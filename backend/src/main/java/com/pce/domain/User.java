@@ -1,0 +1,139 @@
+package com.pce.domain;
+
+import org.hibernate.Session;
+import org.hibernate.annotations.*;
+
+import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Set;
+
+/**
+ * Created by Leonardo Tarjadi on 4/02/2016.
+ */
+@Entity
+@Table(name = "user", schema = "ivs")
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "id", nullable = false, updatable = false)
+    private long id;
+
+    @Column(name = "email", nullable = false, unique = true)
+    private String email;
+
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
+
+    @Column(name = "first_name")
+    private String firstName;
+
+    @Column(name = "last_name")
+    private String lastName;
+
+
+    @CreationTimestamp
+    private Calendar creationDate;
+
+    @UpdateTimestamp
+    private Calendar updatedDate;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name= "user_role", schema = "ivs", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+    private Set<Role> roles;
+
+    public User() {
+    }
+
+    public User(String firstName, String lastName, String email, String passwordHash, Set<Role> roles) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.passwordHash = passwordHash;
+        this.roles = roles;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPasswordHash() {
+        return passwordHash;
+    }
+
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public Calendar getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Calendar creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public Calendar getUpdatedDate() {
+        return updatedDate;
+    }
+
+    public void setUpdatedDate(Calendar updatedDate) {
+        this.updatedDate = updatedDate;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    @Override
+    public String toString() {
+        String result = String.format("User [id=%d, firstname='%s'," +
+                "lastname='%s', email='%s', password='%s']%n", id, firstName, lastName, email, passwordHash);
+
+
+        if (roles != null){
+            for (Role role : roles){
+                result += String.format("Role [id=%d, roleName='%s']%n", role.getId(), role.getRoleName());
+            }
+        }
+        return result;
+    }
+}
