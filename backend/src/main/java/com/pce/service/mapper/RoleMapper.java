@@ -3,7 +3,7 @@ package com.pce.service.mapper;
 import com.google.common.base.Preconditions;
 import com.pce.domain.Role;
 import com.pce.domain.dto.DomainObjectDTO;
-import com.pce.domain.dto.RoleDTO;
+import com.pce.domain.dto.RoleDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,16 +20,12 @@ public  class RoleMapper implements EntityToDTOMapper<Role> {
 
     @Override
     public DomainObjectDTO mapEntityIntoDTO(Role entity) {
-        DomainObjectDTO roleObjectDTO = new RoleDTO(  entity.getId(),
-                                                        entity.getRoleName(),
-                                                        entity.getCreationDate(),
-                                                        entity.getUpdatedDate());
-
-        return roleObjectDTO;
+        return null;
     }
 
     @Override
     public List<DomainObjectDTO> mapEntitiesIntoDTO(Iterable<Role> entities) {
+
         Preconditions.checkArgument(entities != null,  "Role entities cannot be null");
         List<DomainObjectDTO> roleObjectDTOs = new ArrayList<>();
         entities.forEach(role -> roleObjectDTOs.add(mapEntityIntoDTO(role)));

@@ -1,46 +1,51 @@
 package com.pce.controller;
 
 import com.pce.domain.Role;
+import com.pce.domain.User;
+import com.pce.domain.dto.RoleDto;
 import com.pce.domain.dto.UserCreationForm;
+import com.pce.domain.dto.UserDto;
 import com.pce.service.RoleService;
 import com.pce.service.UserService;
 import com.pce.validator.UserCreateValidator;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Leonardo Tarjadi on 7/02/2016.
  */
-@Controller
+@RestController
+@RequestMapping("/api/pce")
 public class UserController {
 
     private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
 
     private UserService userService;
     private RoleService roleService;
-
+    private ModelMapper modelMapper;
     private UserCreateValidator userCreateValidator;
 
     @Autowired
     public UserController(UserCreateValidator userCreateValidator, UserService userService,
-                          RoleService roleService) {
+                          RoleService roleService,
+                          ModelMapper modelMapper) {
         this.userCreateValidator = userCreateValidator;
         this.userService = userService;
         this.roleService = roleService;
+        this.modelMapper = modelMapper;
     }
 
     @InitBinder("userCreateForm")
@@ -51,18 +56,23 @@ public class UserController {
 
     @PreAuthorize("@currentUserServiceImpl.canAccessUser(principal, #id)")
     @RequestMapping("/user/{id}")
-    public ModelAndView getUserPage(@PathVariable Long id) {
-        return new ModelAndView("user", "user", userService.getUserById(id)
-                .orElseThrow(()-> new NoSuchElementException(String.format("User=%s not found", id))));
+    public UserDto getUserById(@PathVariable Long id) {
+        User user = userService.getUserById(id).orElseThrow(() -> new NoSuchElementException(String.format("User=%s not found", id)));
+      List<RoleDto> roleDtos = user.getRoles().stream().map(role -> modelMapper.map(role, RoleDto.class)).collect(Collectors.toList());
+
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+      userDto.setRoles(roleDtos);
+        return userDto;
     }
 
-    @PreAuthorize("hasAuthority('Admin')")
+
+    /*@PreAuthorize("hasAuthority('Admin')")
     @RequestMapping(value = "/user/create", method = RequestMethod.GET)
     public ModelAndView getUserCreatePage() {
         UserCreationForm userCreationForm = new UserCreationForm();
         userCreationForm.setRoles(roleService.getAllAvailableRoles());
         return new ModelAndView("userCreate", "userCreateForm", userCreationForm);
-    }
+    }*/
 
     @PreAuthorize("hasAuthority('Admin')")
     @RequestMapping(value = "/user/create", method = RequestMethod.POST)

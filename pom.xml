@@ -47,6 +47,12 @@
             </dependency>
 
             <dependency>
+                <groupId>org.modelmapper</groupId>
+                <artifactId>modelmapper</artifactId>
+                <version>0.7.6</version>
+            </dependency>
+
+            <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
                 <version>9.4-1200-jdbc41</version>
