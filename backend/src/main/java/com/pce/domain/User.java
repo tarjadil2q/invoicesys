@@ -16,8 +16,6 @@ import java.util.Set;
  */
 @Entity
 @Table(name = "user", schema = "ivs")
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
