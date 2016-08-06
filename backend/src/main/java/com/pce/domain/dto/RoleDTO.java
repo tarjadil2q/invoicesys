@@ -2,17 +2,21 @@ package com.pce.domain.dto;
 
 import java.io.Serializable;
 import java.util.Calendar;
+import java.util.StringJoiner;
 
 /**
  * Created by Leonardo Tarjadi on 5/03/2016.
  */
-public class RoleDTO implements DomainObjectDTO, Serializable{
+public class RoleDto implements DomainObjectDTO, Serializable{
     private long id;
     private String roleName;
-    private Calendar creationDate;
-    private Calendar updatedDate;
+    private String creationDate;
+    private String updatedDate;
 
-    public RoleDTO(long id, String roleName, Calendar creationDate, Calendar updatedDate) {
+    public RoleDto() {
+    }
+
+    public RoleDto(long id, String roleName, String creationDate, String updatedDate) {
         this.id = id;
         this.roleName = roleName;
         this.creationDate = creationDate;
@@ -35,19 +39,19 @@ public class RoleDTO implements DomainObjectDTO, Serializable{
         this.roleName = roleName;
     }
 
-    public Calendar getCreationDate() {
+    public String getCreationDate() {
         return creationDate;
     }
 
-    public void setCreationDate(Calendar creationDate) {
+    public void setCreationDate(String creationDate) {
         this.creationDate = creationDate;
     }
 
-    public Calendar getUpdatedDate() {
+    public String getUpdatedDate() {
         return updatedDate;
     }
 
-    public void setUpdatedDate(Calendar updatedDate) {
+    public void setUpdatedDate(String updatedDate) {
         this.updatedDate = updatedDate;
     }
 }
