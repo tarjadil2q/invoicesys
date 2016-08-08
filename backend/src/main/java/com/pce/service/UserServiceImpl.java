@@ -7,11 +7,15 @@ import com.pce.domain.dto.UserCreationForm;
 import com.pce.repository.RoleRepository;
 import com.pce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Leonardo Tarjadi on 6/02/2016.
@@ -39,6 +43,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Collection<User> getAllUsers() {
         return userRepository.findAll(new Sort("email"));
+    }
+
+
+    public Page<User> getAllUsers(Pageable pageRequest){
+      return userRepository.findAll(pageRequest);
     }
 
     @Override

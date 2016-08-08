@@ -27,7 +27,8 @@ public class RoleServiceImpl implements RoleService {
     @Override
     public Page<DomainObjectDTO> getAllAvailableRoles(Pageable pageRequest) {
         Page<Role> pageRoleEntity = roleRepository.findAll(pageRequest);
-        return roleMapper.mapEntityPageIntoDTOPage(pageRequest, pageRoleEntity);
+        return null;
+        /*return roleMapper.mapEntityPageIntoDTOPage(pageRequest, pageRoleEntity);*/
     }
 
     @Override

@@ -7,4 +7,5 @@ import com.pce.domain.CurrentUser;
  */
 public interface CurrentUserService {
     boolean canAccessUser(CurrentUser currentUser, Long userId);
+    boolean isCurrentUserAdmin(CurrentUser currentUser);
 }
