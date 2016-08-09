@@ -1,6 +1,7 @@
 package com.pce.service.mapper;
 
 import com.google.common.base.Preconditions;
+import com.pce.domain.Role;
 import com.pce.domain.User;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.RoleDto;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -32,6 +34,13 @@ public class UserMapper implements EntityToDTOMapper<User> {
     UserDto userDto = modelMapper.map(userEntity, UserDto.class);
     userDto.setRoles(roleDtos);
     return userDto;
+  }
+
+  public User mapDtoIntoEntity(UserDto userDto){
+    Set<Role> roles = userDto.getRoles().stream().map(roleDto -> modelMapper.map(roleDto, Role.class)).collect(Collectors.toSet());
+    User user = modelMapper.map(userDto, User.class);
+    user.setRoles(roles);
+    return user;
   }
 
   @Override

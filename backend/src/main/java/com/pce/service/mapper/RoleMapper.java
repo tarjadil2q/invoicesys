@@ -2,8 +2,9 @@ package com.pce.service.mapper;
 
 import com.google.common.base.Preconditions;
 import com.pce.domain.Role;
+import com.pce.domain.User;
 import com.pce.domain.dto.DomainObjectDTO;
-import com.pce.domain.dto.RoleDto;
+import com.pce.domain.dto.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -37,5 +38,11 @@ public  class RoleMapper implements EntityToDTOMapper<Role> {
     public Page<DomainObjectDTO> mapEntityPageIntoDTOPage(Pageable pageRequest, Page<Role> pageEntity) {
         List<DomainObjectDTO> roleObjectDTOs = mapEntitiesIntoDTO(pageEntity.getContent());
         return new PageImpl<>(roleObjectDTOs, pageRequest, pageEntity.getTotalElements());
+    }
+
+    //TODO
+    @Override
+    public User mapDtoIntoEntity(UserDto userDto) {
+        return null;
     }
 }

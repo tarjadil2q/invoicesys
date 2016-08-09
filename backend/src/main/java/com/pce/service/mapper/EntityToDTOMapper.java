@@ -1,6 +1,8 @@
 package com.pce.service.mapper;
 
+import com.pce.domain.User;
 import com.pce.domain.dto.DomainObjectDTO;
+import com.pce.domain.dto.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,4 +19,6 @@ public interface EntityToDTOMapper <T> {
 
     Page<DomainObjectDTO> mapEntityPageIntoDTOPage(Pageable pageRequest, Page<T> pageEntity);
 
+
+    User mapDtoIntoEntity(UserDto userDto);
 }

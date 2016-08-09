@@ -1,9 +1,11 @@
 package com.pce.controller;
 
+import com.google.common.base.Preconditions;
 import com.pce.domain.Role;
 import com.pce.domain.User;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.UserCreationForm;
+import com.pce.domain.dto.UserDto;
 import com.pce.service.RoleService;
 import com.pce.service.UserService;
 import com.pce.service.mapper.UserMapper;
@@ -15,9 +17,9 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.*;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -35,23 +38,29 @@ import java.util.NoSuchElementException;
  */
 @RestController
 @RequestMapping("/api/pce")
+@ExposesResourceFor(UserDto.class)
+
 public class UserController {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+  public static final String USER = "/user";
 
   private UserService userService;
   private RoleService roleService;
   private UserMapper userMapper;
   private UserCreateValidator userCreateValidator;
+  private EntityLinks entityLinks;
 
   @Autowired
   public UserController(UserCreateValidator userCreateValidator, UserService userService,
                         RoleService roleService,
-                        UserMapper userMapper) {
+                        UserMapper userMapper,
+                        EntityLinks entityLinks) {
     this.userCreateValidator = userCreateValidator;
     this.userService = userService;
     this.roleService = roleService;
     this.userMapper = userMapper;
+    this.entityLinks = entityLinks;
   }
 
   @InitBinder("userCreateForm")
@@ -64,10 +73,13 @@ public class UserController {
   @RequestMapping(value = "/user/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> getUserById(@PathVariable Long id) {
     User user = userService.getUserById(id).orElseThrow(() -> new NoSuchElementException(String.format("User=%s not found", id)));
-    DomainObjectDTO userDto = userMapper.mapEntityIntoDTO(user);
-    Resource<DomainObjectDTO> userResource = new Resource<>(userDto);
+    UserDto userDto = (UserDto)userMapper.mapEntityIntoDTO(user);
+    Link userLink = entityLinks.linkToSingleResource(UserDto.class, userDto.getUserId());
+
+    Resource<DomainObjectDTO> userResource = new Resource<>(userDto, userLink);
     return new ResponseEntity<>(userResource, HttpStatus.OK);
   }
+
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/users", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
@@ -76,6 +88,24 @@ public class UserController {
     Page<User> allUsers = userService.getAllUsers(pageRequest);
     Page<DomainObjectDTO> userDtos = userMapper.mapEntityPageIntoDTOPage(pageRequest, allUsers);
     return new ResponseEntity<>(assembler.toResource(userDtos), HttpStatus.OK);
+  }
+
+  @RequestMapping(value = USER, method = RequestMethod.POST)
+  public HttpEntity<Resource<DomainObjectDTO>> createUser(@RequestBody UserDto userDto){
+    Preconditions.checkArgument(userDto != null, "User cannot be null");
+
+    User user = userMapper.mapDtoIntoEntity(userDto);
+    if (userService.isUserExists(user)){
+      return new ResponseEntity(HttpStatus.CONFLICT);
+    }
+
+    user = userService.create(user);
+    userDto.setLink(user.getId(), USER);
+    Link resourceLink = userDto.getLink("self");
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.setLocation(URI.create(resourceLink.getHref()));
+    return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+
   }
 
 

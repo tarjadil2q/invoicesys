@@ -50,7 +50,14 @@ public class UserServiceImpl implements UserService {
       return userRepository.findAll(pageRequest);
     }
 
-    @Override
+  @Override
+  public boolean isUserExists(User user) {
+    Optional<User> existingUser = userRepository.findOneByEmail(user.getEmail());
+    if (existingUser.isPresent()) return false;
+    return true;
+  }
+
+  @Override
     public User create(UserCreationForm form) {
         String email = form.getEmail();
         String firstName = form.getFirstName();

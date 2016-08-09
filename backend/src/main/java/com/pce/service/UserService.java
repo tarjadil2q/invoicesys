@@ -42,6 +42,8 @@ public interface UserService {
    */
   Page<User> getAllUsers(Pageable pageRequest);
 
+  boolean isUserExists(User user);
+
     /**
      * Create a new user, {@link User}.
      * @param form the form data to create the user
