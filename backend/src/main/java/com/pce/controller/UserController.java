@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -60,11 +61,12 @@ public class UserController {
 
 
   @PreAuthorize("@currentUserServiceImpl.canAccessUser(principal, #id)")
-  @RequestMapping("/user/{id}")
-  public HttpEntity<DomainObjectDTO> getUserById(@PathVariable Long id) {
+  @RequestMapping(value = "/user/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  public HttpEntity<Resource<DomainObjectDTO>> getUserById(@PathVariable Long id) {
     User user = userService.getUserById(id).orElseThrow(() -> new NoSuchElementException(String.format("User=%s not found", id)));
     DomainObjectDTO userDto = userMapper.mapEntityIntoDTO(user);
-    return new ResponseEntity<>(userDto, HttpStatus.FOUND);
+    Resource<DomainObjectDTO> userResource = new Resource<>(userDto);
+    return new ResponseEntity<>(userResource, HttpStatus.FOUND);
   }
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")

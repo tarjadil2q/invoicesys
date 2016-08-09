@@ -1,12 +1,18 @@
 package com.pce.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
+
 import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by Leonardo Tarjadi on 5/03/2016.
  */
-public class UserDto implements DomainObjectDTO, Serializable {
+@Relation(collectionRelation = "userList")
+public class UserDto extends ResourceSupport implements DomainObjectDTO, Serializable {
   private long id;
   private String firstName;
   private String lastName;
@@ -15,8 +21,27 @@ public class UserDto implements DomainObjectDTO, Serializable {
   private String updatedDate;
   private List<RoleDto> roles;
 
+  public UserDto() {
+  }
 
-  public long getId() {
+  @JsonCreator
+  public UserDto(@JsonProperty("userId")long id,
+                 @JsonProperty("firstName") String firstName,
+                 @JsonProperty("lastName") String lastName,
+                 @JsonProperty("email") String email,
+                 @JsonProperty("creationDate") String creationDate,
+                 @JsonProperty("updatedDate") String updatedDate,
+                 @JsonProperty("roles") List<RoleDto> roles) {
+    this.id = id;
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.email = email;
+    this.creationDate = creationDate;
+    this.updatedDate = updatedDate;
+    this.roles = roles;
+  }
+
+  public long getUserId() {
     return id;
   }
 
