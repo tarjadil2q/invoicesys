@@ -66,7 +66,7 @@ public class UserController {
     User user = userService.getUserById(id).orElseThrow(() -> new NoSuchElementException(String.format("User=%s not found", id)));
     DomainObjectDTO userDto = userMapper.mapEntityIntoDTO(user);
     Resource<DomainObjectDTO> userResource = new Resource<>(userDto);
-    return new ResponseEntity<>(userResource, HttpStatus.FOUND);
+    return new ResponseEntity<>(userResource, HttpStatus.OK);
   }
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
@@ -75,7 +75,7 @@ public class UserController {
   public HttpEntity<PagedResources<DomainObjectDTO>> getUsers(Pageable pageRequest, PagedResourcesAssembler assembler) {
     Page<User> allUsers = userService.getAllUsers(pageRequest);
     Page<DomainObjectDTO> userDtos = userMapper.mapEntityPageIntoDTOPage(pageRequest, allUsers);
-    return new ResponseEntity<>(assembler.toResource(userDtos), HttpStatus.FOUND);
+    return new ResponseEntity<>(assembler.toResource(userDtos), HttpStatus.OK);
   }
 
 

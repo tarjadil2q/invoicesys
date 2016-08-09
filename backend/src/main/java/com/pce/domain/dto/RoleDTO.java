@@ -1,13 +1,15 @@
 package com.pce.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.hateoas.ResourceSupport;
+
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.StringJoiner;
 
 /**
  * Created by Leonardo Tarjadi on 5/03/2016.
  */
-public class RoleDto implements DomainObjectDTO, Serializable{
+public class RoleDto extends ResourceSupport implements DomainObjectDTO, Serializable{
     private long id;
     private String roleName;
     private String creationDate;
@@ -16,14 +18,18 @@ public class RoleDto implements DomainObjectDTO, Serializable{
     public RoleDto() {
     }
 
-    public RoleDto(long id, String roleName, String creationDate, String updatedDate) {
+    @JsonCreator
+    public RoleDto(@JsonProperty("roleId") long id,
+                   @JsonProperty("roleName") String roleName,
+                   @JsonProperty("creationDate") String creationDate,
+                   @JsonProperty("updatedDate") String updatedDate) {
         this.id = id;
         this.roleName = roleName;
         this.creationDate = creationDate;
         this.updatedDate = updatedDate;
     }
 
-    public long getId() {
+    public long getRoleId() {
         return id;
     }
 
