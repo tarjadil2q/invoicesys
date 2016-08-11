@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Leonardo Tarjadi on 13/02/2016.
@@ -18,35 +19,49 @@ import java.util.List;
 @Service
 public class RoleServiceImpl implements RoleService {
 
-    @Autowired
-    private RoleRepository roleRepository;
+  @Autowired
+  private RoleRepository roleRepository;
 
-    @Autowired
-    private RoleMapper roleMapper;
+  @Autowired
+  private RoleMapper roleMapper;
 
-    @Override
-    public Page<DomainObjectDTO> getAllAvailableRoles(Pageable pageRequest) {
-        Page<Role> pageRoleEntity = roleRepository.findAll(pageRequest);
-        return null;
+  @Override
+  public Page<DomainObjectDTO> getAllAvailableRoles(Pageable pageRequest) {
+    Page<Role> pageRoleEntity = roleRepository.findAll(pageRequest);
+    return null;
         /*return roleMapper.mapEntityPageIntoDTOPage(pageRequest, pageRoleEntity);*/
-    }
+  }
 
-    @Override
-    public Role create(RoleCreationForm roleCreationForm) {
-        Role newRole = new Role();
-        newRole.setRoleName(roleCreationForm.getRoleName());
-        return roleRepository.save(newRole);
-    }
+  @Override
+  public Role create(RoleCreationForm roleCreationForm) {
+    Role newRole = new Role();
+    newRole.setRoleName(roleCreationForm.getRoleName());
+    return roleRepository.save(newRole);
+  }
 
-    @Override
-    public List<Role> findRoleByRoleNameIgnoreCase(String roleName) {
-        List<Role> rolesByRoleName = roleRepository.findByRoleNameIgnoreCase(roleName);
-        return rolesByRoleName;
+  public Role createRole(Role role) {
+    return roleRepository.save(role);
+  }
 
-    }
+  @Override
+  public List<Role> findRoleByRoleNameIgnoreCase(String roleName) {
+    List<Role> rolesByRoleName = roleRepository.findByRoleNameIgnoreCase(roleName);
+    return rolesByRoleName;
 
-    @Override
-    public List<Role> getAllAvailableRoles() {
-        return roleRepository.findAll();
-    }
+  }
+
+  @Override
+  public List<Role> getAllAvailableRoles() {
+    return roleRepository.findAll();
+  }
+
+  @Override
+  public boolean isRoleExist(long roleId) {
+    return roleRepository.findOne(roleId) != null;
+  }
+
+  @Override
+  public Optional<Role> getRoleById(long id) {
+    return Optional.ofNullable(roleRepository.findOne(id));
+  }
 }

@@ -7,19 +7,24 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by Leonardo Tarjadi on 13/02/2016.
  */
 public interface RoleService {
 
-    Page<DomainObjectDTO> getAllAvailableRoles(Pageable pageRequest);
+  Page<DomainObjectDTO> getAllAvailableRoles(Pageable pageRequest);
 
-    List<Role> getAllAvailableRoles();
+  List<Role> getAllAvailableRoles();
 
 
-    Role create(RoleCreationForm roleCreationForm);
+  Role create(RoleCreationForm roleCreationForm);
 
-    List<Role> findRoleByRoleNameIgnoreCase(String roleName);
+  List<Role> findRoleByRoleNameIgnoreCase(String roleName);
+
+  boolean isRoleExist(long roleId);
+
+  public Optional<Role> getRoleById(long id);
 
 }

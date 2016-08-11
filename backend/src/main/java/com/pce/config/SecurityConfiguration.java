@@ -21,29 +21,31 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+  @Autowired
+  private UserDetailsService userDetailsService;
 
-    @Autowired
-    BCryptPasswordEncoder bCryptPasswordEncoder;
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+  @Autowired
+  BCryptPasswordEncoder bCryptPasswordEncoder;
 
-
-        http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/**").authenticated()
-                .antMatchers(HttpMethod.POST, "/api/**").authenticated()
-                .antMatchers(HttpMethod.PUT, "api/**").authenticated()
-                .anyRequest().permitAll()
-                .and()
-                .httpBasic().and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-    }
+  @Override
+  protected void configure(HttpSecurity http) throws Exception {
 
 
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService)
-                .passwordEncoder(bCryptPasswordEncoder);
-    }
+    http.authorizeRequests()
+            .antMatchers(HttpMethod.GET, "/api/**").authenticated()
+            .antMatchers(HttpMethod.POST, "/api/**").authenticated()
+            .antMatchers(HttpMethod.PUT, "/api/**").authenticated()
+            .anyRequest().permitAll()
+            .and()
+            .csrf().disable()
+            .httpBasic().and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+  }
+
+
+  @Override
+  protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+    auth.userDetailsService(userDetailsService)
+            .passwordEncoder(bCryptPasswordEncoder);
+  }
 }
