@@ -37,7 +37,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.PUT, "/api/**").authenticated()
             .anyRequest().permitAll()
             .and()
-            .csrf().disable()
+            .csrf().disable()//Enable back when in prod mode
             .httpBasic().and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
   }
