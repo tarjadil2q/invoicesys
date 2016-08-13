@@ -1,6 +1,6 @@
 package com.pce.controller;
 
-import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.pce.domain.Role;
 import com.pce.domain.User;
 import com.pce.domain.dto.*;
@@ -22,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -92,34 +94,64 @@ public class UserController {
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(method = RequestMethod.POST)
-  public HttpEntity<Resource<DomainObjectDTO>> createUser(@RequestBody UserDto userDto) {
-    Preconditions.checkArgument(userDto != null, "User cannot be null");
+  public HttpEntity<Resource<DomainObjectDTO>> createUser(@RequestBody @Valid UserDto userDto) {
 
     User user = userMapper.mapDtoIntoEntity(userDto);
     if (userService.isUserExists(userDto.getEmail())) {
-      return new ResponseEntity(new Resource<>(new ErrorDto("User already exists")), HttpStatus.CONFLICT);
+      return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.CONFLICT,
+              "User already exists, please enter different user", Lists.newArrayList("User already exists"))), HttpStatus.CONFLICT);
     }
-    List<RoleDto> userRoles = userDto.getRoles();
+    Set<Role> roles = getRoles(userDto);
+    if (CollectionUtils.isEmpty(roles)) {
+      return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.BAD_REQUEST,
+              "No Roles being defined for user " + user.getEmail(), "No Roles being defined")), HttpStatus.BAD_REQUEST);
+    }
+    user = userService.createOrUpdate(user, roles);
+    userDto.setLink(user.getId(), USER);
+    Link resourceLink = userDto.getLink("self");
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.setLocation(URI.create(resourceLink.getHref()));
+    return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+  }
 
-    Set<Role> roles = userRoles.stream().distinct().
-            filter(roleDto -> roleDto != null && roleDto.getRoleId() != 0)
-            .filter(roleDto -> roleService.isRoleExist(roleDto.getRoleId()))
-            .map(roleDto -> roleService.getRoleById(roleDto.getRoleId()).get())
-            .collect(Collectors.toSet());
-    try {
-      user = userService.create(user, roles);
-      userDto.setLink(user.getId(), USER);
-      Link resourceLink = userDto.getLink("self");
-      HttpHeaders httpHeaders = new HttpHeaders();
-      httpHeaders.setLocation(URI.create(resourceLink.getHref()));
-      return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
-    } catch (DataIntegrityViolationException e) {
-      return new ResponseEntity(new Resource<>(new ErrorDto("Data integrity exception " + e.getMessage())), HttpStatus.NOT_FOUND);
+
+  @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
+  @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
+  public HttpEntity<Resource<DomainObjectDTO>> updateUser(@PathVariable("id") long id,
+                                                          @RequestBody @Valid UserDto userDto) {
+    Optional<User> currentUser = userService.getUserById(id);
+
+    if (!currentUser.isPresent()) {
+      return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.NOT_FOUND,
+              "User to be updated not found, please check id is correct ", "User id is not found")), HttpStatus.NOT_FOUND);
     }
+    Set<Role> roles = getRoles(userDto);
+    User userToBeUpdate = currentUser.get();
+    userToBeUpdate.setFirstName(userDto.getFirstName());
+    userToBeUpdate.setFirstName(userDto.getLastName());
+    userToBeUpdate.setFirstName(userDto.getEmail());
+    User updatedUser = userService.createOrUpdate(userToBeUpdate, roles);
+
+    userDto.setLink(updatedUser.getId(), USER);
+    Link resourceLink = userDto.getLink("self");
+    HttpHeaders httpHeaders = new HttpHeaders();
+    httpHeaders.setLocation(URI.create(resourceLink.getHref()));
+    return new ResponseEntity<>(null, httpHeaders, HttpStatus.OK);
 
 
   }
 
+  private Set<Role> getRoles(@RequestBody UserDto userDto) {
+    List<RoleDto> userRoles = userDto.getRoles();
+    if (CollectionUtils.isEmpty(userRoles)) {
+      return null;
+    }
+    return userRoles.stream().distinct().
+            filter(roleDto -> roleDto != null && roleDto.getRoleId() != 0)
+            .filter(roleDto -> roleService.isRoleExist(roleDto.getRoleId()))
+            .map(roleDto -> roleService.getRoleById(roleDto.getRoleId()).get())
+            .collect(Collectors.toSet());
+  }
 
     /*@PreAuthorize("hasAuthority('Admin')")
     @RequestMapping(value = "/user/create", method = RequestMethod.GET)
@@ -142,7 +174,7 @@ public class UserController {
       return "userCreate";
     }
     try {
-      userService.create(form);
+      userService.createOrUpdate(form);
     } catch (DataIntegrityViolationException e) {
       LOG.warn("Integrity Exception happen when creating new user", e);
       bindingResult.reject("data.integration.exception", "Data integrity exception");

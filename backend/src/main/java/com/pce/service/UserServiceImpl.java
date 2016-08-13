@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public User create(UserCreationForm form) {
+  public User createOrUpdate(UserCreationForm form) {
     String email = form.getEmail();
     String firstName = form.getFirstName();
     String lastName = form.getLastName();
@@ -71,7 +71,7 @@ public class UserServiceImpl implements UserService {
 
 
   @Override
-  public User create(User user, Set<Role> roles) {
+  public User createOrUpdate(User user, Set<Role> roles) {
     user.setRoles(roles);
     return userRepository.save(user);
   }

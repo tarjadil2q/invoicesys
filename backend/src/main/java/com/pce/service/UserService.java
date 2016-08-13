@@ -54,9 +54,9 @@ public interface UserService {
    * @param form the form data to create the user
    * @return created user
    */
-  User create(UserCreationForm form);
+  User createOrUpdate(UserCreationForm form);
 
-  User create(User user, Set<Role> roles);
+  User createOrUpdate(User user, Set<Role> roles);
 
 
 }
