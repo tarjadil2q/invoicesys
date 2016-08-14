@@ -123,7 +123,7 @@ public class UserController {
 
   @PreAuthorize("@currentUserServiceImpl.canAccessUser(principal, #id)")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
-  public HttpEntity<Resource<DomainObjectDTO>> updateUserAndRole(@PathVariable("id") long id,
+  public HttpEntity<Resource<DomainObjectDTO>> updateUser(@PathVariable("id") long id,
                                                                  @RequestBody @Valid UserDto userDto,
                                                                  Authentication authentication) {
     Optional<User> currentUser = userService.getUserById(id);
