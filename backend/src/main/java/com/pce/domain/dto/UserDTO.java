@@ -2,9 +2,14 @@ package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pce.controller.UserController;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
+import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -14,24 +19,35 @@ import java.util.List;
 @Relation(collectionRelation = "userList")
 public class UserDto extends ResourceSupport implements DomainObjectDTO, Serializable {
   private long id;
+  @NotEmpty
   private String firstName;
+  @NotEmpty
   private String lastName;
+
   private String email;
   private String creationDate;
   private String updatedDate;
   private List<RoleDto> roles;
+  private String password;
 
+  @NotNull
   public UserDto() {
   }
 
+  public void setLink(long id, String rel) {
+    this.add(ControllerLinkBuilder.linkTo(UserController.class).slash(id).withRel(rel).withSelfRel());
+  }
+
   @JsonCreator
-  public UserDto(@JsonProperty("userId")long id,
+  @NotNull
+  public UserDto(@JsonProperty("userId") long id,
                  @JsonProperty("firstName") String firstName,
                  @JsonProperty("lastName") String lastName,
                  @JsonProperty("email") String email,
                  @JsonProperty("creationDate") String creationDate,
                  @JsonProperty("updatedDate") String updatedDate,
-                 @JsonProperty("roles") List<RoleDto> roles) {
+                 @JsonProperty("roles") List<RoleDto> roles,
+                 @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, value = "password") String password) {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -39,6 +55,7 @@ public class UserDto extends ResourceSupport implements DomainObjectDTO, Seriali
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
     this.roles = roles;
+    this.password = password;
   }
 
   public long getUserId() {
@@ -97,6 +114,14 @@ public class UserDto extends ResourceSupport implements DomainObjectDTO, Seriali
     this.roles = roles;
   }
 
+  public String getPassword() {
+    return password;
+  }
+
+  public void setPassword(String password) {
+    this.password = password;
+  }
+
   @Override
   public String toString() {
     return "UserDto{" +
@@ -104,8 +129,8 @@ public class UserDto extends ResourceSupport implements DomainObjectDTO, Seriali
             ", firstName='" + firstName + '\'' +
             ", lastName='" + lastName + '\'' +
             ", email='" + email + '\'' +
-            ", creationDate=" + creationDate +
-            ", updatedDate=" + updatedDate +
+            ", creationDate='" + creationDate + '\'' +
+            ", updatedDate='" + updatedDate + '\'' +
             ", roles=" + roles +
             '}';
   }
