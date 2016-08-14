@@ -1,8 +1,6 @@
 package com.pce.service;
 
 import com.pce.domain.Role;
-import com.pce.domain.dto.DomainObjectDTO;
-import com.pce.domain.dto.RoleCreationForm;
 import com.pce.repository.RoleRepository;
 import com.pce.service.mapper.RoleMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +24,12 @@ public class RoleServiceImpl implements RoleService {
   private RoleMapper roleMapper;
 
   @Override
-  public Page<DomainObjectDTO> getAllAvailableRoles(Pageable pageRequest) {
-    Page<Role> pageRoleEntity = roleRepository.findAll(pageRequest);
-    return null;
-        /*return roleMapper.mapEntityPageIntoDTOPage(pageRequest, pageRoleEntity);*/
+  public Page<Role> getAllAvailableRoles(Pageable pageRequest) {
+    return roleRepository.findAll(pageRequest);
   }
 
-  @Override
-  public Role create(RoleCreationForm roleCreationForm) {
-    Role newRole = new Role();
-    newRole.setRoleName(roleCreationForm.getRoleName());
-    return roleRepository.save(newRole);
-  }
 
-  public Role createRole(Role role) {
+  public Role createOrUpdateRole(Role role) {
     return roleRepository.save(role);
   }
 
