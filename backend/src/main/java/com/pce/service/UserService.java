@@ -58,5 +58,6 @@ public interface UserService {
 
   User createOrUpdate(User user, Set<Role> roles);
 
+  User createOrUpdate(User user);
 
 }

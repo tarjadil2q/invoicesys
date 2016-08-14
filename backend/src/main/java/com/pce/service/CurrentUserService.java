@@ -6,6 +6,9 @@ import com.pce.domain.CurrentUser;
  * Created by Leonardo Tarjadi on 8/02/2016.
  */
 public interface CurrentUserService {
-    boolean canAccessUser(CurrentUser currentUser, Long userId);
-    boolean isCurrentUserAdmin(CurrentUser currentUser);
+  boolean canAccessUser(CurrentUser currentUser, Long userId);
+
+  boolean isCurrentUserAdmin(CurrentUser currentUser);
+
+  boolean canCurrentUserAccess(CurrentUser currentUser, Long userId);
 }

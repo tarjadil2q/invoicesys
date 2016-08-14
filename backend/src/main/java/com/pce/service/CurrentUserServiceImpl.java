@@ -14,34 +14,42 @@ import java.util.Set;
 @Service
 public class CurrentUserServiceImpl implements CurrentUserService {
 
-    @Override
-    public boolean canAccessUser(CurrentUser currentUser, Long userId) {
-        Preconditions.checkArgument(currentUser != null, "Current User cannot be null");
-        if (currentUser.getId() == userId){
-            return true;
-        }
-        Set<Role> roles = currentUser.getRoles();
-        for (Role role : roles){
-            if (RoleConstant.ADMIN.getRoleName().equals(role.getRoleName())){
-                return true;
-            }
-        }
-        return false;
+  @Override
+  public boolean canAccessUser(CurrentUser currentUser, Long userId) {
+    if (canCurrentUserAccess(currentUser, userId)) {
+      return true;
     }
+    Set<Role> roles = currentUser.getRoles();
+    for (Role role : roles) {
+      if (RoleConstant.ADMIN.getRoleName().equals(role.getRoleName())) {
+        return true;
+      }
+    }
+    return false;
+  }
 
-    @Override
-    public boolean isCurrentUserAdmin(CurrentUser currentUser) {
-        Preconditions.checkArgument(currentUser != null, "Current User cannot be null");
-        return thisRoleCanAccess(RoleConstant.ADMIN, currentUser);
+  @Override
+  public boolean canCurrentUserAccess(CurrentUser currentUser, Long userId) {
+    Preconditions.checkArgument(currentUser != null, "Current User cannot be null");
+    if (currentUser.getId() == userId) {
+      return true;
     }
+    return false;
+  }
 
-    private boolean thisRoleCanAccess(RoleConstant role, CurrentUser currentUser){
-        Set<Role> roles = currentUser.getRoles();
-        for (Role currentUserRole : roles){
-            if (role.getRoleName().equals(currentUserRole.getRoleName())){
-                return true;
-            }
-        }
-        return false;
+  @Override
+  public boolean isCurrentUserAdmin(CurrentUser currentUser) {
+    Preconditions.checkArgument(currentUser != null, "Current User cannot be null");
+    return thisRoleCanAccess(RoleConstant.ADMIN, currentUser);
+  }
+
+  private boolean thisRoleCanAccess(RoleConstant role, CurrentUser currentUser) {
+    Set<Role> roles = currentUser.getRoles();
+    for (Role currentUserRole : roles) {
+      if (role.getRoleName().equals(currentUserRole.getRoleName())) {
+        return true;
+      }
     }
+    return false;
+  }
 }
