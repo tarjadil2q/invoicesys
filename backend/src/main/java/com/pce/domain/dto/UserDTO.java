@@ -8,7 +8,6 @@ import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;

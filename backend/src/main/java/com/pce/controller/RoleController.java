@@ -5,7 +5,6 @@ import com.pce.domain.Role;
 import com.pce.domain.dto.ApiError;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.RoleDto;
-import com.pce.domain.dto.UserDto;
 import com.pce.service.RoleService;
 import com.pce.service.mapper.RoleMapper;
 import org.slf4j.Logger;
@@ -58,7 +57,7 @@ public class RoleController {
   public HttpEntity<Resource<DomainObjectDTO>> getRoleById(@PathVariable Long id) {
     Role role = roleService.getRoleById(id).orElseThrow(() -> new NoSuchElementException(String.format("Role=%s not found", id)));
     RoleDto roleDto = (RoleDto) roleMapper.mapEntityIntoDto(role);
-    Link linkForRole = entityLinks.linkToSingleResource(UserDto.class, roleDto.getRoleId());
+    Link linkForRole = entityLinks.linkToSingleResource(RoleDto.class, roleDto.getRoleId());
     Resource<DomainObjectDTO> userResource = new Resource<>(roleDto, linkForRole);
     return new ResponseEntity<>(userResource, HttpStatus.OK);
   }
