@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pce.controller.UserController;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
@@ -17,6 +18,7 @@ import java.util.List;
  */
 @Relation(collectionRelation = "userList")
 public class UserDto extends ResourceSupport implements DomainObjectDTO, Serializable {
+  @ReadOnlyProperty
   private long id;
   @NotEmpty
   private String firstName;
@@ -24,7 +26,9 @@ public class UserDto extends ResourceSupport implements DomainObjectDTO, Seriali
   private String lastName;
 
   private String email;
+  @ReadOnlyProperty
   private String creationDate;
+  @ReadOnlyProperty
   private String updatedDate;
   private List<RoleDto> roles;
   private String password;

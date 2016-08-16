@@ -65,8 +65,8 @@ public class RoleController {
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<PagedResources<DomainObjectDTO>> getRoles(Pageable pageRequest, PagedResourcesAssembler assembler) {
-    Page<Role> allUsers = roleService.getAllAvailableRoles(pageRequest);
-    Page<DomainObjectDTO> userDtos = roleMapper.mapEntityPageIntoDTOPage(pageRequest, allUsers);
+    Page<Role> allRoles = roleService.getAllAvailableRoles(pageRequest);
+    Page<DomainObjectDTO> userDtos = roleMapper.mapEntityPageIntoDTOPage(pageRequest, allRoles);
     return new ResponseEntity<>(assembler.toResource(userDtos), HttpStatus.OK);
   }
 

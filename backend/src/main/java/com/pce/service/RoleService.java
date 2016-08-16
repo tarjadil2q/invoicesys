@@ -16,13 +16,13 @@ public interface RoleService {
 
   List<Role> getAllAvailableRoles();
 
-  public Role createOrUpdateRole(Role role);
+  Role createOrUpdateRole(Role role);
 
 
   List<Role> findRoleByRoleNameIgnoreCase(String roleName);
 
   boolean isRoleExist(long roleId);
 
-  public Optional<Role> getRoleById(long id);
+  Optional<Role> getRoleById(long id);
 
 }
