@@ -31,8 +31,9 @@ public class Role {
   @ManyToMany(mappedBy = "roles")
   private Set<User> users;
 
-  @OneToMany(mappedBy = "role")
-  private Set<Puk> puks;
+  @OneToMany(mappedBy = "comitteeRoleHead")
+  private Set<Committee> Committees;
+
 
   public Role() {
   }
@@ -81,13 +82,14 @@ public class Role {
     this.users = users;
   }
 
-  public Set<Puk> getPuks() {
-    return puks;
+  public Set<Committee> getCommittees() {
+    return Committees;
   }
 
-  public void setPuks(Set<Puk> puks) {
-    this.puks = puks;
+  public void setCommittees(Set<Committee> committees) {
+    Committees = committees;
   }
+
 
   @Override
   public String toString() {
@@ -97,7 +99,6 @@ public class Role {
             ", creationDate=" + creationDate +
             ", updatedDate=" + updatedDate +
             ", users=" + users +
-            ", puks=" + puks +
             '}';
   }
 }

@@ -45,94 +45,71 @@ public class PukItem {
   private BigDecimal totalPrice;
 
   @ManyToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  @JoinColumn(name = "approver_id", referencedColumnName = "id")
   private User approver;
+
+  @ManyToOne(cascade = CascadeType.ALL)
+  @JoinColumn(name = "puk_id", referencedColumnName = "id")
+  private Puk puk;
+
+  public PukItem(long id, String activityName, int totalActivity, int quantity, PukItemMeasurement pukItemMeasurement, PukItemStatus pukItemStatus, BigDecimal totalPrice, BigDecimal perMeasurementPrice, User approver, Puk puk) {
+    this.id = id;
+    this.activityName = activityName;
+    this.totalActivity = totalActivity;
+    this.quantity = quantity;
+    this.pukItemMeasurement = pukItemMeasurement;
+    this.pukItemStatus = pukItemStatus;
+    this.totalPrice = totalPrice;
+    this.perMeasurementPrice = perMeasurementPrice;
+    this.approver = approver;
+    this.puk = puk;
+  }
 
   public long getId() {
     return id;
-  }
-
-  public void setId(long id) {
-    this.id = id;
   }
 
   public Calendar getCreationDate() {
     return creationDate;
   }
 
-  public void setCreationDate(Calendar creationDate) {
-    this.creationDate = creationDate;
-  }
-
   public Calendar getUpdatedDate() {
     return updatedDate;
-  }
-
-  public void setUpdatedDate(Calendar updatedDate) {
-    this.updatedDate = updatedDate;
   }
 
   public String getActivityName() {
     return activityName;
   }
 
-  public void setActivityName(String activityName) {
-    this.activityName = activityName;
-  }
-
   public int getTotalActivity() {
     return totalActivity;
-  }
-
-  public void setTotalActivity(int totalActivity) {
-    this.totalActivity = totalActivity;
   }
 
   public int getQuantity() {
     return quantity;
   }
 
-  public void setQuantity(int quantity) {
-    this.quantity = quantity;
-  }
-
   public PukItemMeasurement getPukItemMeasurement() {
     return pukItemMeasurement;
-  }
-
-  public void setPukItemMeasurement(PukItemMeasurement pukItemMeasurement) {
-    this.pukItemMeasurement = pukItemMeasurement;
-  }
-
-  public BigDecimal getPerMeasurementPrice() {
-    return perMeasurementPrice;
-  }
-
-  public void setPerMeasurementPrice(BigDecimal perMeasurementPrice) {
-    this.perMeasurementPrice = perMeasurementPrice;
-  }
-
-  public BigDecimal getTotalPrice() {
-    return totalPrice;
-  }
-
-  public void setTotalPrice(BigDecimal totalPrice) {
-    this.totalPrice = totalPrice;
   }
 
   public PukItemStatus getPukItemStatus() {
     return pukItemStatus;
   }
 
-  public void setPukItemStatus(PukItemStatus pukItemStatus) {
-    this.pukItemStatus = pukItemStatus;
+  public BigDecimal getPerMeasurementPrice() {
+    return perMeasurementPrice;
+  }
+
+  public BigDecimal getTotalPrice() {
+    return totalPrice;
   }
 
   public User getApprover() {
     return approver;
   }
 
-  public void setApprover(User approver) {
-    this.approver = approver;
+  public Puk getPuk() {
+    return puk;
   }
 }

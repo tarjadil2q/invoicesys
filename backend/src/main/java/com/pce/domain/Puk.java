@@ -6,6 +6,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Calendar;
+import java.util.Set;
 
 /**
  * Created by Leonardo Tarjadi on 16/08/2016.
@@ -37,19 +38,24 @@ public class Puk {
   @Column(name = "puk_year", nullable = false)
   private int pukYear;
 
+
   @ManyToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "role_id", referencedColumnName = "id", nullable = false)
-  private Role role;
+  @JoinColumn(name = "comittee_id", referencedColumnName = "id", nullable = false)
+  private Committee committee;
+
+  @OneToMany(mappedBy = "puk")
+  private Set<PukItem> pukItems;
 
 
-  public Puk(String pukNo, String pukDescription, BigDecimal budget, Role role, int pukYear) {
+  public Puk(long id, String pukNo, String pukDescription, BigDecimal budget, int pukYear, Committee committee, Set<PukItem> pukItems) {
+    this.id = id;
     this.pukNo = pukNo;
     this.pukDescription = pukDescription;
     this.budget = budget;
-    this.role = role;
     this.pukYear = pukYear;
+    this.committee = committee;
+    this.pukItems = pukItems;
   }
-
 
   public long getId() {
     return id;
@@ -75,11 +81,16 @@ public class Puk {
     return budget;
   }
 
-  public Role getRole() {
-    return role;
-  }
-
   public int getPukYear() {
     return pukYear;
+  }
+
+
+  public Committee getCommittee() {
+    return committee;
+  }
+
+  public Set<PukItem> getPukItems() {
+    return pukItems;
   }
 }

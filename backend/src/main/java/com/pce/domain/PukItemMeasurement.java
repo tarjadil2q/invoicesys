@@ -1,6 +1,10 @@
 package com.pce.domain;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
+import java.util.Calendar;
 
 /**
  * Created by Leonardo Tarjadi on 16/08/2016.
@@ -16,19 +20,30 @@ public class PukItemMeasurement {
 
   private String typeOfMeasurement;
 
-  public long getId() {
-    return id;
+  @CreationTimestamp
+  private Calendar creationDate;
+
+  @UpdateTimestamp
+  private Calendar updatedDate;
+
+  public PukItemMeasurement(long id, String typeOfMeasurement) {
+    this.id = id;
+    this.typeOfMeasurement = typeOfMeasurement;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public long getId() {
+    return id;
   }
 
   public String getTypeOfMeasurement() {
     return typeOfMeasurement;
   }
 
-  public void setTypeOfMeasurement(String typeOfMeasurement) {
-    this.typeOfMeasurement = typeOfMeasurement;
+  public Calendar getCreationDate() {
+    return creationDate;
+  }
+
+  public Calendar getUpdatedDate() {
+    return updatedDate;
   }
 }

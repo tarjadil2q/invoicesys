@@ -1,6 +1,10 @@
 package com.pce.domain;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Set;
 
 /**
@@ -20,19 +24,35 @@ public class PukItemStatus {
   @OneToMany(mappedBy = "pukItemStatus")
   private Set<PukItem> pukItems;
 
-  public long getId() {
-    return id;
+  @CreationTimestamp
+  private Calendar creationDate;
+
+  @UpdateTimestamp
+  private Calendar updatedDate;
+
+  public PukItemStatus(long id, String status, Set<PukItem> pukItems) {
+    this.id = id;
+    this.status = status;
+    this.pukItems = pukItems;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public long getId() {
+    return id;
   }
 
   public String getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
-    this.status = status;
+  public Set<PukItem> getPukItems() {
+    return pukItems;
+  }
+
+  public Calendar getCreationDate() {
+    return creationDate;
+  }
+
+  public Calendar getUpdatedDate() {
+    return updatedDate;
   }
 }
