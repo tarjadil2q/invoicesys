@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface PukService {
   Page<Puk> getAllAvailablePuk(Pageable pageRequest);
 
-  Puk createOrUpdateRole(Puk puk);
+  Puk createOrUpdatePuk(Puk puk);
 
   Optional<Puk> getPukByPukNoIgnoreCase(String pukNo);
 

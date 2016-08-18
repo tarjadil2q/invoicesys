@@ -83,7 +83,7 @@ public class PukController {
               "Puk already exists, please enter different Puk", Lists.newArrayList("Puk already exists"))), HttpStatus.CONFLICT);
     }
 
-    pukService.createOrUpdateRole(puk);
+    pukService.createOrUpdatePuk(puk);
     pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(puk.getId()).withRel(PUK_URL_PATH).withSelfRel());
 
     Link resourceLink = pukDto.getLink("self");
@@ -107,7 +107,7 @@ public class PukController {
     Puk pukToBeUpdate = currentPuk.get();
     //TODO Set all properties
 
-    Puk updatedRole = pukService.createOrUpdateRole(pukToBeUpdate);
+    Puk updatedRole = pukService.createOrUpdatePuk(pukToBeUpdate);
     pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(updatedRole.getId()).withRel(PUK_URL_PATH).withSelfRel());
 
     Link resourceLink = pukDto.getLink("self");

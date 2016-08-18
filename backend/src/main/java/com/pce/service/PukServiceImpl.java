@@ -28,7 +28,7 @@ public class PukServiceImpl implements PukService {
   }
 
   @Override
-  public Puk createOrUpdateRole(Puk puk) {
+  public Puk createOrUpdatePuk(Puk puk) {
     return pukRepository.save(puk);
   }
 
