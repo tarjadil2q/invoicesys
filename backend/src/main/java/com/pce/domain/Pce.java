@@ -1,7 +1,11 @@
 package com.pce.domain;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Set;
 
 /**
@@ -47,8 +51,18 @@ public class Pce {
   @Column(name = "invoice_image")
   private byte[] invoiceImage;
 
+  @CreationTimestamp
+  private Calendar creationDate;
 
-  public Pce(String pceNo, Puk associatedPuk, RecipientBankAccount recipientBankAccount, String remarks, Set<User> approvers, Set<PceItem> pceItems, byte[] invoiceImage) {
+  @UpdateTimestamp
+  private Calendar updatedDate;
+
+  @Column(name = "pce_year")
+  private int pceYear;
+
+
+  public Pce(String pceNo, Puk associatedPuk, RecipientBankAccount recipientBankAccount, String remarks, Set<User> approvers, Set<PceItem> pceItems, byte[] invoiceImage,
+             int pceYear) {
     this.pceNo = pceNo;
     this.associatedPuk = associatedPuk;
     this.recipientBankAccount = recipientBankAccount;
@@ -56,6 +70,7 @@ public class Pce {
     this.approvers = approvers;
     this.pceItems = pceItems;
     this.invoiceImage = invoiceImage;
+    this.pceYear = pceYear;
   }
 
   public long getId() {
@@ -96,5 +111,17 @@ public class Pce {
 
   public byte[] getInvoiceImage() {
     return invoiceImage;
+  }
+
+  public Calendar getCreationDate() {
+    return creationDate;
+  }
+
+  public Calendar getUpdatedDate() {
+    return updatedDate;
+  }
+
+  public int getPceYear() {
+    return pceYear;
   }
 }

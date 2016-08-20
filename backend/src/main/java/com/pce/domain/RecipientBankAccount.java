@@ -1,6 +1,10 @@
 package com.pce.domain;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
+import java.util.Calendar;
 import java.util.Set;
 
 /**
@@ -24,6 +28,11 @@ public class RecipientBankAccount {
   @Column(name = "acct_number", nullable = false, unique = true)
   private String acctNumber;
 
+  @CreationTimestamp
+  private Calendar creationDate;
+
+  @UpdateTimestamp
+  private Calendar updatedDate;
 
   @OneToMany(mappedBy = "recipientBankAccount")
   private Set<Pce> associatedPces;

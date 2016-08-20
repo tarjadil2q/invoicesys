@@ -1,7 +1,11 @@
 package com.pce.domain;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Calendar;
 
 /**
  * Created by Leonardo Tarjadi on 20/08/2016.
@@ -24,6 +28,12 @@ public class PceItem {
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "pce_id", referencedColumnName = "id")
   private Pce pce;
+
+  @CreationTimestamp
+  private Calendar creationDate;
+
+  @UpdateTimestamp
+  private Calendar updatedDate;
 
   public PceItem(String pceItemDescription, BigDecimal priceAmount, Pce pce) {
     this.pceItemDescription = pceItemDescription;
