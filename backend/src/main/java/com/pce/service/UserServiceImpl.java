@@ -1,9 +1,7 @@
 package com.pce.service;
 
-import com.google.common.collect.Sets;
 import com.pce.domain.Role;
 import com.pce.domain.User;
-import com.pce.domain.dto.UserCreationForm;
 import com.pce.repository.RoleRepository;
 import com.pce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +12,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -58,7 +55,7 @@ public class UserServiceImpl implements UserService {
     return false;
   }
 
-  @Override
+  /*@Override
   public User createOrUpdate(UserCreationForm form) {
     String email = form.getEmail();
     String firstName = form.getFirstName();
@@ -67,7 +64,7 @@ public class UserServiceImpl implements UserService {
     List<Role> selectedRoles = roleRepository.findAll(form.getSelectedRoleIds());
     User user = new User(firstName, lastName, email, passwordHash, Sets.newHashSet(selectedRoles));
     return userRepository.save(user);
-  }
+  }*/
 
 
   @Override

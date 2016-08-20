@@ -42,6 +42,9 @@ public class User {
           inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private Set<Role> roles;
 
+  @ManyToMany(mappedBy = "usersInGroup")
+  private Set<PukGroup> pukGroups;
+
   @ManyToMany(mappedBy = "approvers")
   private Set<Pce> pcesApproved;
 
@@ -49,12 +52,14 @@ public class User {
   public User() {
   }
 
-  public User(String firstName, String lastName, String email, String passwordHash, Set<Role> roles) {
+  public User(String firstName, String lastName, String email, String passwordHash, Set<Role> roles,
+              Set<PukGroup> pukGroups) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.passwordHash = passwordHash;
     this.roles = roles;
+    this.pukGroups = pukGroups;
   }
 
   public long getId() {
@@ -119,6 +124,14 @@ public class User {
 
   public void setRoles(Set<Role> roles) {
     this.roles = roles;
+  }
+
+  public Set<PukGroup> getPukGroups() {
+    return pukGroups;
+  }
+
+  public Set<Pce> getPcesApproved() {
+    return pcesApproved;
   }
 
   @Override

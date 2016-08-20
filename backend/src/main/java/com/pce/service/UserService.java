@@ -2,7 +2,6 @@ package com.pce.service;
 
 import com.pce.domain.Role;
 import com.pce.domain.User;
-import com.pce.domain.dto.UserCreationForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -48,13 +47,6 @@ public interface UserService {
 
   boolean isUserExists(String email);
 
-  /**
-   * Create a new user, {@link User}.
-   *
-   * @param form the form data to create the user
-   * @return created user
-   */
-  User createOrUpdate(UserCreationForm form);
 
   User createOrUpdate(User user, Set<Role> roles);
 

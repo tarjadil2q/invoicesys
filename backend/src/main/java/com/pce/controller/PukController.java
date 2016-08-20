@@ -82,8 +82,8 @@ public class PukController {
   public HttpEntity<Resource<DomainObjectDTO>> createPuk(@RequestBody @Valid PukDto pukDto) {
 
     Puk puk = pukMapper.mapDtoIntoEntity(pukDto);
-    long committeeId = pukDto.getPukGroup().getId();
-    PukGroup pukGroupById = pukGroupService.getPukGroupById(committeeId).orElseThrow(() -> new NoSuchElementException(String.format("Role = %s not found", committeeId)));
+    long pukGroupId = pukDto.getPukGroup().getId();
+    PukGroup pukGroupById = pukGroupService.getPukGroupById(pukGroupId).orElseThrow(() -> new NoSuchElementException(String.format("Puk = %s not found", pukGroupId)));
 
 
     Optional<Puk> pukFound = pukService.getPukByPukNoIgnoreCase(pukDto.getPukNo());
