@@ -31,9 +31,11 @@ public class Role {
   @ManyToMany(mappedBy = "roles")
   private Set<User> users;
 
-  @OneToMany(mappedBy = "comitteeRoleHead")
-  private Set<Committee> Committees;
+  @OneToMany(mappedBy = "pukGroupRoleHead")
+  private Set<PukGroup> pukGroups;
 
+  @OneToMany(mappedBy = "pceApprovalRole")
+  private Set<PceApprovalRole> pceApprovalRoles;
 
   public Role() {
   }
@@ -82,12 +84,12 @@ public class Role {
     this.users = users;
   }
 
-  public Set<Committee> getCommittees() {
-    return Committees;
+  public Set<PukGroup> getPukGroups() {
+    return pukGroups;
   }
 
-  public void setCommittees(Set<Committee> committees) {
-    Committees = committees;
+  public void setPukGroups(Set<PukGroup> pukGroups) {
+    this.pukGroups = pukGroups;
   }
 
 

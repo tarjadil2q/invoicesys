@@ -7,11 +7,11 @@ import javax.persistence.*;
 import java.util.Calendar;
 
 /**
- * Created by Leonardo Tarjadi on 18/08/2016.
+ * Created by Leonardo Tarjadi on 20/08/2016.
  */
 @Entity
-@Table(name = "puk_approval_role", schema = "ivs")
-public class PukApprovalRole {
+@Table(name = "pce_approval_role", schema = "ivs")
+public class PceApprovalRole {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -22,7 +22,7 @@ public class PukApprovalRole {
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "approval_role_id", referencedColumnName = "id", nullable = false)
-  private Role role;
+  private Role pceApprovalRole;
 
 
   @CreationTimestamp
@@ -31,28 +31,8 @@ public class PukApprovalRole {
   @UpdateTimestamp
   private Calendar updatedDate;
 
-  public PukApprovalRole(int approvalRoleSequence, Role role) {
+  public PceApprovalRole(int approvalRoleSequence, Role pceApprovalRole) {
     this.approvalRoleSequence = approvalRoleSequence;
-    this.role = role;
-  }
-
-  public long getId() {
-    return id;
-  }
-
-  public int getApprovalRoleSequence() {
-    return approvalRoleSequence;
-  }
-
-  public Role getRole() {
-    return role;
-  }
-
-  public Calendar getCreationDate() {
-    return creationDate;
-  }
-
-  public Calendar getUpdatedDate() {
-    return updatedDate;
+    this.pceApprovalRole = pceApprovalRole;
   }
 }

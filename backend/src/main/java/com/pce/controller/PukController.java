@@ -2,10 +2,12 @@ package com.pce.controller;
 
 import com.google.common.collect.Lists;
 import com.pce.domain.Puk;
+import com.pce.domain.PukGroup;
 import com.pce.domain.dto.ApiError;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.PukDto;
 import com.pce.domain.dto.RoleDto;
+import com.pce.service.PukGroupService;
 import com.pce.service.PukService;
 import com.pce.service.mapper.PukMapper;
 import org.slf4j.Logger;
@@ -40,15 +42,18 @@ public class PukController {
   private static final Logger LOG = LoggerFactory.getLogger(PukController.class);
 
   private PukService pukService;
+  private PukGroupService pukGroupService;
   private PukMapper pukMapper;
   private EntityLinks entityLinks;
   private static final String PUK_URL_PATH = "/puk";
 
   @Autowired
-  public PukController(PukService pukService, PukMapper pukMapper, EntityLinks entityLinks) {
+  public PukController(PukService pukService, PukMapper pukMapper, EntityLinks entityLinks,
+                       PukGroupService pukGroupService) {
     this.pukService = pukService;
     this.pukMapper = pukMapper;
     this.entityLinks = entityLinks;
+    this.pukGroupService = pukGroupService;
   }
 
   @PreAuthorize("@currentUserServiceImpl.thisRoleCanAccess(RoleConstant.ADMIN.getName, principal)")
@@ -77,6 +82,10 @@ public class PukController {
   public HttpEntity<Resource<DomainObjectDTO>> createPuk(@RequestBody @Valid PukDto pukDto) {
 
     Puk puk = pukMapper.mapDtoIntoEntity(pukDto);
+    long committeeId = pukDto.getPukGroup().getId();
+    PukGroup pukGroupById = pukGroupService.getPukGroupById(committeeId).orElseThrow(() -> new NoSuchElementException(String.format("Role = %s not found", committeeId)));
+
+
     Optional<Puk> pukFound = pukService.getPukByPukNoIgnoreCase(pukDto.getPukNo());
     if (!pukFound.isPresent()) {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.CONFLICT,

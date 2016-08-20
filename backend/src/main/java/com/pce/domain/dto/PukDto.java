@@ -2,7 +2,7 @@ package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pce.domain.Committee;
+import com.pce.domain.PukGroup;
 import com.pce.domain.PukItem;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
@@ -17,7 +17,7 @@ import java.util.Set;
  */
 @Relation(collectionRelation = "pukList")
 public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializable {
-
+  @ReadOnlyProperty
   private long id;
   @ReadOnlyProperty
   private String creationDate;
@@ -33,7 +33,7 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
   private int pukYear;
 
   @NotEmpty
-  private Committee committee;
+  private PukGroup pukGroup;
 
   @NotEmpty
   private Set<PukItem> pukItems;
@@ -49,7 +49,7 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
                 @JsonProperty("pukNo") String pukNo,
                 @JsonProperty("pukDescription") String pukDescription,
                 @JsonProperty("budget") String budget,
-                @JsonProperty("committee") Committee committee,
+                @JsonProperty("pukGroup") PukGroup pukGroup,
                 @JsonProperty("pukItems") Set<PukItem> pukItems) {
     this.id = id;
     this.creationDate = creationDate;
@@ -57,7 +57,7 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.pukNo = pukNo;
     this.pukDescription = pukDescription;
     this.budget = budget;
-    this.committee = committee;
+    this.pukGroup = pukGroup;
     this.pukItems = pukItems;
   }
 
@@ -118,12 +118,12 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.pukYear = pukYear;
   }
 
-  public Committee getCommittee() {
-    return committee;
+  public PukGroup getPukGroup() {
+    return pukGroup;
   }
 
-  public void setCommittee(Committee committee) {
-    this.committee = committee;
+  public void setPukGroup(PukGroup pukGroup) {
+    this.pukGroup = pukGroup;
   }
 
   public Set<PukItem> getPukItems() {

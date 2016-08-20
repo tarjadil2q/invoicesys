@@ -11,26 +11,26 @@ import java.util.Set;
  * Created by Leonardo Tarjadi on 16/08/2016.
  */
 @Entity
-@Table(name = "comittee", schema = "ivs")
-public class Committee {
+@Table(name = "puk_group", schema = "ivs")
+public class PukGroup {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(name = "id", nullable = false, updatable = false)
   private long id;
 
-  @Column(name = "comitteeName", nullable = false)
-  private String comitteeName;
+  @Column(name = "puk_group_name", nullable = false)
+  private String pukGroupName;
 
-  @Column(name = "comitteeDescription", nullable = false)
-  private String comitteeDescription;
+  @Column(name = "puk_group_description", nullable = false)
+  private String pukGroupDescription;
 
-  @OneToMany(mappedBy = "committee")
+  @OneToMany(mappedBy = "pukGroup")
   private Set<Puk> puks;
 
   @ManyToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "comittee_role_head_id", referencedColumnName = "id")
-  private Role comitteeRoleHead;
+  @JoinColumn(name = "puk_group_role_head_id", referencedColumnName = "id")
+  private Role pukGroupRoleHead;
 
   @CreationTimestamp
   private Calendar creationDate;
@@ -38,32 +38,32 @@ public class Committee {
   @UpdateTimestamp
   private Calendar updatedDate;
 
-  public Committee(long id, String comitteeName, String comitteeDescription, Set<Puk> puks, Role comitteeRoleHead) {
+  public PukGroup(long id, String pukGroupName, String pukGroupDescription, Set<Puk> puks, Role pukGroupRoleHead) {
     this.id = id;
-    this.comitteeName = comitteeName;
-    this.comitteeDescription = comitteeDescription;
+    this.pukGroupName = pukGroupName;
+    this.pukGroupDescription = pukGroupDescription;
     this.puks = puks;
-    this.comitteeRoleHead = comitteeRoleHead;
+    this.pukGroupRoleHead = pukGroupRoleHead;
   }
 
   public long getId() {
     return id;
   }
 
-  public String getComitteeName() {
-    return comitteeName;
+  public String getPukGroupName() {
+    return pukGroupName;
   }
 
-  public String getComitteeDescription() {
-    return comitteeDescription;
+  public String getPukGroupDescription() {
+    return pukGroupDescription;
   }
 
   public Set<Puk> getPuks() {
     return puks;
   }
 
-  public Role getComitteeRoleHead() {
-    return comitteeRoleHead;
+  public Role getPukGroupRoleHead() {
+    return pukGroupRoleHead;
   }
 
   public Calendar getCreationDate() {

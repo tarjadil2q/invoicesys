@@ -40,20 +40,23 @@ public class Puk {
 
 
   @ManyToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "comittee_id", referencedColumnName = "id", nullable = false)
-  private Committee committee;
+  @JoinColumn(name = "puk_group_id", referencedColumnName = "id", nullable = false)
+  private PukGroup pukGroup;
 
   @OneToMany(mappedBy = "puk")
   private Set<PukItem> pukItems;
 
+  @OneToMany(mappedBy = "associatedPuk")
+  private Set<Pce> associatedPces;
 
-  public Puk(long id, String pukNo, String pukDescription, BigDecimal budget, int pukYear, Committee committee, Set<PukItem> pukItems) {
+
+  public Puk(long id, String pukNo, String pukDescription, BigDecimal budget, int pukYear, PukGroup pukGroup, Set<PukItem> pukItems) {
     this.id = id;
     this.pukNo = pukNo;
     this.pukDescription = pukDescription;
     this.budget = budget;
     this.pukYear = pukYear;
-    this.committee = committee;
+    this.pukGroup = pukGroup;
     this.pukItems = pukItems;
   }
 
@@ -86,8 +89,8 @@ public class Puk {
   }
 
 
-  public Committee getCommittee() {
-    return committee;
+  public PukGroup getPukGroup() {
+    return pukGroup;
   }
 
   public Set<PukItem> getPukItems() {

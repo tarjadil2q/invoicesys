@@ -35,33 +35,25 @@ public class PukItem {
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "puk_item_measurement_id", referencedColumnName = "id", nullable = false)
   private PukItemMeasurement pukItemMeasurement;
-  @ManyToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "puk_item_status_id", referencedColumnName = "id", nullable = false)
-  private PukItemStatus pukItemStatus;
 
   @Column(name = "per_measurement_price", nullable = false)
   private BigDecimal perMeasurementPrice;
   @Column(name = "total_price", nullable = false)
   private BigDecimal totalPrice;
 
-  @ManyToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "approver_id", referencedColumnName = "id")
-  private User approver;
 
   @ManyToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "puk_id", referencedColumnName = "id")
   private Puk puk;
 
-  public PukItem(long id, String activityName, int totalActivity, int quantity, PukItemMeasurement pukItemMeasurement, PukItemStatus pukItemStatus, BigDecimal totalPrice, BigDecimal perMeasurementPrice, User approver, Puk puk) {
+  public PukItem(long id, String activityName, int totalActivity, int quantity, PukItemMeasurement pukItemMeasurement, BigDecimal totalPrice, BigDecimal perMeasurementPrice, User approver, Puk puk) {
     this.id = id;
     this.activityName = activityName;
     this.totalActivity = totalActivity;
     this.quantity = quantity;
     this.pukItemMeasurement = pukItemMeasurement;
-    this.pukItemStatus = pukItemStatus;
     this.totalPrice = totalPrice;
     this.perMeasurementPrice = perMeasurementPrice;
-    this.approver = approver;
     this.puk = puk;
   }
 
@@ -93,20 +85,12 @@ public class PukItem {
     return pukItemMeasurement;
   }
 
-  public PukItemStatus getPukItemStatus() {
-    return pukItemStatus;
-  }
-
   public BigDecimal getPerMeasurementPrice() {
     return perMeasurementPrice;
   }
 
   public BigDecimal getTotalPrice() {
     return totalPrice;
-  }
-
-  public User getApprover() {
-    return approver;
   }
 
   public Puk getPuk() {

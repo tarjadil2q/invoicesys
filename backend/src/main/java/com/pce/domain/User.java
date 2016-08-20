@@ -42,8 +42,9 @@ public class User {
           inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private Set<Role> roles;
 
-  @OneToMany(mappedBy = "approver")
-  private Set<PukItem> pukItems;
+  @ManyToMany(mappedBy = "approvers")
+  private Set<Pce> pcesApproved;
+
 
   public User() {
   }
