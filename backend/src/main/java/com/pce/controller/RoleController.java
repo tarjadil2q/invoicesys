@@ -7,6 +7,7 @@ import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.RoleDto;
 import com.pce.service.RoleService;
 import com.pce.service.mapper.RoleMapper;
+import com.pce.util.ControllerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,6 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,7 +24,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -84,10 +83,8 @@ public class RoleController {
     roleService.createOrUpdateRole(role);
     roleDto.add(ControllerLinkBuilder.linkTo(RoleController.class).slash(role.getId()).withRel(ROLE_URL_PATH).withSelfRel());
 
-    Link resourceLink = roleDto.getLink("self");
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setLocation(URI.create(resourceLink.getHref()));
-    return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+    return ControllerHelper.getResponseEntityWithoutBody(roleDto, HttpStatus.CREATED);
+
   }
 
 
@@ -108,9 +105,6 @@ public class RoleController {
     Role updatedRole = roleService.createOrUpdateRole(roleToBeUpdate);
     roleDto.add(ControllerLinkBuilder.linkTo(RoleController.class).slash(updatedRole.getId()).withRel(ROLE_URL_PATH).withSelfRel());
 
-    Link resourceLink = roleDto.getLink("self");
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setLocation(URI.create(resourceLink.getHref()));
-    return new ResponseEntity<>(null, httpHeaders, HttpStatus.OK);
+    return ControllerHelper.getResponseEntityWithoutBody(roleDto, HttpStatus.OK);
   }
 }

@@ -10,6 +10,7 @@ import com.pce.domain.dto.RoleDto;
 import com.pce.service.PukGroupService;
 import com.pce.service.PukService;
 import com.pce.service.mapper.PukMapper;
+import com.pce.util.ControllerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,6 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,7 +27,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -95,10 +94,7 @@ public class PukController {
     pukService.createOrUpdatePuk(puk);
     pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(puk.getId()).withRel(PUK_URL_PATH).withSelfRel());
 
-    Link resourceLink = pukDto.getLink("self");
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setLocation(URI.create(resourceLink.getHref()));
-    return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+    return ControllerHelper.getResponseEntityWithoutBody(pukDto, HttpStatus.CREATED);
   }
 
 
@@ -110,7 +106,7 @@ public class PukController {
 
     if (!currentPuk.isPresent()) {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.NOT_FOUND,
-              "Role to be updated not found, please check id is correct ", "Role id is not found")), HttpStatus.NOT_FOUND);
+              "Puk to be updated not found, please check id is correct ", "Puk id is not found")), HttpStatus.NOT_FOUND);
     }
 
     Puk pukToBeUpdate = currentPuk.get();
@@ -119,9 +115,7 @@ public class PukController {
     Puk updatedRole = pukService.createOrUpdatePuk(pukToBeUpdate);
     pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(updatedRole.getId()).withRel(PUK_URL_PATH).withSelfRel());
 
-    Link resourceLink = pukDto.getLink("self");
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setLocation(URI.create(resourceLink.getHref()));
-    return new ResponseEntity<>(null, httpHeaders, HttpStatus.OK);
+    return ControllerHelper.getResponseEntityWithoutBody(pukDto, HttpStatus.OK);
+
   }
 }

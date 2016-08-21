@@ -28,9 +28,6 @@ public class PukGroup {
   @OneToMany(mappedBy = "pukGroup")
   private Set<Puk> puks;
 
-  @ManyToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "puk_group_role_head_id", referencedColumnName = "id")
-  private Role pukGroupRoleHead;
 
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(name = "puk_group_user", schema = "ivs", joinColumns = @JoinColumn(name = "puk_group_id", referencedColumnName = "id"),
@@ -43,13 +40,12 @@ public class PukGroup {
   @UpdateTimestamp
   private Calendar updatedDate;
 
-  public PukGroup(long id, String pukGroupName, String pukGroupDescription, Set<Puk> puks, Role pukGroupRoleHead,
+  public PukGroup(long id, String pukGroupName, String pukGroupDescription, Set<Puk> puks,
                   Set<User> usersInGroup) {
     this.id = id;
     this.pukGroupName = pukGroupName;
     this.pukGroupDescription = pukGroupDescription;
     this.puks = puks;
-    this.pukGroupRoleHead = pukGroupRoleHead;
     this.usersInGroup = usersInGroup;
   }
 
@@ -69,10 +65,6 @@ public class PukGroup {
     return puks;
   }
 
-  public Role getPukGroupRoleHead() {
-    return pukGroupRoleHead;
-  }
-
   public Calendar getCreationDate() {
     return creationDate;
   }
@@ -83,5 +75,13 @@ public class PukGroup {
 
   public Set<User> getUsersInGroup() {
     return usersInGroup;
+  }
+
+  public void setPukGroupName(String pukGroupName) {
+    this.pukGroupName = pukGroupName;
+  }
+
+  public void setPukGroupDescription(String pukGroupDescription) {
+    this.pukGroupDescription = pukGroupDescription;
   }
 }

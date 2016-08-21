@@ -12,6 +12,7 @@ import com.pce.service.CurrentUserService;
 import com.pce.service.RoleService;
 import com.pce.service.UserService;
 import com.pce.service.mapper.UserMapper;
+import com.pce.util.ControllerHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,6 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,7 +30,6 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.net.URI;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -107,10 +106,8 @@ public class UserController {
     user = userService.createOrUpdate(user, roles);
     userDto.add(ControllerLinkBuilder.linkTo(UserController.class).slash(user.getId()).withRel(USER_REQUEST_PATH).withSelfRel());
 
-    Link resourceLink = userDto.getLink("self");
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setLocation(URI.create(resourceLink.getHref()));
-    return new ResponseEntity<>(null, httpHeaders, HttpStatus.CREATED);
+    return ControllerHelper.getResponseEntityWithoutBody(userDto, HttpStatus.CREATED);
+
   }
 
 
@@ -136,10 +133,7 @@ public class UserController {
     User updatedUser = getUpdatedUser(currentUserPrincipal, userDto, userToBeUpdate);
 
     userDto.setLink(updatedUser.getId(), USER_REQUEST_PATH);
-    Link resourceLink = userDto.getLink("self");
-    HttpHeaders httpHeaders = new HttpHeaders();
-    httpHeaders.setLocation(URI.create(resourceLink.getHref()));
-    return new ResponseEntity<>(null, httpHeaders, HttpStatus.OK);
+    return ControllerHelper.getResponseEntityWithoutBody(userDto, HttpStatus.OK);
 
   }
 

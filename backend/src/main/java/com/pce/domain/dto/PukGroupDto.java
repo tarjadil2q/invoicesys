@@ -3,7 +3,6 @@ package com.pce.domain.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pce.domain.Puk;
-import com.pce.domain.Role;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
@@ -28,32 +27,28 @@ public class PukGroupDto extends ResourceSupport implements DomainObjectDTO, Ser
   @ReadOnlyProperty
   @NotEmpty
   private Set<Puk> puks;
-  @ReadOnlyProperty
-  @NotEmpty
-  private Role pukGroupRoleHead;
+
 
   public PukGroupDto() {
   }
 
   @JsonCreator
-  public PukGroupDto(@JsonProperty("committeeId") long id,
+  public PukGroupDto(@JsonProperty("pukGroupId") long id,
                      @JsonProperty("creationDate") String creationDate,
                      @JsonProperty("updatedDate") String updatedDate,
                      @JsonProperty("pukGroupName") String pukGroupName,
                      @JsonProperty("pukGroupDescription") String pukGroupDescription,
-                     @JsonProperty("puks") Set<Puk> puks,
-                     @JsonProperty("pukGroupRoleHead") Role pukGroupRoleHead) {
+                     @JsonProperty("puks") Set<Puk> puks) {
     this.id = id;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
     this.pukGroupName = pukGroupName;
     this.pukGroupDescription = pukGroupDescription;
     this.puks = puks;
-    this.pukGroupRoleHead = pukGroupRoleHead;
   }
 
 
-  public long getCommitteeId() {
+  public long pukGroupId() {
     return id;
   }
 
@@ -101,11 +96,4 @@ public class PukGroupDto extends ResourceSupport implements DomainObjectDTO, Ser
     this.puks = puks;
   }
 
-  public Role getPukGroupRoleHead() {
-    return pukGroupRoleHead;
-  }
-
-  public void setPukGroupRoleHead(Role pukGroupRoleHead) {
-    this.pukGroupRoleHead = pukGroupRoleHead;
-  }
 }

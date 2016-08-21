@@ -31,9 +31,6 @@ public class Role {
   @ManyToMany(mappedBy = "roles")
   private Set<User> users;
 
-  @OneToMany(mappedBy = "pukGroupRoleHead")
-  private Set<PukGroup> pukGroups;
-
   @OneToMany(mappedBy = "pceApprovalRole")
   private Set<PceApprovalRole> pceApprovalRoles;
 
@@ -82,14 +79,6 @@ public class Role {
 
   public void setUsers(Set<User> users) {
     this.users = users;
-  }
-
-  public Set<PukGroup> getPukGroups() {
-    return pukGroups;
-  }
-
-  public void setPukGroups(Set<PukGroup> pukGroups) {
-    this.pukGroups = pukGroups;
   }
 
 
