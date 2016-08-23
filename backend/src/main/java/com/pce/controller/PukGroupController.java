@@ -60,8 +60,8 @@ public class PukGroupController {
   public HttpEntity<Resource<DomainObjectDTO>> createPukGroup(@RequestBody @Valid PukGroupDto pukGroupDto) {
 
     PukGroup pukGroup = pukGroupMapper.mapDtoIntoEntity(pukGroupDto);
-    List<PukGroup> rolesFound = pukGroupService.findPukGroupByPukGroupNameIgnoreCase(pukGroupDto.getPukGroupName());
-    if (!CollectionUtils.isEmpty(rolesFound)) {
+    List<PukGroup> pukGroupFound = pukGroupService.findPukGroupByPukGroupNameIgnoreCase(pukGroupDto.getPukGroupName());
+    if (!CollectionUtils.isEmpty(pukGroupFound)) {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.CONFLICT,
               "Puk Group already exists, please enter different Puk Group Name", Lists.newArrayList("Puk Group already exists"))), HttpStatus.CONFLICT);
     }
@@ -77,14 +77,14 @@ public class PukGroupController {
   public HttpEntity<Resource<DomainObjectDTO>> getPukGroupById(@PathVariable Long id) {
     PukGroup pukGroup = pukGroupService.getPukGroupById(id).orElseThrow(() -> new NoSuchElementException(String.format("Puk Group=%s not found", id)));
     PukGroupDto pukGroupDto = (PukGroupDto) pukGroupMapper.mapEntityIntoDto(pukGroup);
-    Link linkForPUkGroup = entityLinks.linkToSingleResource(PukGroupDto.class, pukGroupDto.pukGroupId());
+    Link linkForPUkGroup = entityLinks.linkToSingleResource(PukGroupDto.class, pukGroupDto.getPukGroupId());
     Resource<DomainObjectDTO> userResource = new Resource<>(pukGroupDto, linkForPUkGroup);
     return new ResponseEntity<>(userResource, HttpStatus.OK);
   }
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-  public HttpEntity<PagedResources<DomainObjectDTO>> getRoles(Pageable pageRequest, PagedResourcesAssembler assembler) {
+  public HttpEntity<PagedResources<DomainObjectDTO>> getPukGroups(Pageable pageRequest, PagedResourcesAssembler assembler) {
     Page<PukGroup> allPukGroups = pukGroupService.getAllAvailablePukGroup(pageRequest);
     Page<DomainObjectDTO> pukGroupDtos = pukGroupMapper.mapEntityPageIntoDTOPage(pageRequest, allPukGroups);
     return new ResponseEntity<>(assembler.toResource(pukGroupDtos), HttpStatus.OK);

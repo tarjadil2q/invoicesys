@@ -3,12 +3,12 @@ package com.pce.controller;
 import com.google.common.collect.Lists;
 import com.pce.domain.Puk;
 import com.pce.domain.PukGroup;
-import com.pce.domain.dto.ApiError;
-import com.pce.domain.dto.DomainObjectDTO;
-import com.pce.domain.dto.PukDto;
-import com.pce.domain.dto.RoleDto;
+import com.pce.domain.PukItem;
+import com.pce.domain.dto.*;
 import com.pce.service.PukGroupService;
+import com.pce.service.PukItemService;
 import com.pce.service.PukService;
+import com.pce.service.mapper.PukItemMapper;
 import com.pce.service.mapper.PukMapper;
 import com.pce.util.ControllerHelper;
 import org.slf4j.Logger;
@@ -24,11 +24,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Leonardo Tarjadi on 16/08/2016.
@@ -44,15 +47,21 @@ public class PukController {
   private PukGroupService pukGroupService;
   private PukMapper pukMapper;
   private EntityLinks entityLinks;
+  private PukItemService pukItemService;
+  private PukItemMapper pukItemMapper;
   private static final String PUK_URL_PATH = "/puk";
 
   @Autowired
   public PukController(PukService pukService, PukMapper pukMapper, EntityLinks entityLinks,
-                       PukGroupService pukGroupService) {
+                       PukGroupService pukGroupService,
+                       PukItemService pukItemService,
+                       PukItemMapper pukItemMapper) {
     this.pukService = pukService;
     this.pukMapper = pukMapper;
     this.entityLinks = entityLinks;
     this.pukGroupService = pukGroupService;
+    this.pukItemService = pukItemService;
+    this.pukItemMapper = pukItemMapper;
   }
 
   @PreAuthorize("@currentUserServiceImpl.thisRoleCanAccess(RoleConstant.ADMIN.getName, principal)")
@@ -81,7 +90,7 @@ public class PukController {
   public HttpEntity<Resource<DomainObjectDTO>> createPuk(@RequestBody @Valid PukDto pukDto) {
 
     Puk puk = pukMapper.mapDtoIntoEntity(pukDto);
-    long pukGroupId = pukDto.getPukGroup().getId();
+    long pukGroupId = pukDto.getPukGroup().getPukGroupId();
     PukGroup pukGroupById = pukGroupService.getPukGroupById(pukGroupId).orElseThrow(() -> new NoSuchElementException(String.format("Puk = %s not found", pukGroupId)));
 
 
@@ -90,9 +99,16 @@ public class PukController {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.CONFLICT,
               "Puk already exists, please enter different Puk", Lists.newArrayList("Puk already exists"))), HttpStatus.CONFLICT);
     }
-
-    pukService.createOrUpdatePuk(puk);
-    pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(puk.getId()).withRel(PUK_URL_PATH).withSelfRel());
+    Set<PukItemDto> pukItemsDtos = pukDto.getPukItems();
+    if (CollectionUtils.isEmpty(pukItemsDtos)) {
+      return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.BAD_REQUEST,
+              "Puk items is empty, please provide puk items", Lists.newArrayList("Puk items empty"))), HttpStatus.BAD_REQUEST);
+    }
+    Set<PukItem> pukItems = pukItemsDtos.stream().map(pukItemDto -> pukItemMapper.mapDtoIntoEntity(pukItemDto)).collect(Collectors.toSet());
+    puk.setPukGroup(pukGroupById);
+    puk.setPukItems(pukItems);
+    Puk createdPuk = pukService.createOrUpdatePuk(puk);
+    pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(createdPuk.getId()).withRel(PUK_URL_PATH).withSelfRel());
 
     return ControllerHelper.getResponseEntityWithoutBody(pukDto, HttpStatus.CREATED);
   }
@@ -109,11 +125,10 @@ public class PukController {
               "Puk to be updated not found, please check id is correct ", "Puk id is not found")), HttpStatus.NOT_FOUND);
     }
 
-    Puk pukToBeUpdate = currentPuk.get();
-    //TODO Set all properties
+    Puk puk = pukMapper.mapDtoIntoEntity(pukDto);
 
-    Puk updatedRole = pukService.createOrUpdatePuk(pukToBeUpdate);
-    pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(updatedRole.getId()).withRel(PUK_URL_PATH).withSelfRel());
+    Puk updatedPuk = pukService.createOrUpdatePuk(puk);
+    pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(updatedPuk.getId()).withRel(PUK_URL_PATH).withSelfRel());
 
     return ControllerHelper.getResponseEntityWithoutBody(pukDto, HttpStatus.OK);
 

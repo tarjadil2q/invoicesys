@@ -2,8 +2,6 @@ package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pce.domain.PukGroup;
-import com.pce.domain.PukItem;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
@@ -33,10 +31,10 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
   private int pukYear;
 
   @NotEmpty
-  private PukGroup pukGroup;
+  private PukGroupDto pukGroup;
 
   @NotEmpty
-  private Set<PukItem> pukItems;
+  private Set<PukItemDto> pukItems;
 
 
   public PukDto() {
@@ -49,8 +47,8 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
                 @JsonProperty("pukNo") String pukNo,
                 @JsonProperty("pukDescription") String pukDescription,
                 @JsonProperty("budget") String budget,
-                @JsonProperty("pukGroup") PukGroup pukGroup,
-                @JsonProperty("pukItems") Set<PukItem> pukItems) {
+                @JsonProperty("pukGroup") PukGroupDto pukGroup,
+                @JsonProperty("pukItems") Set<PukItemDto> pukItems) {
     this.id = id;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
@@ -118,19 +116,19 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.pukYear = pukYear;
   }
 
-  public PukGroup getPukGroup() {
+  public PukGroupDto getPukGroup() {
     return pukGroup;
   }
 
-  public void setPukGroup(PukGroup pukGroup) {
+  public void setPukGroup(PukGroupDto pukGroup) {
     this.pukGroup = pukGroup;
   }
 
-  public Set<PukItem> getPukItems() {
+  public Set<PukItemDto> getPukItems() {
     return pukItems;
   }
 
-  public void setPukItems(Set<PukItem> pukItems) {
+  public void setPukItems(Set<PukItemDto> pukItems) {
     this.pukItems = pukItems;
   }
 }

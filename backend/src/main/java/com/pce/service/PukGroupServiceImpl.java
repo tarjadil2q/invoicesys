@@ -20,7 +20,7 @@ public class PukGroupServiceImpl implements PukGroupService {
 
   @Override
   public Optional<PukGroup> getPukGroupById(long id) {
-    return null;
+    return Optional.ofNullable(pukGroupRepository.findOne(id));
   }
 
   @Override

@@ -96,4 +96,8 @@ public class PukItem {
   public Puk getPuk() {
     return puk;
   }
+
+  public void setTotalPrice(BigDecimal totalPrice) {
+    this.totalPrice = totalPrice;
+  }
 }

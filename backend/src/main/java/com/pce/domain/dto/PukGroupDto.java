@@ -48,7 +48,7 @@ public class PukGroupDto extends ResourceSupport implements DomainObjectDTO, Ser
   }
 
 
-  public long pukGroupId() {
+  public long getPukGroupId() {
     return id;
   }
 

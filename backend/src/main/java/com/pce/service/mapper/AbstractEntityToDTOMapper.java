@@ -18,10 +18,10 @@ public abstract class AbstractEntityToDTOMapper<T, D> {
   public abstract T mapDtoIntoEntity(D d);
 
   public List<D> mapEntitiesIntoDTO(Iterable<T> entities) {
-    Preconditions.checkArgument(entities != null, "User entities cannot be null");
-    List<D> userObjectDtos = new ArrayList<>();
-    entities.forEach(t -> userObjectDtos.add(mapEntityIntoDto(t)));
-    return userObjectDtos;
+    Preconditions.checkArgument(entities != null, "entities cannot be null");
+    List<D> objectDtos = new ArrayList<>();
+    entities.forEach(t -> objectDtos.add(mapEntityIntoDto(t)));
+    return objectDtos;
   }
 
 

@@ -96,4 +96,17 @@ public class Puk {
   public Set<PukItem> getPukItems() {
     return pukItems;
   }
+
+  public void setPukGroup(PukGroup pukGroup) {
+    this.pukGroup = pukGroup;
+  }
+
+  public void setPukItems(Set<PukItem> pukItems) {
+    this.pukItems = pukItems;
+  }
+
+
+  public void setBudget(BigDecimal budget) {
+    this.budget = budget;
+  }
 }
