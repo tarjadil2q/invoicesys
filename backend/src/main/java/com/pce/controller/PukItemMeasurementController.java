@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.pce.domain.PukItemMeasurement;
 import com.pce.domain.dto.ApiError;
 import com.pce.domain.dto.DomainObjectDTO;
-import com.pce.domain.dto.PukGroupDto;
 import com.pce.domain.dto.PukItemMeasurementDto;
 import com.pce.service.PukItemMeasurementService;
 import com.pce.service.mapper.PukItemMeasurementMapper;
@@ -15,10 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.Link;
-import org.springframework.hateoas.PagedResources;
-import org.springframework.hateoas.Resource;
+import org.springframework.hateoas.*;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -37,6 +33,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/pce/pukitemmeasurement")
+@ExposesResourceFor(PukItemMeasurementDto.class)
 public class PukItemMeasurementController {
   private static final Logger LOG = LoggerFactory.getLogger(PukItemMeasurementController.class);
 
@@ -57,7 +54,7 @@ public class PukItemMeasurementController {
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(method = RequestMethod.POST)
-  public HttpEntity<Resource<DomainObjectDTO>> createPukItemMeasurment(@RequestBody @Valid PukItemMeasurementDto pukItemMeasurementDto) {
+  public HttpEntity<Resource<DomainObjectDTO>> createPukItemMeasurement(@RequestBody @Valid PukItemMeasurementDto pukItemMeasurementDto) {
 
     PukItemMeasurement pukItemMeasurement = pukItemMeasurementMapper.mapDtoIntoEntity(pukItemMeasurementDto);
     List<PukItemMeasurement> pukItemsMeasurementFound = pukItemMeasurementService.findPukItemMeasurementByTypeOfMeasurementIgnoreCase(pukItemMeasurementDto.getTypeOfMeasurement());
@@ -67,7 +64,7 @@ public class PukItemMeasurementController {
     }
 
     pukItemMeasurementService.createOrUpdatePukItemMeasurement(pukItemMeasurement);
-    pukItemMeasurementDto.add(ControllerLinkBuilder.linkTo(RoleController.class).slash(pukItemMeasurement.getId()).withRel(PUK_ITEM_MEASUREMENT_URL_PATH).withSelfRel());
+    pukItemMeasurementDto.add(ControllerLinkBuilder.linkTo(PukItemMeasurementController.class).slash(pukItemMeasurement.getPukMeasurementId()).withRel(PUK_ITEM_MEASUREMENT_URL_PATH).withSelfRel());
     return ControllerHelper.getResponseEntityWithoutBody(pukItemMeasurementDto, HttpStatus.CREATED);
   }
 
@@ -76,18 +73,18 @@ public class PukItemMeasurementController {
   @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> getPukItemMeasurementById(@PathVariable Long id) {
     PukItemMeasurement pukItemMeasurement = pukItemMeasurementService.getPukItemMeasurementById(id).orElseThrow(() -> new NoSuchElementException(String.format("Puk Item Measurement=%s not found", id)));
-    PukGroupDto pukGroupDto = (PukGroupDto) pukItemMeasurementMapper.mapEntityIntoDto(pukItemMeasurement);
-    Link linkForPUkGroup = entityLinks.linkToSingleResource(PukGroupDto.class, pukGroupDto.getPukGroupId());
-    Resource<DomainObjectDTO> userResource = new Resource<>(pukGroupDto, linkForPUkGroup);
-    return new ResponseEntity<>(userResource, HttpStatus.OK);
+    PukItemMeasurementDto pukMeasurementDto = (PukItemMeasurementDto) pukItemMeasurementMapper.mapEntityIntoDto(pukItemMeasurement);
+    Link linkForPukMeasurement = entityLinks.linkToSingleResource(PukItemMeasurementDto.class, pukMeasurementDto.getPukItemMeasurementId());
+    Resource<DomainObjectDTO> pukMeasurementResource = new Resource<>(pukMeasurementDto, linkForPukMeasurement);
+    return new ResponseEntity<>(pukMeasurementResource, HttpStatus.OK);
   }
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<PagedResources<DomainObjectDTO>> getPukItemMeasurements(Pageable pageRequest, PagedResourcesAssembler assembler) {
-    Page<PukItemMeasurement> allPukGroups = pukItemMeasurementService.getAllAvailablePukItemMeasurement(pageRequest);
-    Page<DomainObjectDTO> pukGroupDtos = pukItemMeasurementMapper.mapEntityPageIntoDTOPage(pageRequest, allPukGroups);
-    return new ResponseEntity<>(assembler.toResource(pukGroupDtos), HttpStatus.OK);
+    Page<PukItemMeasurement> allPukMeasurements = pukItemMeasurementService.getAllAvailablePukItemMeasurement(pageRequest);
+    Page<DomainObjectDTO> pukMeasurementDtos = pukItemMeasurementMapper.mapEntityPageIntoDTOPage(pageRequest, allPukMeasurements);
+    return new ResponseEntity<>(assembler.toResource(pukMeasurementDtos), HttpStatus.OK);
   }
 
 
@@ -99,14 +96,16 @@ public class PukItemMeasurementController {
 
     if (!currentPukItemMeasurement.isPresent()) {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.NOT_FOUND,
-              "Puk Group to be updated not found, please check id is correct ", "Puk Group id is not found")), HttpStatus.NOT_FOUND);
+              "Puk Measurement to be updated not found, please check id is correct ", "Puk measurement id is not found")), HttpStatus.NOT_FOUND);
     }
+    PukItemMeasurement toBeUpdatedPukMeasurement = currentPukItemMeasurement.get();
 
     PukItemMeasurement pukItemMeasurement = pukItemMeasurementMapper.mapDtoIntoEntity(pukItemMeasurementDto);
 
+    toBeUpdatedPukMeasurement.setTypeOfMeasurement(pukItemMeasurement.getTypeOfMeasurement());
 
-    PukItemMeasurement updatedPukItemMeasurement = pukItemMeasurementService.createOrUpdatePukItemMeasurement(pukItemMeasurement);
-    pukItemMeasurementDto.add(ControllerLinkBuilder.linkTo(RoleController.class).slash(updatedPukItemMeasurement.getId()).withRel(PUK_ITEM_MEASUREMENT_URL_PATH).withSelfRel());
+    PukItemMeasurement updatedPukItemMeasurement = pukItemMeasurementService.createOrUpdatePukItemMeasurement(toBeUpdatedPukMeasurement);
+    pukItemMeasurementDto.add(ControllerLinkBuilder.linkTo(PukItemMeasurementController.class).slash(updatedPukItemMeasurement.getPukMeasurementId()).withRel(PUK_ITEM_MEASUREMENT_URL_PATH).withSelfRel());
 
     return ControllerHelper.getResponseEntityWithoutBody(pukItemMeasurementDto, HttpStatus.OK);
   }

@@ -1,5 +1,7 @@
 package com.pce.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
@@ -24,7 +26,9 @@ public class PukItemMeasurementDto extends ResourceSupport implements DomainObje
   public PukItemMeasurementDto() {
   }
 
-  public PukItemMeasurementDto(long id, String typeOfMeasurement) {
+  @JsonCreator
+  public PukItemMeasurementDto(@JsonProperty("pukItemMeasurementId") long id,
+                               @JsonProperty("typeOfMeasurement") String typeOfMeasurement) {
     this.id = id;
     this.typeOfMeasurement = typeOfMeasurement;
   }
@@ -61,4 +65,6 @@ public class PukItemMeasurementDto extends ResourceSupport implements DomainObje
   public void setTypeOfMeasurement(String typeOfMeasurement) {
     this.typeOfMeasurement = typeOfMeasurement;
   }
+
+
 }

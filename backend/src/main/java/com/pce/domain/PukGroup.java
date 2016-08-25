@@ -17,7 +17,7 @@ public class PukGroup {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(name = "id", nullable = false, updatable = false)
-  private long id;
+  private long pukGroupId;
 
   @Column(name = "puk_group_name", nullable = false)
   private String pukGroupName;
@@ -40,17 +40,20 @@ public class PukGroup {
   @UpdateTimestamp
   private Calendar updatedDate;
 
-  public PukGroup(long id, String pukGroupName, String pukGroupDescription, Set<Puk> puks,
+  public PukGroup() {
+  }
+
+  public PukGroup(long pukGroupId, String pukGroupName, String pukGroupDescription, Set<Puk> puks,
                   Set<User> usersInGroup) {
-    this.id = id;
+    this.pukGroupId = pukGroupId;
     this.pukGroupName = pukGroupName;
     this.pukGroupDescription = pukGroupDescription;
     this.puks = puks;
     this.usersInGroup = usersInGroup;
   }
 
-  public long getId() {
-    return id;
+  public long getPukGroupId() {
+    return pukGroupId;
   }
 
   public String getPukGroupName() {
@@ -83,5 +86,9 @@ public class PukGroup {
 
   public void setPukGroupDescription(String pukGroupDescription) {
     this.pukGroupDescription = pukGroupDescription;
+  }
+
+  public void setPukGroupId(long pukGroupId) {
+    this.pukGroupId = pukGroupId;
   }
 }

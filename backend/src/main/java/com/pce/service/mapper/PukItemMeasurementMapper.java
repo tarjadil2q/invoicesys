@@ -5,10 +5,12 @@ import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.PukItemMeasurementDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Leonardo Tarjadi on 23/08/2016.
  */
+@Component
 public class PukItemMeasurementMapper extends AbstractEntityToDTOMapper<PukItemMeasurement, DomainObjectDTO> implements EntityToDTOMapper {
 
   @Autowired

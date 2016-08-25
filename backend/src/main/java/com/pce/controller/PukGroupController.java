@@ -5,7 +5,6 @@ import com.pce.domain.PukGroup;
 import com.pce.domain.dto.ApiError;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.PukGroupDto;
-import com.pce.domain.dto.RoleDto;
 import com.pce.service.PukGroupService;
 import com.pce.service.mapper.PukGroupMapper;
 import com.pce.util.ControllerHelper;
@@ -34,7 +33,7 @@ import java.util.Optional;
  */
 @RestController
 @RequestMapping("/api/pce/pukgroup")
-@ExposesResourceFor(RoleDto.class)
+@ExposesResourceFor(PukGroupDto.class)
 public class PukGroupController {
 
   private static final Logger LOG = LoggerFactory.getLogger(PukGroupController.class);
@@ -67,7 +66,7 @@ public class PukGroupController {
     }
 
     pukGroupService.createOrUpdatePukGroup(pukGroup);
-    pukGroupDto.add(ControllerLinkBuilder.linkTo(RoleController.class).slash(pukGroup.getId()).withRel(PUK_GROUP_URL_PATH).withSelfRel());
+    pukGroupDto.add(ControllerLinkBuilder.linkTo(PukGroupController.class).slash(pukGroup.getPukGroupId()).withRel(PUK_GROUP_URL_PATH).withSelfRel());
     return ControllerHelper.getResponseEntityWithoutBody(pukGroupDto, HttpStatus.CREATED);
   }
 
@@ -94,23 +93,23 @@ public class PukGroupController {
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> updatePukGroup(@PathVariable("id") long id,
-                                                              @RequestBody @Valid PukGroupDto pukGroup) {
-    Optional<PukGroup> currentPukGroup = pukGroupService.getPukGroupById(id);
+                                                              @RequestBody @Valid PukGroupDto pukGroupDto) {
+    Optional<PukGroup> existingPukGroup = pukGroupService.getPukGroupById(id);
 
-    if (!currentPukGroup.isPresent()) {
+    if (!existingPukGroup.isPresent()) {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.NOT_FOUND,
               "Puk Group to be updated not found, please check id is correct ", "Puk Group id is not found")), HttpStatus.NOT_FOUND);
     }
+    PukGroup toBeUpdatePukGroup = existingPukGroup.get();
 
-    PukGroup pukGroupToBeUpdate = currentPukGroup.get();
-    pukGroupToBeUpdate.setPukGroupName(pukGroup.getPukGroupName());
-    pukGroupToBeUpdate.setPukGroupName(pukGroup.getPukGroupDescription());
+    PukGroup mappedPukGroup = pukGroupMapper.mapDtoIntoEntity(pukGroupDto);
 
+    toBeUpdatePukGroup.setPukGroupDescription(mappedPukGroup.getPukGroupDescription());
+    toBeUpdatePukGroup.setPukGroupName(mappedPukGroup.getPukGroupName());
+    PukGroup updatedPukGroup = pukGroupService.createOrUpdatePukGroup(toBeUpdatePukGroup);
+    pukGroupDto.add(ControllerLinkBuilder.linkTo(PukGroupController.class).slash(updatedPukGroup.getPukGroupId()).withRel(PUK_GROUP_URL_PATH).withSelfRel());
 
-    PukGroup updatedRole = pukGroupService.createOrUpdatePukGroup(pukGroupToBeUpdate);
-    pukGroup.add(ControllerLinkBuilder.linkTo(RoleController.class).slash(updatedRole.getId()).withRel(PUK_GROUP_URL_PATH).withSelfRel());
-
-    return ControllerHelper.getResponseEntityWithoutBody(pukGroup, HttpStatus.OK);
+    return ControllerHelper.getResponseEntityWithoutBody(pukGroupDto, HttpStatus.OK);
   }
 
 

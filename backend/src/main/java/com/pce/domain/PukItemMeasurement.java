@@ -18,6 +18,7 @@ public class PukItemMeasurement {
   @Column(name = "id", nullable = false, updatable = false)
   private long id;
 
+  @Column(name = "type_of_measurement", nullable = false)
   private String typeOfMeasurement;
 
   @CreationTimestamp
@@ -26,12 +27,15 @@ public class PukItemMeasurement {
   @UpdateTimestamp
   private Calendar updatedDate;
 
+  public PukItemMeasurement() {
+  }
+
   public PukItemMeasurement(long id, String typeOfMeasurement) {
     this.id = id;
     this.typeOfMeasurement = typeOfMeasurement;
   }
 
-  public long getId() {
+  public long getPukMeasurementId() {
     return id;
   }
 
@@ -45,5 +49,9 @@ public class PukItemMeasurement {
 
   public Calendar getUpdatedDate() {
     return updatedDate;
+  }
+
+  public void setTypeOfMeasurement(String typeOfMeasurement) {
+    this.typeOfMeasurement = typeOfMeasurement;
   }
 }

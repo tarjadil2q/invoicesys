@@ -2,6 +2,7 @@ package com.pce.service;
 
 import com.pce.domain.PukItemMeasurement;
 import com.pce.repository.PukItemMeasurementRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @Service
 public class PukItemMeasurementServiceImpl implements PukItemMeasurementService {
 
+  @Autowired
   private PukItemMeasurementRepository pukItemMeasurementRepository;
 
   @Override
