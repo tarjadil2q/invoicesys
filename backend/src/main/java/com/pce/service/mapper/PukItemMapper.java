@@ -18,6 +18,7 @@ public class PukItemMapper extends AbstractEntityToDTOMapper<PukItem, DomainObje
 
   @Override
   public DomainObjectDTO mapEntityIntoDto(PukItem pukItem) {
+
     return modelMapper.map(pukItem, PukItemDto.class);
   }
 

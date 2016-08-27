@@ -15,4 +15,6 @@ public interface CurrentUserService {
   boolean canCurrentUserAccess(CurrentUser currentUser, Long userId);
 
   boolean thisRoleCanAccess(List<String> rolesToValidate, CurrentUser currentUser);
+
+  boolean canCurrentUserAcces(CurrentUser currentUser, String functionalityAccess);
 }

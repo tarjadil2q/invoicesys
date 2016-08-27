@@ -64,7 +64,7 @@ public class PukItemMeasurementController {
     }
 
     pukItemMeasurementService.createOrUpdatePukItemMeasurement(pukItemMeasurement);
-    pukItemMeasurementDto.add(ControllerLinkBuilder.linkTo(PukItemMeasurementController.class).slash(pukItemMeasurement.getPukMeasurementId()).withRel(PUK_ITEM_MEASUREMENT_URL_PATH).withSelfRel());
+    pukItemMeasurementDto.add(ControllerLinkBuilder.linkTo(PukItemMeasurementController.class).slash(pukItemMeasurement.getPukItemMeasurementId()).withRel(PUK_ITEM_MEASUREMENT_URL_PATH).withSelfRel());
     return ControllerHelper.getResponseEntityWithoutBody(pukItemMeasurementDto, HttpStatus.CREATED);
   }
 
@@ -105,7 +105,7 @@ public class PukItemMeasurementController {
     toBeUpdatedPukMeasurement.setTypeOfMeasurement(pukItemMeasurement.getTypeOfMeasurement());
 
     PukItemMeasurement updatedPukItemMeasurement = pukItemMeasurementService.createOrUpdatePukItemMeasurement(toBeUpdatedPukMeasurement);
-    pukItemMeasurementDto.add(ControllerLinkBuilder.linkTo(PukItemMeasurementController.class).slash(updatedPukItemMeasurement.getPukMeasurementId()).withRel(PUK_ITEM_MEASUREMENT_URL_PATH).withSelfRel());
+    pukItemMeasurementDto.add(ControllerLinkBuilder.linkTo(PukItemMeasurementController.class).slash(updatedPukItemMeasurement.getPukItemMeasurementId()).withRel(PUK_ITEM_MEASUREMENT_URL_PATH).withSelfRel());
 
     return ControllerHelper.getResponseEntityWithoutBody(pukItemMeasurementDto, HttpStatus.OK);
   }

@@ -3,6 +3,7 @@ package com.pce.service;
 import com.google.common.base.Preconditions;
 import com.pce.domain.Puk;
 import com.pce.domain.PukItem;
+import com.pce.repository.PukItemRepository;
 import com.pce.repository.PukRepository;
 import com.pce.service.mapper.PukMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Year;
 import java.util.Optional;
 
 /**
@@ -26,7 +28,7 @@ public class PukServiceImpl implements PukService {
   private PukRepository pukRepository;
 
   @Autowired
-  private PukItemService pukItemService;
+  private PukItemRepository pukItemRepository;
 
   @Override
   public Page<Puk> getAllAvailablePuk(Pageable pageRequest) {
@@ -43,11 +45,13 @@ public class PukServiceImpl implements PukService {
       pukItem.setTotalPrice(pukItem.getPerMeasurementPrice()
               .multiply(new BigDecimal(pukItem.getQuantity()))
               .multiply(new BigDecimal(pukItem.getTotalActivity())));
-      totalBudget.add(pukItem.getTotalPrice());
+      pukItem.setPuk(puk);
+      totalBudget = totalBudget.add(pukItem.getTotalPrice());
     }
     puk.setBudget(totalBudget);
-
+    puk.setPukYear(Year.now().getValue());
     Puk savedPuk = pukRepository.save(puk);
+    pukItemRepository.save(savedPuk.getPukItems());
     return savedPuk;
   }
 

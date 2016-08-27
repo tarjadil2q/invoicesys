@@ -16,7 +16,7 @@ public class PukItemMeasurement {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(name = "id", nullable = false, updatable = false)
-  private long id;
+  private long pukItemMeasurementId;
 
   @Column(name = "type_of_measurement", nullable = false)
   private String typeOfMeasurement;
@@ -30,28 +30,40 @@ public class PukItemMeasurement {
   public PukItemMeasurement() {
   }
 
-  public PukItemMeasurement(long id, String typeOfMeasurement) {
-    this.id = id;
+  public PukItemMeasurement(long pukItemMeasurementId, String typeOfMeasurement) {
+    this.pukItemMeasurementId = pukItemMeasurementId;
     this.typeOfMeasurement = typeOfMeasurement;
   }
 
-  public long getPukMeasurementId() {
-    return id;
+  public long getPukItemMeasurementId() {
+    return pukItemMeasurementId;
+  }
+
+  public void setPukItemMeasurementId(long pukItemMeasurementId) {
+    this.pukItemMeasurementId = pukItemMeasurementId;
   }
 
   public String getTypeOfMeasurement() {
     return typeOfMeasurement;
   }
 
+  public void setTypeOfMeasurement(String typeOfMeasurement) {
+    this.typeOfMeasurement = typeOfMeasurement;
+  }
+
   public Calendar getCreationDate() {
     return creationDate;
+  }
+
+  public void setCreationDate(Calendar creationDate) {
+    this.creationDate = creationDate;
   }
 
   public Calendar getUpdatedDate() {
     return updatedDate;
   }
 
-  public void setTypeOfMeasurement(String typeOfMeasurement) {
-    this.typeOfMeasurement = typeOfMeasurement;
+  public void setUpdatedDate(Calendar updatedDate) {
+    this.updatedDate = updatedDate;
   }
 }

@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class PukItemMeasurementDto extends ResourceSupport implements DomainObjectDTO, Serializable {
 
   @ReadOnlyProperty
-  private long id;
+  private long pukItemMeasurementId;
   @ReadOnlyProperty
   private String creationDate;
   @ReadOnlyProperty
@@ -27,19 +27,19 @@ public class PukItemMeasurementDto extends ResourceSupport implements DomainObje
   }
 
   @JsonCreator
-  public PukItemMeasurementDto(@JsonProperty("pukItemMeasurementId") long id,
+  public PukItemMeasurementDto(@JsonProperty("pukItemMeasurementId") long pukItemMeasurementId,
                                @JsonProperty("typeOfMeasurement") String typeOfMeasurement) {
-    this.id = id;
+    this.pukItemMeasurementId = pukItemMeasurementId;
     this.typeOfMeasurement = typeOfMeasurement;
   }
 
 
   public long getPukItemMeasurementId() {
-    return id;
+    return pukItemMeasurementId;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public void setPukItemMeasurementId(long pukItemMeasurementId) {
+    this.pukItemMeasurementId = pukItemMeasurementId;
   }
 
   public String getCreationDate() {
@@ -65,6 +65,4 @@ public class PukItemMeasurementDto extends ResourceSupport implements DomainObje
   public void setTypeOfMeasurement(String typeOfMeasurement) {
     this.typeOfMeasurement = typeOfMeasurement;
   }
-
-
 }

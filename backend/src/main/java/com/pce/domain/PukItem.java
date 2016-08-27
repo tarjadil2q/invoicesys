@@ -17,7 +17,7 @@ public class PukItem {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(name = "id", nullable = false, updatable = false)
-  private long id;
+  private long pukItemId;
 
 
   @CreationTimestamp
@@ -46,8 +46,12 @@ public class PukItem {
   @JoinColumn(name = "puk_id", referencedColumnName = "id")
   private Puk puk;
 
-  public PukItem(long id, String activityName, int totalActivity, int quantity, PukItemMeasurement pukItemMeasurement, BigDecimal totalPrice, BigDecimal perMeasurementPrice, User approver, Puk puk) {
-    this.id = id;
+
+  public PukItem() {
+  }
+
+  public PukItem(long pukItemId, String activityName, int totalActivity, int quantity, PukItemMeasurement pukItemMeasurement, BigDecimal totalPrice, BigDecimal perMeasurementPrice, User approver, Puk puk) {
+    this.pukItemId = pukItemId;
     this.activityName = activityName;
     this.totalActivity = totalActivity;
     this.quantity = quantity;
@@ -57,47 +61,83 @@ public class PukItem {
     this.puk = puk;
   }
 
-  public long getId() {
-    return id;
+  public long getPukItemId() {
+    return pukItemId;
+  }
+
+  public void setPukItemId(long pukItemId) {
+    this.pukItemId = pukItemId;
   }
 
   public Calendar getCreationDate() {
     return creationDate;
   }
 
+  public void setCreationDate(Calendar creationDate) {
+    this.creationDate = creationDate;
+  }
+
   public Calendar getUpdatedDate() {
     return updatedDate;
+  }
+
+  public void setUpdatedDate(Calendar updatedDate) {
+    this.updatedDate = updatedDate;
   }
 
   public String getActivityName() {
     return activityName;
   }
 
+  public void setActivityName(String activityName) {
+    this.activityName = activityName;
+  }
+
   public int getTotalActivity() {
     return totalActivity;
+  }
+
+  public void setTotalActivity(int totalActivity) {
+    this.totalActivity = totalActivity;
   }
 
   public int getQuantity() {
     return quantity;
   }
 
+  public void setQuantity(int quantity) {
+    this.quantity = quantity;
+  }
+
   public PukItemMeasurement getPukItemMeasurement() {
     return pukItemMeasurement;
+  }
+
+  public void setPukItemMeasurement(PukItemMeasurement pukItemMeasurement) {
+    this.pukItemMeasurement = pukItemMeasurement;
   }
 
   public BigDecimal getPerMeasurementPrice() {
     return perMeasurementPrice;
   }
 
+  public void setPerMeasurementPrice(BigDecimal perMeasurementPrice) {
+    this.perMeasurementPrice = perMeasurementPrice;
+  }
+
   public BigDecimal getTotalPrice() {
     return totalPrice;
+  }
+
+  public void setTotalPrice(BigDecimal totalPrice) {
+    this.totalPrice = totalPrice;
   }
 
   public Puk getPuk() {
     return puk;
   }
 
-  public void setTotalPrice(BigDecimal totalPrice) {
-    this.totalPrice = totalPrice;
+  public void setPuk(Puk puk) {
+    this.puk = puk;
   }
 }

@@ -1,4 +1,4 @@
-package com.pce.exception;
+package com.pce.validation;
 
 import com.pce.domain.dto.ApiError;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -32,7 +32,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
     List<String> errors = new ArrayList<>();
     for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-      errors.add(error.getField() + ": " + error.getDefaultMessage());
+      errors.add(error.getField() + ": " + error.getRejectedValue() + " " + error.getDefaultMessage());
     }
     for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
       errors.add(error.getObjectName() + ": " + error.getDefaultMessage());
@@ -40,7 +40,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 
 
     ApiError apiError =
-            new ApiError(HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors);
+            new ApiError(HttpStatus.BAD_REQUEST, "Errors processing arguments ", errors);
     return handleExceptionInternal(ex, apiError, headers, apiError.getStatus(), request);
   }
 

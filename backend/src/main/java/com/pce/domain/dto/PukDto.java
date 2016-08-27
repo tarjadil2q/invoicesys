@@ -2,13 +2,19 @@ package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pce.validation.PukGroupAssociation;
+import com.pce.validation.PukItemMeasureAssociation;
+import com.pce.validation.PukNo;
+import com.pce.validation.group.ExistingPuk;
+import com.pce.validation.group.NewPuk;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
-import java.util.Set;
+import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Created by Leonardo Tarjadi on 16/08/2016.
@@ -16,40 +22,42 @@ import java.util.Set;
 @Relation(collectionRelation = "pukList")
 public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializable {
   @ReadOnlyProperty
-  private long id;
+  private long pukId;
   @ReadOnlyProperty
   private String creationDate;
   @ReadOnlyProperty
   private String updatedDate;
   @NotEmpty
+  @PukNo.List({@PukNo(message = "Puk No is not exists in the system, please choose correct one", update = true, groups = ExistingPuk.class),
+          @PukNo(message = "Puk no already exists in the system, please choose another one", update = false, groups = NewPuk.class)})
   private String pukNo;
-  @NotEmpty
+  @NotEmpty(groups = NewPuk.class)
   private String pukDescription;
-  @NotEmpty
-  private String budget;
+
+  private BigDecimal budget;
+
   @ReadOnlyProperty
   private int pukYear;
 
-  @NotEmpty
-  private PukGroupDto pukGroup;
+  private PukGroupForPukDto pukGroup;
 
-  @NotEmpty
-  private Set<PukItemDto> pukItems;
+  @NotEmpty(groups = NewPuk.class, message = "Puk items is empty, please provide puk items")
+  private List<PukItemDto> pukItems;
 
 
   public PukDto() {
   }
 
   @JsonCreator
-  public PukDto(@JsonProperty("pukId") long id,
+  public PukDto(@JsonProperty("pukId") long pukId,
                 @JsonProperty("creationDate") String creationDate,
                 @JsonProperty("updatedDate") String updatedDate,
                 @JsonProperty("pukNo") String pukNo,
                 @JsonProperty("pukDescription") String pukDescription,
-                @JsonProperty("budget") String budget,
-                @JsonProperty("pukGroup") PukGroupDto pukGroup,
-                @JsonProperty("pukItems") Set<PukItemDto> pukItems) {
-    this.id = id;
+                @JsonProperty("budget") BigDecimal budget,
+                @JsonProperty("pukGroup") PukGroupForPukDto pukGroup,
+                @JsonProperty("pukItems") List<PukItemDto> pukItems) {
+    this.pukId = pukId;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
     this.pukNo = pukNo;
@@ -60,7 +68,7 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
   }
 
   public long getPukId() {
-    return id;
+    return pukId;
   }
 
   public String getCreationDate() {
@@ -79,13 +87,13 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
     return pukDescription;
   }
 
-  public String getBudget() {
+  public BigDecimal getBudget() {
     return budget;
   }
 
 
-  public void setId(long id) {
-    this.id = id;
+  public void setPukId(long pukId) {
+    this.pukId = pukId;
   }
 
   public void setCreationDate(String creationDate) {
@@ -104,7 +112,7 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.pukDescription = pukDescription;
   }
 
-  public void setBudget(String budget) {
+  public void setBudget(BigDecimal budget) {
     this.budget = budget;
   }
 
@@ -116,19 +124,34 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.pukYear = pukYear;
   }
 
-  public PukGroupDto getPukGroup() {
+  public PukGroupForPukDto getPukGroup() {
     return pukGroup;
   }
 
-  public void setPukGroup(PukGroupDto pukGroup) {
+  public void setPukGroup(PukGroupForPukDto pukGroup) {
     this.pukGroup = pukGroup;
   }
 
-  public Set<PukItemDto> getPukItems() {
+  public List<PukItemDto> getPukItems() {
     return pukItems;
   }
 
-  public void setPukItems(Set<PukItemDto> pukItems) {
+  public void setPukItems(List<PukItemDto> pukItems) {
     this.pukItems = pukItems;
+  }
+
+  @Override
+  public String toString() {
+    return "PukDto{" +
+            "pukId=" + pukId +
+            ", creationDate='" + creationDate + '\'' +
+            ", updatedDate='" + updatedDate + '\'' +
+            ", pukNo='" + pukNo + '\'' +
+            ", pukDescription='" + pukDescription + '\'' +
+            ", budget=" + budget +
+            ", pukYear=" + pukYear +
+            ", pukGroup=" + pukGroup +
+            ", pukItems=" + pukItems +
+            '}';
   }
 }

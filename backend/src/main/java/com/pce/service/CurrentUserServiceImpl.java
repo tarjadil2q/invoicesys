@@ -2,6 +2,7 @@ package com.pce.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.pce.constant.FunctionalityAccessConstant;
 import com.pce.domain.CurrentUser;
 import com.pce.domain.Role;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,16 @@ public class CurrentUserServiceImpl implements CurrentUserService {
     Preconditions.checkArgument(!CollectionUtils.isEmpty(rolesToValidate), "Roles to validate cannot be null");
     Set<Role> roles = currentUser.getRoles();
     return roles.stream().anyMatch(role -> rolesToValidate.contains(role.getRoleName()));
+  }
+
+  @Override
+  public boolean canCurrentUserAcces(CurrentUser currentUser, String functionalityAccess) {
+    Preconditions.checkArgument(currentUser != null, "Current user cannot be null");
+    Preconditions.checkArgument(functionalityAccess != null, "Functinality access cannot be null");
+    if (FunctionalityAccessConstant.PUK.getAccessName().equalsIgnoreCase(functionalityAccess)) {
+      //TODO get all puk_group for user current user  from puk_group_user and return true if user is in any puk group
+      return true;
+    }
+    return false;
   }
 }

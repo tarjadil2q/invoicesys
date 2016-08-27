@@ -18,7 +18,7 @@ public class Puk {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(name = "id", nullable = false, updatable = false)
-  private long id;
+  private long pukId;
 
   @CreationTimestamp
   private Calendar creationDate;
@@ -50,8 +50,11 @@ public class Puk {
   private Set<Pce> associatedPces;
 
 
-  public Puk(long id, String pukNo, String pukDescription, BigDecimal budget, int pukYear, PukGroup pukGroup, Set<PukItem> pukItems) {
-    this.id = id;
+  public Puk() {
+  }
+
+  public Puk(long pukId, String pukNo, String pukDescription, BigDecimal budget, int pukYear, PukGroup pukGroup, Set<PukItem> pukItems) {
+    this.pukId = pukId;
     this.pukNo = pukNo;
     this.pukDescription = pukDescription;
     this.budget = budget;
@@ -60,53 +63,83 @@ public class Puk {
     this.pukItems = pukItems;
   }
 
-  public long getId() {
-    return id;
+  public long getPukId() {
+    return pukId;
+  }
+
+  public void setPukId(long pukId) {
+    this.pukId = pukId;
   }
 
   public Calendar getCreationDate() {
     return creationDate;
   }
 
+  public void setCreationDate(Calendar creationDate) {
+    this.creationDate = creationDate;
+  }
+
   public Calendar getUpdatedDate() {
     return updatedDate;
+  }
+
+  public void setUpdatedDate(Calendar updatedDate) {
+    this.updatedDate = updatedDate;
   }
 
   public String getPukNo() {
     return pukNo;
   }
 
+  public void setPukNo(String pukNo) {
+    this.pukNo = pukNo;
+  }
+
   public String getPukDescription() {
     return pukDescription;
+  }
+
+  public void setPukDescription(String pukDescription) {
+    this.pukDescription = pukDescription;
   }
 
   public BigDecimal getBudget() {
     return budget;
   }
 
+  public void setBudget(BigDecimal budget) {
+    this.budget = budget;
+  }
+
   public int getPukYear() {
     return pukYear;
   }
 
+  public void setPukYear(int pukYear) {
+    this.pukYear = pukYear;
+  }
 
   public PukGroup getPukGroup() {
     return pukGroup;
-  }
-
-  public Set<PukItem> getPukItems() {
-    return pukItems;
   }
 
   public void setPukGroup(PukGroup pukGroup) {
     this.pukGroup = pukGroup;
   }
 
+  public Set<PukItem> getPukItems() {
+    return pukItems;
+  }
+
   public void setPukItems(Set<PukItem> pukItems) {
     this.pukItems = pukItems;
   }
 
+  public Set<Pce> getAssociatedPces() {
+    return associatedPces;
+  }
 
-  public void setBudget(BigDecimal budget) {
-    this.budget = budget;
+  public void setAssociatedPces(Set<Pce> associatedPces) {
+    this.associatedPces = associatedPces;
   }
 }
