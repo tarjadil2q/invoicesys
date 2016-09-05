@@ -19,6 +19,12 @@ public class ApiError extends ResourceSupport implements DomainObjectDTO, Serial
   private String message;
   private List<String> errors;
 
+  @JsonCreator
+  public ApiError(@JsonProperty("status") HttpStatus status,
+                  @JsonProperty("errorMessage")String message) {
+    this.status = status;
+    this.message = message;
+  }
 
   @JsonCreator
   public ApiError(
@@ -49,6 +55,10 @@ public class ApiError extends ResourceSupport implements DomainObjectDTO, Serial
 
   public List<String> getErrors() {
     return errors;
+  }
+
+  public void setErrors(List<String> errors) {
+    this.errors = errors;
   }
 
   @Override

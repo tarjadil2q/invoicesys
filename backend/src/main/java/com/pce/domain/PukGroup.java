@@ -2,6 +2,8 @@ package com.pce.domain;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -35,6 +37,8 @@ public class PukGroup {
   private Set<User> usersInGroup;
 
   @CreationTimestamp
+  @CreatedDate
+  @ReadOnlyProperty
   private Calendar creationDate;
 
   @UpdateTimestamp
@@ -84,6 +88,7 @@ public class PukGroup {
     this.pukGroupName = pukGroupName;
   }
 
+  @ReadOnlyProperty
   public void setPukGroupDescription(String pukGroupDescription) {
     this.pukGroupDescription = pukGroupDescription;
   }

@@ -11,4 +11,6 @@ import java.util.List;
 public interface PukItemMeasurementRepository extends JpaRepository<PukItemMeasurement, Long> {
 
   List<PukItemMeasurement> findByTypeOfMeasurementIgnoreCase(String pukGroupName);
+
+  List<PukItemMeasurement> findByPukItemMeasurementIdIn(List<Long> pukItemMeasurementId);
 }

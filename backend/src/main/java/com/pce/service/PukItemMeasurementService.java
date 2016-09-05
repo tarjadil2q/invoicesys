@@ -18,4 +18,6 @@ public interface PukItemMeasurementService {
   PukItemMeasurement createOrUpdatePukItemMeasurement(PukItemMeasurement pukItemMeasurement);
 
   Page<PukItemMeasurement> getAllAvailablePukItemMeasurement(Pageable pageRequest);
+
+  List<PukItemMeasurement> findPukItemMeasurementByIds(List<Long> pukItemMeasurementIds);
 }

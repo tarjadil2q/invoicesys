@@ -21,6 +21,7 @@ public class Puk {
   private long pukId;
 
   @CreationTimestamp
+  @Column(name = "creation_date", insertable = true, updatable = false)
   private Calendar creationDate;
 
   @UpdateTimestamp
@@ -39,11 +40,11 @@ public class Puk {
   private int pukYear;
 
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = {CascadeType.REFRESH})
   @JoinColumn(name = "puk_group_id", referencedColumnName = "id", nullable = false)
   private PukGroup pukGroup;
 
-  @OneToMany(mappedBy = "puk")
+  @OneToMany(mappedBy = "puk", cascade = {CascadeType.MERGE})
   private Set<PukItem> pukItems;
 
   @OneToMany(mappedBy = "associatedPuk")

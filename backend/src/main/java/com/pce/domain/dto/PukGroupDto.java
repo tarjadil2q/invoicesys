@@ -14,7 +14,6 @@ import java.util.Set;
  * Created by Leonardo Tarjadi on 19/08/2016.
  */
 public class PukGroupDto extends ResourceSupport implements DomainObjectDTO, Serializable {
-  @ReadOnlyProperty
   private long id;
   @ReadOnlyProperty
   private String creationDate;
@@ -23,9 +22,9 @@ public class PukGroupDto extends ResourceSupport implements DomainObjectDTO, Ser
   @NotEmpty
   private String pukGroupName;
   @NotEmpty
+  @ReadOnlyProperty
   private String pukGroupDescription;
   @ReadOnlyProperty
-  @NotEmpty
   private Set<Puk> puks;
 
 

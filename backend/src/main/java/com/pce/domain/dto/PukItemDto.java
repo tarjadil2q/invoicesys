@@ -2,9 +2,6 @@ package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pce.domain.PukItemMeasurement;
-import com.pce.validation.PukItemMeasureAssociation;
-import com.pce.validation.group.NewPuk;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
@@ -34,7 +31,7 @@ public class PukItemDto extends ResourceSupport implements DomainObjectDTO, Seri
   private BigDecimal perMeasurementPrice;
   @NotEmpty
   @ReadOnlyProperty
-  private PukItemMeasurement pukItemMeasurement;
+  private PukItemMeasurementDto pukItemMeasurement;
 
 
   private BigDecimal totalPrice;
@@ -49,7 +46,7 @@ public class PukItemDto extends ResourceSupport implements DomainObjectDTO, Seri
                     @JsonProperty("totalActivity") int totalActivity,
                     @JsonProperty("perMeasurementPrice") BigDecimal perMeasurementPrice,
                     @JsonProperty("totalPrice") BigDecimal totalPrice,
-                    @JsonProperty("pukItemMeasurement") PukItemMeasurement pukItemMeasurement) {
+                    @JsonProperty("pukItemMeasurement") PukItemMeasurementDto pukItemMeasurement) {
     this.pukItemId = pukItemId;
     this.activityName = activityName;
     this.quantity = quantity;
@@ -116,11 +113,11 @@ public class PukItemDto extends ResourceSupport implements DomainObjectDTO, Seri
     this.perMeasurementPrice = perMeasurementPrice;
   }
 
-  public PukItemMeasurement getPukItemMeasurement() {
+  public PukItemMeasurementDto getPukItemMeasurement() {
     return pukItemMeasurement;
   }
 
-  public void setPukItemMeasurement(PukItemMeasurement pukItemMeasurement) {
+  public void setPukItemMeasurement(PukItemMeasurementDto pukItemMeasurement) {
     this.pukItemMeasurement = pukItemMeasurement;
   }
 

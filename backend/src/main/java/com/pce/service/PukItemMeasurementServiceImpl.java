@@ -24,6 +24,7 @@ public class PukItemMeasurementServiceImpl implements PukItemMeasurementService 
     return Optional.ofNullable(pukItemMeasurementRepository.findOne(id));
   }
 
+
   @Override
   public List<PukItemMeasurement> findPukItemMeasurementByTypeOfMeasurementIgnoreCase(String typeOfMeasurement) {
     return pukItemMeasurementRepository.findByTypeOfMeasurementIgnoreCase(typeOfMeasurement);
@@ -37,5 +38,10 @@ public class PukItemMeasurementServiceImpl implements PukItemMeasurementService 
   @Override
   public Page<PukItemMeasurement> getAllAvailablePukItemMeasurement(Pageable pageRequest) {
     return pukItemMeasurementRepository.findAll(pageRequest);
+  }
+
+  @Override
+  public List<PukItemMeasurement> findPukItemMeasurementByIds(List<Long> pukItemMeasurementIds) {
+    return pukItemMeasurementRepository.findByPukItemMeasurementIdIn(pukItemMeasurementIds);
   }
 }

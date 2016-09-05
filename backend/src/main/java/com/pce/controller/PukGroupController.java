@@ -101,12 +101,11 @@ public class PukGroupController {
               "Puk Group to be updated not found, please check id is correct ", "Puk Group id is not found")), HttpStatus.NOT_FOUND);
     }
     PukGroup toBeUpdatePukGroup = existingPukGroup.get();
+    PukGroup mappedPukGroup = new PukGroup();
+    mappedPukGroup.setPukGroupId(id);
+    //PukGroup mappedPukGroup = pukGroupMapper.mapDtoIntoEntity(pukGroupDto);
 
-    PukGroup mappedPukGroup = pukGroupMapper.mapDtoIntoEntity(pukGroupDto);
-
-    toBeUpdatePukGroup.setPukGroupDescription(mappedPukGroup.getPukGroupDescription());
-    toBeUpdatePukGroup.setPukGroupName(mappedPukGroup.getPukGroupName());
-    PukGroup updatedPukGroup = pukGroupService.createOrUpdatePukGroup(toBeUpdatePukGroup);
+    PukGroup updatedPukGroup = pukGroupService.createOrUpdatePukGroup(mappedPukGroup);
     pukGroupDto.add(ControllerLinkBuilder.linkTo(PukGroupController.class).slash(updatedPukGroup.getPukGroupId()).withRel(PUK_GROUP_URL_PATH).withSelfRel());
 
     return ControllerHelper.getResponseEntityWithoutBody(pukGroupDto, HttpStatus.OK);

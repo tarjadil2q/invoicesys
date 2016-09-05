@@ -21,6 +21,7 @@ public class PukItem {
 
 
   @CreationTimestamp
+  @Column(name = "creation_date", insertable = true, updatable = false)
   private Calendar creationDate;
 
   @UpdateTimestamp
@@ -32,7 +33,7 @@ public class PukItem {
   private int totalActivity;
   @Column(name = "quantity", nullable = false)
   private int quantity;
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = CascadeType.REFRESH)
   @JoinColumn(name = "puk_item_measurement_id", referencedColumnName = "id", nullable = false)
   private PukItemMeasurement pukItemMeasurement;
 
