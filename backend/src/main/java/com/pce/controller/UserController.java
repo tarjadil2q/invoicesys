@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * Created by Leonardo Tarjadi on 7/02/2016.
  */
 @RestController
-@RequestMapping("/api/pce/user")
+@RequestMapping("/api/v1/pce/user")
 @ExposesResourceFor(UserDto.class)
 
 public class UserController {

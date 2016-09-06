@@ -32,7 +32,7 @@ import java.util.Optional;
  * Created by Leonardo Tarjadi on 23/08/2016.
  */
 @RestController
-@RequestMapping("/api/pce/pukitemmeasurement")
+@RequestMapping("/api/v1/pce/pukitemmeasurement")
 @ExposesResourceFor(PukItemMeasurementDto.class)
 public class PukItemMeasurementController {
   private static final Logger LOG = LoggerFactory.getLogger(PukItemMeasurementController.class);

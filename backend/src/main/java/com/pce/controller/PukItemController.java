@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
  * Created by Leonardo Tarjadi on 6/09/2016.
  */
 @RestController
-@RequestMapping("/api/pce/puk")
+@RequestMapping("/api/v1/pce/puk")
 @ExposesResourceFor(PukItemDto.class)
 public class PukItemController {
 

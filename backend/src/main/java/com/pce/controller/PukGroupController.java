@@ -32,7 +32,7 @@ import java.util.Optional;
  * Created by Leonardo Tarjadi on 21/08/2016.
  */
 @RestController
-@RequestMapping("/api/pce/pukgroup")
+@RequestMapping("/api/v1/pce/pukgroup")
 @ExposesResourceFor(PukGroupDto.class)
 public class PukGroupController {
 

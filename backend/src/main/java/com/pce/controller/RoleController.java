@@ -32,7 +32,7 @@ import java.util.Optional;
  * Created by Leonardo Tarjadi on 11/02/2016.
  */
 @RestController
-@RequestMapping("/api/pce/role")
+@RequestMapping("/api/v1/pce/role")
 @ExposesResourceFor(RoleDto.class)
 public class RoleController {
 

@@ -33,7 +33,7 @@ import java.util.NoSuchElementException;
  * Created by Leonardo Tarjadi on 16/08/2016.
  */
 @RestController
-@RequestMapping("/api/pce/puk")
+@RequestMapping("/api/v1/pce/puk")
 @ExposesResourceFor(PukDto.class)
 public class PukController {
 
