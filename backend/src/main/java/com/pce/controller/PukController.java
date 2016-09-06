@@ -3,8 +3,6 @@ package com.pce.controller;
 import com.pce.domain.Puk;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.PukDto;
-import com.pce.service.PukGroupService;
-import com.pce.service.PukItemMeasurementService;
 import com.pce.service.PukService;
 import com.pce.service.mapper.PukItemMapper;
 import com.pce.service.mapper.PukMapper;
@@ -42,7 +40,6 @@ public class PukController {
   private static final Logger LOG = LoggerFactory.getLogger(PukController.class);
 
   private PukService pukService;
-  private PukGroupService pukGroupService;
   private PukMapper pukMapper;
   private EntityLinks entityLinks;
   private PukItemMapper pukItemMapper;
@@ -53,21 +50,15 @@ public class PukController {
   private PukUpdateValidator pukUpdateValidator;
 
 
-  private PukItemMeasurementService pukItemMeasurementService;
-
-  private static final String PUK_URL_PATH = "/puk";
+  public static final String PUK_URL_PATH = "/puk";
 
   @Autowired
   public PukController(PukService pukService, PukMapper pukMapper, EntityLinks entityLinks,
-                       PukGroupService pukGroupService,
-                       PukItemMeasurementService pukItemMeasurementService,
                        PukItemMapper pukItemMapper) {
     this.pukService = pukService;
     this.pukMapper = pukMapper;
     this.entityLinks = entityLinks;
-    this.pukGroupService = pukGroupService;
     this.pukItemMapper = pukItemMapper;
-    this.pukItemMeasurementService = pukItemMeasurementService;
   }
 
 
@@ -111,12 +102,10 @@ public class PukController {
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> updatePuk(@PathVariable("id") long id,
-                                                         @RequestBody PukDto pukDto, Errors errors) {
+                                                         @RequestBody @Valid PukDto pukDto, Errors errors) {
 
     Puk puk = pukService.getPukByPukId(id).orElseThrow(() -> new NoSuchElementException(String.format("Puk=%s not found", id)));
-    if (puk.getPukId() != pukDto.getPukId()) {
-      errors.rejectValue("pukId", "pukId.not.match", "puk Id " + id + " does not matched with puk id from request body");
-    }
+
     ValidationUtils.invokeValidator(pukUpdateValidator, pukDto, errors);
 
     if (errors.hasErrors()) {
@@ -124,7 +113,7 @@ public class PukController {
     }
 
     Puk mappedPuk = pukMapper.mapDtoIntoEntity(pukDto);
-
+    mappedPuk.setPukId(puk.getPukId());
     Puk updatedPuk = pukService.createOrUpdatePuk(mappedPuk);
 
     pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(updatedPuk.getPukId()).withRel(PUK_URL_PATH).withSelfRel());
@@ -132,4 +121,6 @@ public class PukController {
     return ControllerHelper.getResponseEntityWithoutBody(pukDto, HttpStatus.OK);
 
   }
+
+
 }

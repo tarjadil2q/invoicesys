@@ -2,10 +2,8 @@ package com.pce.config;
 
 import com.pce.service.converter.CalendarConverter;
 import org.modelmapper.ModelMapper;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 /**
@@ -26,11 +24,11 @@ public class PCEConfiguration {
     return modelMapper;
   }
 
-  @Bean
+  /*@Bean
   public MessageSource messageSource() {
     ReloadableResourceBundleMessageSource reloadableResourceBundleMessageSource = new ReloadableResourceBundleMessageSource();
     reloadableResourceBundleMessageSource.setBasename("messages");
     return reloadableResourceBundleMessageSource;
 
-  }
+  }*/
 }

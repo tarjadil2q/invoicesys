@@ -1,6 +1,7 @@
 package com.pce.service;
 
 import com.pce.domain.Puk;
+import com.pce.domain.PukItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,4 +20,11 @@ public interface PukService {
   boolean isPukExist(long id);
 
   Optional<Puk> getPukByPukId(long id);
+
+  PukItem createOrUpdatePukItem(Puk puk
+          , PukItem pukItem);
+
+  public Optional<PukItem> getPukItemByPukItemId(long id);
+
+  Optional<PukItem> getPukItemByPukIdAndPukItemId(long pukId, long pukItemId);
 }

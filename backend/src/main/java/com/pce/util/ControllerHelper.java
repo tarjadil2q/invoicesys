@@ -1,6 +1,7 @@
 package com.pce.util;
 
 import org.springframework.hateoas.Link;
+import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,5 +19,10 @@ public class ControllerHelper {
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.setLocation(URI.create(resourceLink.getHref()));
     return new ResponseEntity<>(null, httpHeaders, httpStatus);
+  }
+
+  public static ResponseEntity getResponseEntity(ResourceSupport resourceDto) {
+    Resource<ResourceSupport> pukResource = new Resource<>(resourceDto);
+    return new ResponseEntity<>(pukResource, HttpStatus.OK);
   }
 }

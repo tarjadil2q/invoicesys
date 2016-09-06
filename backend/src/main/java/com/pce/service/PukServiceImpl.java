@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.Year;
@@ -49,18 +50,18 @@ public class PukServiceImpl implements PukService {
     Preconditions.checkArgument(puk != null, new IllegalArgumentException("Puk cannot be null"));
     Preconditions.checkArgument(puk.getPukGroup() != null, new IllegalArgumentException("Puk Group cannot be null"));
     Set<PukItem> pukItems = puk.getPukItems();
-    Preconditions.checkArgument(pukItems != null, new IllegalArgumentException("Puk Items cannot be null"));
     List<PukItem> existingPukItems = getExistingPukItem(puk.getPukId(), pukItems);
 
     BigDecimal totalBudget = BigDecimal.ZERO;
-    for (PukItem pukItem : pukItems) {
-      pukItem.setTotalPrice(pukItem.getPerMeasurementPrice()
-              .multiply(new BigDecimal(pukItem.getQuantity()))
-              .multiply(new BigDecimal(pukItem.getTotalActivity())));
-      pukItem.setPuk(puk);
+    if (!CollectionUtils.isEmpty(pukItems)) {
+      for (PukItem pukItem : pukItems) {
+        calculateTotalPriceFor(pukItem);
+        pukItem.setPuk(puk);
 
-      totalBudget = totalBudget.add(pukItem.getTotalPrice());
+        totalBudget = totalBudget.add(pukItem.getTotalPrice());
+      }
     }
+
     for (PukItem existingPukItem : existingPukItems) {
       totalBudget = totalBudget.add(existingPukItem.getTotalPrice());
     }
@@ -69,10 +70,38 @@ public class PukServiceImpl implements PukService {
     puk.setBudget(totalBudget);
     puk.setPukYear(Year.now().getValue());
     Puk savedPuk = pukRepository.save(puk);
-    CopyOnWriteArrayList<PukItem> copyOfPukItems = new CopyOnWriteArrayList<>(savedPuk.getPukItems());
-    pukItemRepository.save(copyOfPukItems);
+    Set<PukItem> savedPukItems = savedPuk.getPukItems();
+    if (!CollectionUtils.isEmpty(savedPukItems)) {
+      CopyOnWriteArrayList<PukItem> copyOfPukItems = new CopyOnWriteArrayList<>(savedPukItems);
+
+      pukItemRepository.save(copyOfPukItems);
+    }
 
     return savedPuk;
+  }
+
+  private void calculateTotalPriceFor(PukItem pukItem) {
+    pukItem.setTotalPrice(pukItem.getPerMeasurementPrice()
+            .multiply(new BigDecimal(pukItem.getQuantity()))
+            .multiply(new BigDecimal(pukItem.getTotalActivity())));
+  }
+
+  @Transactional
+  public PukItem createOrUpdatePukItem(Puk puk
+          , PukItem pukItem) {
+    calculateTotalPriceFor(pukItem);
+    pukItem.setPuk(puk);
+
+    PukItem savedPukItem = pukItemRepository.save(pukItem);
+    List<PukItem> pukItems = pukItemRepository.findByPukId(puk.getPukId());
+    BigDecimal totalBudget = BigDecimal.ZERO;
+    for (PukItem puItem : pukItems) {
+      totalBudget = totalBudget.add(puItem.getTotalPrice());
+    }
+    puk.setBudget(totalBudget);
+    pukRepository.save(puk);
+    return savedPukItem;
+
   }
 
   private List<PukItem> getExistingPukItem(long pukId, Set<PukItem> currentPukItem) {
@@ -80,6 +109,9 @@ public class PukServiceImpl implements PukService {
     Iterator<PukItem> existingPukIterators = existingPukItems.iterator();
     while (existingPukIterators.hasNext()) {
       PukItem currentPuk = existingPukIterators.next();
+      if (CollectionUtils.isEmpty(currentPukItem)) {
+        break;
+      }
       for (PukItem pukItem : currentPukItem) {
         if (currentPuk.getPukItemId() == pukItem.getPukItemId()) {
           existingPukIterators.remove();
@@ -87,6 +119,15 @@ public class PukServiceImpl implements PukService {
       }
     }
     return existingPukItems;
+  }
+
+  @Override
+  public Optional<PukItem> getPukItemByPukItemId(long id) {
+    return Optional.ofNullable(pukItemRepository.findOne(id));
+  }
+
+  public Optional<PukItem> getPukItemByPukIdAndPukItemId(long pukId, long pukItemId) {
+    return Optional.ofNullable(pukItemRepository.findByPukIdAndPukItemId(pukId, pukItemId));
   }
 
 

@@ -7,6 +7,7 @@ import com.pce.service.PukService;
 import com.pce.validation.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -41,11 +42,15 @@ public class PukCreateValidator implements Validator {
     if (pukFound.isPresent()) {
       errors.rejectValue("pukNo", "pukNo.exists", "Puk No " + pukNo + " already exist in the system, please select different one");
     }
+
     ValidationHelper.invokeNestedValidator(this.pukGroupAssociationValidator,
             pukDto.getPukGroup(), errors, "pukGroup");
-    ValidationHelper.invokeNestedValidatorForList(this.pukItemMeasurementAssociationValidator,
-            pukDto.getPukItems(),
-            errors, "pukItems");
+
+    if (!CollectionUtils.isEmpty(pukDto.getPukItems())) {
+      ValidationHelper.invokeNestedValidatorForList(this.pukItemMeasurementAssociationValidator,
+              pukDto.getPukItems(),
+              errors, "pukItems");
+    }
 
   }
 }

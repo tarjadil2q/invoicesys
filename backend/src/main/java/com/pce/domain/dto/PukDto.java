@@ -2,7 +2,6 @@ package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pce.validation.group.NewPuk;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
@@ -25,7 +24,7 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
   private String updatedDate;
   @NotEmpty
   private String pukNo;
-  @NotEmpty(groups = NewPuk.class)
+  @NotEmpty
   private String pukDescription;
 
   private BigDecimal budget;
@@ -35,7 +34,6 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
 
   private PukGroupForPukDto pukGroup;
 
-  @NotEmpty(message = "Puk items is empty, please provide puk items")
   private List<PukItemDto> pukItems;
 
 

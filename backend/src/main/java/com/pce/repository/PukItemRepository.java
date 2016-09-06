@@ -13,4 +13,8 @@ import java.util.List;
 public interface PukItemRepository extends JpaRepository<PukItem, Long> {
   @Query("FROM PukItem pi WHERE pi.puk.pukId = :pukId")
   List<PukItem> findByPukId(@Param("pukId") long pukId);
+
+  @Query("FROM PukItem pi WHERE pi.puk.pukId = :pukId AND pi.pukItemId = :pukItemId")
+  PukItem findByPukIdAndPukItemId(@Param("pukId") long pukId,
+                                  @Param("pukItemId") long pukItemId);
 }

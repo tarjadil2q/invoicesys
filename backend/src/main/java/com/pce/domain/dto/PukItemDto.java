@@ -7,6 +7,10 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
@@ -23,13 +27,19 @@ public class PukItemDto extends ResourceSupport implements DomainObjectDTO, Seri
   private String updatedDate;
   @NotEmpty
   private String activityName;
-  @NotEmpty
+  @javax.validation.constraints.NotNull
+  @Min(value = 1, message = "{quantity.min.value}")
+  @Max(value = 999999, message = "{quantity.max.value}")
   private int quantity;
-  @NotEmpty
+  @javax.validation.constraints.NotNull
+  @Min(value = 1, message = "{totalActivity.min.value}")
+  @Max(value = 999999, message = "{totalActivity.max.value}")
   private int totalActivity;
-  @NotEmpty
+  @javax.validation.constraints.NotNull
+  @DecimalMin(value = "0", inclusive = false, message = "{perMeasurementPrice.min.value}")
+  @DecimalMax(value = "9999999", message = "{perMeasurementPrice.max.value}")
   private BigDecimal perMeasurementPrice;
-  @NotEmpty
+  @javax.validation.constraints.NotNull
   @ReadOnlyProperty
   private PukItemMeasurementDto pukItemMeasurement;
 
