@@ -20,8 +20,7 @@ public class PceApprovalRole {
 
   private int approvalRoleSequence;
 
-  @ManyToOne(cascade = CascadeType.ALL)
-  @JoinColumn(name = "approval_role_id", referencedColumnName = "id", nullable = false)
+  @OneToOne
   private Role pceApprovalRole;
 
 
@@ -34,5 +33,45 @@ public class PceApprovalRole {
   public PceApprovalRole(int approvalRoleSequence, Role pceApprovalRole) {
     this.approvalRoleSequence = approvalRoleSequence;
     this.pceApprovalRole = pceApprovalRole;
+  }
+
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
+
+  public int getApprovalRoleSequence() {
+    return approvalRoleSequence;
+  }
+
+  public void setApprovalRoleSequence(int approvalRoleSequence) {
+    this.approvalRoleSequence = approvalRoleSequence;
+  }
+
+  public Role getPceApprovalRole() {
+    return pceApprovalRole;
+  }
+
+  public void setPceApprovalRole(Role pceApprovalRole) {
+    this.pceApprovalRole = pceApprovalRole;
+  }
+
+  public Calendar getCreationDate() {
+    return creationDate;
+  }
+
+  public void setCreationDate(Calendar creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public Calendar getUpdatedDate() {
+    return updatedDate;
+  }
+
+  public void setUpdatedDate(Calendar updatedDate) {
+    this.updatedDate = updatedDate;
   }
 }

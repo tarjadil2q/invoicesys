@@ -31,8 +31,6 @@ public class Role {
   @ManyToMany(mappedBy = "roles")
   private Set<User> users;
 
-  @OneToMany(mappedBy = "pceApprovalRole")
-  private Set<PceApprovalRole> pceApprovalRoles;
 
   public Role() {
   }
