@@ -19,6 +19,7 @@ public class RecipientBankAcctDto extends ResourceSupport implements DomainObjec
   private String updatedDate;
 
   private String acctName;
+
   private String acctNumber;
   private String bsb;
 

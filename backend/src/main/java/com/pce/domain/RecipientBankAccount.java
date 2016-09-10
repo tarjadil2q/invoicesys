@@ -11,7 +11,8 @@ import java.util.Set;
  * Created by Leonardo Tarjadi on 20/08/2016.
  */
 @Entity
-@Table(name = "recipient_bank_account", schema = "ivs")
+@Table(name = "recipient_bank_account", schema = "ivs",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"acct_number", "bsb"})})
 public class RecipientBankAccount {
 
   @Id

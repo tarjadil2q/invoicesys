@@ -8,10 +8,10 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
- * Created by Leonardo Tarjadi on 9/09/2016.
+ * Created by Leonardo Tarjadi on 10/09/2016.
  */
 @Component
-public class RecipientAccountValidator implements Validator {
+public class RecipientBankAssociatedValidator implements Validator {
 
   @Autowired
   private RecipientBankAcctService recipientBankAcctService;
@@ -23,6 +23,11 @@ public class RecipientAccountValidator implements Validator {
 
   @Override
   public void validate(Object target, Errors errors) {
+    RecipientBankAcctDto recipientBankAcctDto = (RecipientBankAcctDto) target;
 
+    long recipientBankAcctId = recipientBankAcctDto.getRecipientBankAcctId();
+    if (!recipientBankAcctService.findRecipientBankAccountById(recipientBankAcctId).isPresent()) {
+      errors.rejectValue("recipientBankAcctId", "recipient.not.exists", "Recipient Bank Account  " + recipientBankAcctId + " is not exists in the system, please select different one");
+    }
   }
 }
