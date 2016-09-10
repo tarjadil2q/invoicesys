@@ -105,7 +105,7 @@ public class PukController {
                                                          @RequestBody @Valid PukDto pukDto, Errors errors) {
 
     Puk puk = pukService.getPukByPukId(id).orElseThrow(() -> new NoSuchElementException(String.format("Puk=%s not found", id)));
-
+    pukDto.setPukId(id);
     ValidationUtils.invokeValidator(pukUpdateValidator, pukDto, errors);
 
     if (errors.hasErrors()) {

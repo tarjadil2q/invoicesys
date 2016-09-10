@@ -93,7 +93,7 @@ public class PceController {
                                                          @RequestBody @Valid PceDto pceDto, Errors errors) {
 
     Pce pce = pceService.getPceByPceId(id).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", id)));
-
+    pceDto.setPceId(id);
     ValidationUtils.invokeValidator(pceUpdateValidator, pceDto, errors);
 
     if (errors.hasErrors()) {

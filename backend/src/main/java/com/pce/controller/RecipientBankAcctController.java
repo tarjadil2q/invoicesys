@@ -5,6 +5,9 @@ import com.pce.domain.RecipientBankAccount;
 import com.pce.domain.dto.*;
 import com.pce.service.RecipientBankAcctService;
 import com.pce.util.ControllerHelper;
+import com.pce.validation.validator.RecipientAccountCreateValidator;
+import com.pce.validation.validator.RecipientAccountUpdateValidator;
+import com.pce.validation.validator.ValidationErrorBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,6 +19,8 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -41,6 +46,12 @@ public class RecipientBankAcctController {
   @Autowired
   private EntityLinks entityLinks;
 
+  @Autowired
+  private RecipientAccountCreateValidator recipientAccountCreateValidator;
+
+  @Autowired
+  private RecipientAccountUpdateValidator recipientAccountUpdateValidator;
+
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{recipientId}/pukitem/{pukItemId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> getRecipientBankAccountById(@PathVariable("recipientId") long recipientId) {
@@ -63,7 +74,12 @@ public class RecipientBankAcctController {
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(method = RequestMethod.POST)
-  public HttpEntity<Resource<DomainObjectDTO>> createRecipient(@RequestBody @Valid RecipientBankAcctDto recipientBankAcctDto) {
+  public HttpEntity<Resource<DomainObjectDTO>> createRecipient(@RequestBody @Valid RecipientBankAcctDto recipientBankAcctDto, Errors errors) {
+    ValidationUtils.invokeValidator(recipientAccountCreateValidator, recipientBankAcctDto, errors);
+
+    if (errors.hasErrors()) {
+      return ValidationErrorBuilder.fromBindingErrors(errors);
+    }
 
     RecipientBankAccount bankAccount = modelMapper.map(recipientBankAcctDto, RecipientBankAccount.class);
     Optional<RecipientBankAccount> recipientBankAccount = recipientBankAcctService.findRecipientBankAccountByAccountNumberAndBsb(recipientBankAcctDto.getAcctNumber(),
@@ -82,12 +98,19 @@ public class RecipientBankAcctController {
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> updateBankAccount(@PathVariable("id") long id,
-                                                                 @RequestBody @Valid RecipientBankAcctDto recipientBankAcctDto) {
+                                                                 @RequestBody @Valid RecipientBankAcctDto recipientBankAcctDto,
+                                                                 Errors errors) {
     Optional<RecipientBankAccount> currentBankAccount = recipientBankAcctService.findRecipientBankAccountById(id);
 
     if (!currentBankAccount.isPresent()) {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.NOT_FOUND,
               "Bank account to be updated not found, please check id is correct ", "Bank Account id is not found")), HttpStatus.NOT_FOUND);
+    }
+    recipientBankAcctDto.setRecipientBankAcctId(id);
+    ValidationUtils.invokeValidator(recipientAccountUpdateValidator, recipientBankAcctDto, errors);
+
+    if (errors.hasErrors()) {
+      return ValidationErrorBuilder.fromBindingErrors(errors);
     }
 
     RecipientBankAccount bankAccount = modelMapper.map(recipientBankAcctDto, RecipientBankAccount.class);

@@ -15,7 +15,7 @@ public class PceCreateValidator implements Validator {
   @Autowired
   private PukAssociatedValidator pukAssociatedValidator;
   @Autowired
-  private RecipientAccountValidator recipientAccountValidator;
+  private RecipientBankAssociatedValidator recipientBankAssociatedValidator;
 
   @Override
   public boolean supports(Class<?> clazz) {
@@ -31,7 +31,7 @@ public class PceCreateValidator implements Validator {
             pceDto.getPuk(), errors, "puk");
 
 
-    ValidationHelper.invokeNestedValidator(this.recipientAccountValidator,
+    ValidationHelper.invokeNestedValidator(this.recipientBankAssociatedValidator,
             pceDto.getPuk(), errors, "recipientBankAccount");
 
   }
