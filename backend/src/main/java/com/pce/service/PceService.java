@@ -1,6 +1,7 @@
 package com.pce.service;
 
 import com.pce.domain.Pce;
+import com.pce.domain.PceItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,6 +15,13 @@ public interface PceService {
 
   Pce createOrUpdatePce(Pce pce);
 
+  PceItem createOrUpdatePceItem(Pce pce, PceItem pceItem);
+
   Optional<Pce> getPceByPceId(long id);
+
+  Optional<PceItem> getPukItemByPukItemId(long id);
+
+  Optional<PceItem> getPceItemByPceIdAndPceItemId(long pceId, long PceItemId);
+
 
 }
