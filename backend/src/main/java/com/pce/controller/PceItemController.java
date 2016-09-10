@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
  * Created by Leonardo Tarjadi on 7/09/2016.
  */
 @RestController
-@RequestMapping("/api/v1/pce/pce")
+@RequestMapping("/api/v1/pce")
 @ExposesResourceFor(PceItemDto.class)
-public class PceItemController {
+public class PceItemController {fix
 }

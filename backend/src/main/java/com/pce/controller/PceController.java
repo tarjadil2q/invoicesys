@@ -31,7 +31,7 @@ import java.util.NoSuchElementException;
  * Created by Leonardo Tarjadi on 5/09/2016.
  */
 @RestController
-@RequestMapping("/api/v1/pce/pce")
+@RequestMapping("/api/v1/pce")
 @ExposesResourceFor(PceDto.class)
 public class PceController {
   @Autowired
