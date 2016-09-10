@@ -16,8 +16,8 @@ public class RecipientBankAccount {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @Column(name = "id", nullable = false, updatable = false)
-  private long id;
+  @Column(name = "recipientBankAccountId", nullable = false, updatable = false)
+  private long recipientBankAccountId;
 
   @Column(name = "bsb", nullable = false)
   private String bsb;
@@ -44,8 +44,8 @@ public class RecipientBankAccount {
     this.associatedPces = associatedPces;
   }
 
-  public long getId() {
-    return id;
+  public long getRecipientBankAccountId() {
+    return recipientBankAccountId;
   }
 
   public String getBsb() {
