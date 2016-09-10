@@ -18,7 +18,7 @@ public class Pce {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(name = "id", nullable = false, updatable = false)
-  private long id;
+  private long pceId;
 
   @Column(name = "pce_no", nullable = false)
   private String pceNo;
@@ -73,8 +73,8 @@ public class Pce {
     this.pceYear = pceYear;
   }
 
-  public long getId() {
-    return id;
+  public long getPceId() {
+    return pceId;
   }
 
   public String getPceNo() {
@@ -123,5 +123,9 @@ public class Pce {
 
   public int getPceYear() {
     return pceYear;
+  }
+
+  public void setPceId(long pceId) {
+    this.pceId = pceId;
   }
 }

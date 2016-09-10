@@ -19,7 +19,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -56,7 +55,6 @@ public class RecipientBankAcctController {
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<PagedResources<DomainObjectDTO>> getRecipients(Pageable pageRequest, PagedResourcesAssembler assembler) {
     Page<RecipientBankAccount> pageRecipient = recipientBankAcctService.findAllRecipientBankAccount(pageRequest);
-    List<RecipientBankAccount> recipients = pageRecipient.getContent();
 
     Page<RecipientBankAcctDto> newPaged = pageRecipient.map(source -> modelMapper.map(source, RecipientBankAcctDto.class));
 
