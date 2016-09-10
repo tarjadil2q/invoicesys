@@ -60,4 +60,8 @@ public class PceItem {
   public void setPceItemId(long pceItemId) {
     this.pceItemId = pceItemId;
   }
+
+  public void setPce(Pce pce) {
+    this.pce = pce;
+  }
 }

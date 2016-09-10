@@ -104,16 +104,17 @@ public class PukServiceImpl implements PukService {
 
   }
 
+  //TODO change to lambda
   private List<PukItem> getExistingPukItem(long pukId, Set<PukItem> currentPukItem) {
     List<PukItem> existingPukItems = pukItemRepository.findByPukId(pukId);
     Iterator<PukItem> existingPukIterators = existingPukItems.iterator();
     while (existingPukIterators.hasNext()) {
-      PukItem currentPuk = existingPukIterators.next();
+      PukItem pi = existingPukIterators.next();
       if (CollectionUtils.isEmpty(currentPukItem)) {
         break;
       }
       for (PukItem pukItem : currentPukItem) {
-        if (currentPuk.getPukItemId() == pukItem.getPukItemId()) {
+        if (pi.getPukItemId() == pukItem.getPukItemId()) {
           existingPukIterators.remove();
         }
       }

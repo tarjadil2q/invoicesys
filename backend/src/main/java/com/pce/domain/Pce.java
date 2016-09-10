@@ -23,7 +23,7 @@ public class Pce {
   @Column(name = "pce_no", nullable = false)
   private String pceNo;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = CascadeType.REFRESH)
   @JoinColumn(name = "puk_id", referencedColumnName = "id", nullable = false)
   private Puk associatedPuk;
 
@@ -33,14 +33,14 @@ public class Pce {
   @Column(name = "total_amount_in_word", nullable = false)
   private String totalAmountInWord;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = CascadeType.REFRESH)
   @JoinColumn(name = "recipient_bank_account_id", referencedColumnName = "id", nullable = false)
   private RecipientBankAccount recipientBankAccount;
 
   @Column(name = "remarks", nullable = true)
   private String remarks;
 
-  @ManyToMany(cascade = CascadeType.ALL)
+  @ManyToMany(cascade = CascadeType.REFRESH)
   @JoinTable(name = "pce_approver_user", schema = "ivs", joinColumns = @JoinColumn(name = "pce_id", referencedColumnName = "id"),
           inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
   private Set<User> approvers;
@@ -127,5 +127,17 @@ public class Pce {
 
   public void setPceId(long pceId) {
     this.pceId = pceId;
+  }
+
+  public void setTotalAmount(BigDecimal totalAmount) {
+    this.totalAmount = totalAmount;
+  }
+
+  public void setTotalAmountInWord(String totalAmountInWord) {
+    this.totalAmountInWord = totalAmountInWord;
+  }
+
+  public void setPceYear(int pceYear) {
+    this.pceYear = pceYear;
   }
 }
