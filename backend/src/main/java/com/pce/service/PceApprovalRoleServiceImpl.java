@@ -5,6 +5,7 @@ import com.pce.repository.PceApprovalRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -31,5 +32,11 @@ public class PceApprovalRoleServiceImpl implements PceApprovalRoleService {
   public Optional<PceApprovalRole> findPceApprovalRoleByApprovalRoleSequence(int roleSequenceNum) {
     Optional<PceApprovalRole> byApprovalRoleSequence = pceApprovalRoleRepository.findByApprovalRoleSequence(roleSequenceNum);
     return Optional.ofNullable(byApprovalRoleSequence.get());
+  }
+
+  @Transactional
+  @Override
+  public PceApprovalRole createOrUpdatePceApprovalRole(PceApprovalRole pceApprovalRole) {
+    return pceApprovalRoleRepository.save(pceApprovalRole);
   }
 }

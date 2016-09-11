@@ -41,6 +41,7 @@ public class PceServiceImpl implements PceService {
   public Pce createOrUpdatePce(Pce pce) {
     Preconditions.checkArgument(pce != null, new IllegalArgumentException("Pce cannot be null"));
     Set<PceItem> pceItems = pce.getPceItems();
+    //TODO create pce no based on puk group code with sequence number
     List<PceItem> existingPukItems = getExistingPceItem(pce.getPceId(), pceItems);
     BigDecimal totalPcePrice = BigDecimal.ZERO;
     if (!CollectionUtils.isEmpty(pceItems)) {

@@ -104,7 +104,6 @@ public class PukController {
   public HttpEntity<Resource<DomainObjectDTO>> updatePuk(@PathVariable("id") long id,
                                                          @RequestBody @Valid PukDto pukDto, Errors errors) {
 
-    Puk puk = pukService.getPukByPukId(id).orElseThrow(() -> new NoSuchElementException(String.format("Puk=%s not found", id)));
     pukDto.setPukId(id);
     ValidationUtils.invokeValidator(pukUpdateValidator, pukDto, errors);
 
@@ -113,7 +112,7 @@ public class PukController {
     }
 
     Puk mappedPuk = pukMapper.mapDtoIntoEntity(pukDto);
-    mappedPuk.setPukId(puk.getPukId());
+    mappedPuk.setPukId(id);
     Puk updatedPuk = pukService.createOrUpdatePuk(mappedPuk);
 
     pukDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(updatedPuk.getPukId()).withRel(PUK_URL_PATH).withSelfRel());

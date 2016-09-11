@@ -11,6 +11,7 @@ import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * Created by Leonardo Tarjadi on 7/09/2016.
@@ -39,6 +40,8 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
 
   private RecipientBankAccount recipientBankAccount;
 
+  private List<PceItemDto> pceItems;
+
 
   public PceDto() {
   }
@@ -52,7 +55,8 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
                 @JsonProperty("remarks") String remarks,
                 @JsonProperty("totalAmount") BigDecimal totalAmount,
                 @JsonProperty("totalAmountInWords") String totalAmountInWords,
-                @JsonProperty("recipientBankAccount") RecipientBankAccount recipientBankAccount) {
+                @JsonProperty("recipientBankAccount") RecipientBankAccount recipientBankAccount,
+                @JsonProperty("pceItems") List<PceItemDto> pceItems) {
     this.puk = puk;
     this.pceId = pceId;
     this.creationDate = creationDate;
@@ -62,6 +66,7 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.totalAmount = totalAmount;
     this.totalAmountInWords = totalAmountInWords;
     this.recipientBankAccount = recipientBankAccount;
+    this.pceItems = pceItems;
   }
 
 
@@ -135,5 +140,13 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
 
   public void setRecipientBankAccount(RecipientBankAccount recipientBankAccount) {
     this.recipientBankAccount = recipientBankAccount;
+  }
+
+  public List<PceItemDto> getPceItems() {
+    return pceItems;
+  }
+
+  public void setPceItems(List<PceItemDto> pceItems) {
+    this.pceItems = pceItems;
   }
 }

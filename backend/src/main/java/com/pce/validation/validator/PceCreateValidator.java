@@ -32,7 +32,7 @@ public class PceCreateValidator implements Validator {
 
 
     ValidationHelper.invokeNestedValidator(this.recipientBankAssociatedValidator,
-            pceDto.getPuk(), errors, "recipientBankAccount");
+            pceDto.getRecipientBankAccount(), errors, "recipientBankAccount");
 
   }
 }

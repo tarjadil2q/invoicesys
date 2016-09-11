@@ -1,6 +1,7 @@
 package com.pce.domain;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -13,14 +14,18 @@ import java.util.Calendar;
 @Table(name = "pce_approval_role", schema = "ivs")
 public class PceApprovalRole {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @Column(name = "id", nullable = false, updatable = false)
-  private long id;
 
+  @Id
+  @GeneratedValue(generator = "roleIdGenerator")
+  @GenericGenerator(name = "roleIdGenerator", strategy = "foreign", parameters = @org.hibernate.annotations.Parameter(value = "role", name = "property"))
+  @Column(name = "role_id", nullable = false, updatable = false)
+  private long roleId;
+
+  @Column(name = "approval_role_sequence", unique = true)
   private int approvalRoleSequence;
 
-  @OneToOne
+  @OneToOne(cascade = CascadeType.REFRESH)
+  @JoinColumn(name = "employee_id")
   private Role pceApprovalRole;
 
 
@@ -35,12 +40,12 @@ public class PceApprovalRole {
     this.pceApprovalRole = pceApprovalRole;
   }
 
-  public long getId() {
-    return id;
+  public long getRoleId() {
+    return roleId;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public void setRoleId(long roleId) {
+    this.roleId = roleId;
   }
 
   public int getApprovalRoleSequence() {

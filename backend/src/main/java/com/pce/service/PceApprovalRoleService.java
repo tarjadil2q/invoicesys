@@ -17,4 +17,6 @@ public interface PceApprovalRoleService {
 
   Optional<PceApprovalRole> findPceApprovalRoleByApprovalRoleSequence(int roleSequenceNum);
 
+  PceApprovalRole createOrUpdatePceApprovalRole(PceApprovalRole pceApprovalRole);
+
 }

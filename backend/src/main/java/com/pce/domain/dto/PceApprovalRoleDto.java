@@ -7,6 +7,7 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -15,12 +16,13 @@ import java.io.Serializable;
 public class PceApprovalRoleDto extends ResourceSupport implements DomainObjectDTO, Serializable {
 
   @ReadOnlyProperty
-  private long pceApprovalRoleId;
+  private long roleId;
   @ReadOnlyProperty
   private String creationDate;
   @ReadOnlyProperty
   private String updatedDate;
   @NotNull
+  @Size(min = 1, max = 4, message = "{approvalRoleSequence.minMax.value}")
   private int approvalRoleSequence;
   @NotEmpty
   private RoleDto approvalRole;
@@ -30,12 +32,12 @@ public class PceApprovalRoleDto extends ResourceSupport implements DomainObjectD
   }
 
   @JsonCreator
-  public PceApprovalRoleDto(@JsonProperty("pceApprovalRoleId") long pceApprovalRoleId,
+  public PceApprovalRoleDto(@JsonProperty("roleId") long roleId,
                             @JsonProperty("creationDate") String creationDate,
                             @JsonProperty("updatedDate") String updatedDate,
                             @JsonProperty("approvalRoleSequence") int approvalRoleSequence,
                             @JsonProperty("approvalRole") RoleDto approvalRole) {
-    this.pceApprovalRoleId = pceApprovalRoleId;
+    this.roleId = roleId;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
     this.approvalRoleSequence = approvalRoleSequence;
@@ -43,12 +45,12 @@ public class PceApprovalRoleDto extends ResourceSupport implements DomainObjectD
   }
 
 
-  public long getPceApprovalRoleId() {
-    return pceApprovalRoleId;
+  public long getRoleId() {
+    return roleId;
   }
 
-  public void setPceApprovalRoleId(long pceApprovalRoleId) {
-    this.pceApprovalRoleId = pceApprovalRoleId;
+  public void setRoleId(long roleId) {
+    this.roleId = roleId;
   }
 
   public String getCreationDate() {
@@ -87,7 +89,7 @@ public class PceApprovalRoleDto extends ResourceSupport implements DomainObjectD
   @Override
   public String toString() {
     return "PceApprovalRoleDto{" +
-            "pceApprovalRoleId=" + pceApprovalRoleId +
+            "roleId=" + roleId +
             ", creationDate='" + creationDate + '\'' +
             ", updatedDate='" + updatedDate + '\'' +
             ", approvalRoleSequence=" + approvalRoleSequence +

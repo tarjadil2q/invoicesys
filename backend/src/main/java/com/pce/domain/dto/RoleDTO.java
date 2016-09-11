@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Relation(collectionRelation = "roleList")
 public class RoleDto extends ResourceSupport implements DomainObjectDTO, Serializable {
   @ReadOnlyProperty
-  private long id;
+  private long roleId;
   @NotEmpty
   private String roleName;
   @ReadOnlyProperty
@@ -27,22 +27,22 @@ public class RoleDto extends ResourceSupport implements DomainObjectDTO, Seriali
   }
 
   @JsonCreator
-  public RoleDto(@JsonProperty("roleId") long id,
+  public RoleDto(@JsonProperty("roleId") long roleId,
                  @JsonProperty("roleName") String roleName,
                  @JsonProperty("creationDate") String creationDate,
                  @JsonProperty("updatedDate") String updatedDate) {
-    this.id = id;
+    this.roleId = roleId;
     this.roleName = roleName;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
   }
 
   public long getRoleId() {
-    return id;
+    return roleId;
   }
 
-  public void setId(long id) {
-    this.id = id;
+  public void setRoleId(long roleId) {
+    this.roleId = roleId;
   }
 
   public String getRoleName() {
