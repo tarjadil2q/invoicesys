@@ -61,6 +61,9 @@ public class Pce {
   private int pceYear;
 
 
+  public Pce() {
+  }
+
   public Pce(String pceNo, Puk associatedPuk, RecipientBankAccount recipientBankAccount, String remarks, Set<User> approvers, Set<PceItem> pceItems, byte[] invoiceImage,
              int pceYear) {
     this.pceNo = pceNo;

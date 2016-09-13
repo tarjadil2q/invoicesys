@@ -5,6 +5,7 @@ import com.pce.repository.PceApprovalRoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
 /**
  * Created by Leonardo Tarjadi on 8/09/2016.
  */
+@Service
 public class PceApprovalRoleServiceImpl implements PceApprovalRoleService {
 
   @Autowired

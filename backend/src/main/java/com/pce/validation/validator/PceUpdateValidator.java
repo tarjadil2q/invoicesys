@@ -4,6 +4,7 @@ import com.pce.domain.Pce;
 import com.pce.domain.dto.PceDto;
 import com.pce.service.PceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -13,6 +14,7 @@ import java.util.Optional;
 /**
  * Created by Leonardo Tarjadi on 10/09/2016.
  */
+@Component
 public class PceUpdateValidator implements Validator {
 
   @Autowired

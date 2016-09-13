@@ -37,7 +37,6 @@ public class PceServiceImpl implements PceService {
   }
 
   @Transactional
-  @Autowired
   public Pce createOrUpdatePce(Pce pce) {
     Preconditions.checkArgument(pce != null, new IllegalArgumentException("Pce cannot be null"));
     Set<PceItem> pceItems = pce.getPceItems();

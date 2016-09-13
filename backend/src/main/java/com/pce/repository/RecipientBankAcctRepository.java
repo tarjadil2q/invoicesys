@@ -11,7 +11,7 @@ import java.util.Optional;
  */
 public interface RecipientBankAcctRepository extends JpaRepository<RecipientBankAccount, Long> {
   List<RecipientBankAccount> findByAcctNameIgnoreCase(String acctName);
-  Optional<RecipientBankAccount> findByAccountNumberAndBsb(String acctNum, String bsb);
+  Optional<RecipientBankAccount> findByAcctNumberAndBsb(String acctNum, String bsb);
 
 
 }

@@ -3,12 +3,14 @@ package com.pce.validation.validator;
 import com.pce.domain.dto.RoleDto;
 import com.pce.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 /**
  * Created by Leonardo Tarjadi on 10/09/2016.
  */
+@Component
 public class PceRoleAssociationValidator implements Validator {
 
   @Autowired

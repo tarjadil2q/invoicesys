@@ -17,7 +17,7 @@ public class RecipientBankAccount {
 
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
-  @Column(name = "recipientBankAccountId", nullable = false, updatable = false)
+  @Column(name = "id", nullable = false, updatable = false)
   private long recipientBankAccountId;
 
   @Column(name = "bsb", nullable = false)

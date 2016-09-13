@@ -5,6 +5,7 @@ import com.pce.repository.RecipientBankAcctRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +13,7 @@ import java.util.Optional;
 /**
  * Created by Leonardo Tarjadi on 8/09/2016.
  */
+@Service
 public class RecipientBankAccountServiceImpl implements RecipientBankAcctService {
 
   @Autowired
@@ -30,7 +32,7 @@ public class RecipientBankAccountServiceImpl implements RecipientBankAcctService
 
   @Override
   public Optional<RecipientBankAccount> findRecipientBankAccountByAccountNumberAndBsb(String accountNum, String bsb) {
-    return recipientBankAcctRepository.findByAccountNumberAndBsb(accountNum, bsb);
+    return recipientBankAcctRepository.findByAcctNumberAndBsb(accountNum, bsb);
   }
 
   @Override
