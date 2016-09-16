@@ -2,12 +2,13 @@ package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pce.domain.Pce;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
 
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -29,9 +30,9 @@ public class PceItemDto extends ResourceSupport implements DomainObjectDTO, Seri
   private String pceItemDescription;
 
   @NotNull
+  @DecimalMin(value = "0", inclusive = false, message = "{priceAmount.min.value}")
+  @DecimalMax(value = "9999999", message = "{priceAmount.max.value}")
   private BigDecimal priceAmount;
-
-  private Pce pce;
 
 
   public PceItemDto() {
@@ -42,14 +43,12 @@ public class PceItemDto extends ResourceSupport implements DomainObjectDTO, Seri
                     @JsonProperty("creationDate") String creationDate,
                     @JsonProperty("updatedDate") String updatedDate,
                     @JsonProperty("pceItemDescription") String pceItemDescription,
-                    @JsonProperty("priceAmount") BigDecimal priceAmount,
-                    @JsonProperty("pce") Pce pce) {
+                    @JsonProperty("priceAmount") BigDecimal priceAmount) {
     this.pceItemId = pceItemId;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
     this.pceItemDescription = pceItemDescription;
     this.priceAmount = priceAmount;
-    this.pce = pce;
   }
 
   public long getPceItemId() {
@@ -92,11 +91,4 @@ public class PceItemDto extends ResourceSupport implements DomainObjectDTO, Seri
     this.priceAmount = priceAmount;
   }
 
-  public Pce getPce() {
-    return pce;
-  }
-
-  public void setPce(Pce pce) {
-    this.pce = pce;
-  }
 }

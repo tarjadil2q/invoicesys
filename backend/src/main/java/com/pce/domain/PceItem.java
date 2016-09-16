@@ -36,6 +36,10 @@ public class PceItem {
   @UpdateTimestamp
   private Calendar updatedDate;
 
+
+  public PceItem() {
+  }
+
   public PceItem(String pceItemDescription, BigDecimal priceAmount, Pce pce) {
     this.pceItemDescription = pceItemDescription;
     this.priceAmount = priceAmount;
@@ -46,23 +50,47 @@ public class PceItem {
     return pceItemId;
   }
 
+  public void setPceItemId(long pceItemId) {
+    this.pceItemId = pceItemId;
+  }
+
   public String getPceItemDescription() {
     return pceItemDescription;
+  }
+
+  public void setPceItemDescription(String pceItemDescription) {
+    this.pceItemDescription = pceItemDescription;
   }
 
   public BigDecimal getPriceAmount() {
     return priceAmount;
   }
 
+  public void setPriceAmount(BigDecimal priceAmount) {
+    this.priceAmount = priceAmount;
+  }
+
   public Pce getPce() {
     return pce;
   }
 
-  public void setPceItemId(long pceItemId) {
-    this.pceItemId = pceItemId;
-  }
-
   public void setPce(Pce pce) {
     this.pce = pce;
+  }
+
+  public Calendar getCreationDate() {
+    return creationDate;
+  }
+
+  public void setCreationDate(Calendar creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public Calendar getUpdatedDate() {
+    return updatedDate;
+  }
+
+  public void setUpdatedDate(Calendar updatedDate) {
+    this.updatedDate = updatedDate;
   }
 }

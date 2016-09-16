@@ -6,8 +6,6 @@ import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.PceItemDto;
 import com.pce.service.PceService;
 import com.pce.util.ControllerHelper;
-import com.pce.validation.validator.PceItemValidator;
-import com.pce.validation.validator.ValidationErrorBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.ExposesResourceFor;
@@ -17,7 +15,6 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -36,8 +33,6 @@ public class PceItemController {
   @Autowired
   private ModelMapper modelMapper;
 
-  @Autowired
-  private PceItemValidator pceItemValidator;
 
   private static final String PCE_ITEM_URL_PATH = "/pceitem";
 
@@ -45,21 +40,17 @@ public class PceItemController {
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{pceId}/pceitem/{pceItemId}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> updatePceItemForParticularPce(@PathVariable("pceId") long pceId,
-                                                                             @PathVariable("pukItemId") long pceItemId,
+                                                                             @PathVariable("pceItemId") long pceItemId,
                                                                              @RequestBody @Valid PceItemDto pceItemDto, Errors errors) {
 
 
     Pce pce = pceService.getPceByPceId(pceId).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", pceId)));
     PceItem pceItem = pceService.getPukItemByPukItemId(pceItemId).orElseThrow(() -> new NoSuchElementException(String.format("PceItem=%s not found", pceItemId)));
-    ValidationUtils.invokeValidator(pceItemValidator, pceItemDto, errors);
-    if (errors.hasErrors()) {
-      return ValidationErrorBuilder.fromBindingErrors(errors);
-    }
 
     PceItem mappedPceItem = modelMapper.map(pceItemDto, PceItem.class);
     mappedPceItem.setPceItemId(pceItem.getPceItemId());
     pceService.createOrUpdatePceItem(pce, mappedPceItem);
-    pceItemDto.add(ControllerLinkBuilder.linkTo(PukItemController.class).slash(pceId).slash(PCE_ITEM_URL_PATH).slash(pceItemId).withSelfRel());
+    pceItemDto.add(ControllerLinkBuilder.linkTo(PceItemController.class).slash(pceId).slash(PCE_ITEM_URL_PATH).slash(pceItemId).withSelfRel());
 
     return ControllerHelper.getResponseEntityWithoutBody(pceItemDto, HttpStatus.OK);
 
@@ -71,28 +62,24 @@ public class PceItemController {
                                                                              @RequestBody @Valid PceItemDto pceItemDto, Errors errors) {
     Pce pce = pceService.getPceByPceId(pceId).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", pceId)));
 
-    ValidationUtils.invokeValidator(pceItemValidator, pceItemDto, errors);
-    if (errors.hasErrors()) {
-      return ValidationErrorBuilder.fromBindingErrors(errors);
-    }
 
     PceItem mappedPceItem = modelMapper.map(pceItemDto, PceItem.class);
     PceItem updatedPceItem = pceService.createOrUpdatePceItem(pce, mappedPceItem);
 
 
-    pceItemDto.add(ControllerLinkBuilder.linkTo(PukItemController.class).slash(pceId).slash(PCE_ITEM_URL_PATH).slash(updatedPceItem.getPceItemId()).withSelfRel());
+    pceItemDto.add(ControllerLinkBuilder.linkTo(PceItemController.class).slash(pceId).slash(PCE_ITEM_URL_PATH).slash(updatedPceItem.getPceItemId()).withSelfRel());
 
     return ControllerHelper.getResponseEntityWithoutBody(pceItemDto, HttpStatus.CREATED);
 
   }
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
-  @RequestMapping(value = "/{pukId}/pukitem/{pukItemId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @RequestMapping(value = "/{pceId}/pceitem/{pceItemId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> retrievePceItemForPce(@PathVariable("pceId") long pceId,
                                                                      @PathVariable("pceItemId") long pceItemId) {
     PceItem pceItem = pceService.getPceItemByPceIdAndPceItemId(pceId, pceItemId).orElseThrow(() -> new NoSuchElementException(String.format("PceItem=%s not found", pceItemId)));
     PceItemDto pceItemDto = modelMapper.map(pceItem, PceItemDto.class);
-    pceItemDto.add(ControllerLinkBuilder.linkTo(PukItemController.class).slash(pceId).slash(PCE_ITEM_URL_PATH).slash(pceItemId).withSelfRel());
+    pceItemDto.add(ControllerLinkBuilder.linkTo(PceItemController.class).slash(pceId).slash(PCE_ITEM_URL_PATH).slash(pceItemId).withSelfRel());
 
     return ControllerHelper.getResponseEntity(pceItemDto);
   }
