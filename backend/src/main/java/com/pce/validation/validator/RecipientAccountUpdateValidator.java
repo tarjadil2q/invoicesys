@@ -2,7 +2,7 @@ package com.pce.validation.validator;
 
 
 import com.pce.domain.RecipientBankAccount;
-import com.pce.domain.dto.RecipientBankAcctDto;
+import com.pce.domain.dto.RecipientBankAccountDto;
 import com.pce.service.RecipientBankAcctService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,14 +22,14 @@ public class RecipientAccountUpdateValidator implements Validator {
 
   @Override
   public boolean supports(Class<?> clazz) {
-    return RecipientBankAcctDto.class.isAssignableFrom(clazz);
+    return RecipientBankAccountDto.class.isAssignableFrom(clazz);
   }
 
   @Override
   public void validate(Object target, Errors errors) {
-    RecipientBankAcctDto recipientBankAcctDto = (RecipientBankAcctDto) target;
+    RecipientBankAccountDto recipientBankAccountDto = (RecipientBankAccountDto) target;
 
-    long recipientBankAcctId = recipientBankAcctDto.getRecipientBankAcctId();
+    long recipientBankAcctId = recipientBankAccountDto.getRecipientBankAccountId();
     Optional<RecipientBankAccount> recipientBankAccountOptional = recipientBankAcctService.findRecipientBankAccountById(recipientBankAcctId);
     if (!recipientBankAccountOptional.isPresent()) {
       errors.rejectValue("recipientBankAcctId", "recipientBankAcctId.not.exists", "Recipient bank account id" + recipientBankAcctId + " not exist in the system, please select different one");
@@ -37,8 +37,8 @@ public class RecipientAccountUpdateValidator implements Validator {
     RecipientBankAccount recipientBankAccount = recipientBankAccountOptional.get();
 
 
-    String acctNumber = recipientBankAcctDto.getAcctNumber();
-    String bsb = recipientBankAcctDto.getBsb();
+    String acctNumber = recipientBankAccountDto.getAcctNumber();
+    String bsb = recipientBankAccountDto.getBsb();
 
     Optional<RecipientBankAccount> recipientBankAccountByAccountNumberAndBsb = recipientBankAcctService.findRecipientBankAccountByAccountNumberAndBsb(acctNumber,
             bsb);

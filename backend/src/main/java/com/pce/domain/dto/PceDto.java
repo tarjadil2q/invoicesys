@@ -2,8 +2,6 @@ package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.pce.domain.Puk;
-import com.pce.domain.RecipientBankAccount;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
@@ -26,7 +24,7 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
   @ReadOnlyProperty
   private String updatedDate;
 
-  @NotEmpty
+  @NotEmpty(message = "PCE No cannot be empty")
   private String pceNo;
 
   private String remarks;
@@ -36,28 +34,31 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
 
   private String totalAmountInWords;
 
-  private Puk puk;
+  private PukDto associatedPuk;
 
-  private RecipientBankAccount recipientBankAccount;
+  private RecipientBankAccountDto recipientBankAccount;
 
   private List<PceItemDto> pceItems;
+
+  @ReadOnlyProperty
+  private int pceYear;
 
 
   public PceDto() {
   }
 
   @JsonCreator
-  public PceDto(@JsonProperty("puk") Puk puk,
-                @JsonProperty("pceId") long pceId,
+  public PceDto(@JsonProperty("pceId") long pceId,
                 @JsonProperty("creationDate") String creationDate,
                 @JsonProperty("updatedDate") String updatedDate,
                 @JsonProperty("pceNo") String pceNo,
                 @JsonProperty("remarks") String remarks,
                 @JsonProperty("totalAmount") BigDecimal totalAmount,
                 @JsonProperty("totalAmountInWords") String totalAmountInWords,
-                @JsonProperty("recipientBankAccount") RecipientBankAccount recipientBankAccount,
+                @JsonProperty("associatedPuk") PukDto associatedPuk,
+                @JsonProperty("recipientBankAccount") RecipientBankAccountDto recipientBankAccount,
                 @JsonProperty("pceItems") List<PceItemDto> pceItems) {
-    this.puk = puk;
+    this.associatedPuk = associatedPuk;
     this.pceId = pceId;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
@@ -126,19 +127,19 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.totalAmountInWords = totalAmountInWords;
   }
 
-  public Puk getPuk() {
-    return puk;
+  public PukDto getAssociatedPuk() {
+    return associatedPuk;
   }
 
-  public void setPuk(Puk puk) {
-    this.puk = puk;
+  public void setAssociatedPuk(PukDto associatedPuk) {
+    this.associatedPuk = associatedPuk;
   }
 
-  public RecipientBankAccount getRecipientBankAccount() {
+  public RecipientBankAccountDto getRecipientBankAccount() {
     return recipientBankAccount;
   }
 
-  public void setRecipientBankAccount(RecipientBankAccount recipientBankAccount) {
+  public void setRecipientBankAccount(RecipientBankAccountDto recipientBankAccount) {
     this.recipientBankAccount = recipientBankAccount;
   }
 
@@ -148,5 +149,13 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
 
   public void setPceItems(List<PceItemDto> pceItems) {
     this.pceItems = pceItems;
+  }
+
+  public int getPceYear() {
+    return pceYear;
+  }
+
+  public void setPceYear(int pceYear) {
+    this.pceYear = pceYear;
   }
 }

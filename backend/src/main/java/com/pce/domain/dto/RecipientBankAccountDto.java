@@ -4,15 +4,17 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
 
 import java.io.Serializable;
 
 /**
  * Created by Leonardo Tarjadi on 7/09/2016.
  */
-public class RecipientBankAcctDto extends ResourceSupport implements DomainObjectDTO, Serializable {
+@Relation(collectionRelation = "recipientBankAcctList")
+public class RecipientBankAccountDto extends ResourceSupport implements DomainObjectDTO, Serializable {
   @ReadOnlyProperty
-  private long recipientBankAcctId;
+  private long recipientBankAccountId;
   @ReadOnlyProperty
   private String creationDate;
   @ReadOnlyProperty
@@ -23,17 +25,18 @@ public class RecipientBankAcctDto extends ResourceSupport implements DomainObjec
   private String acctNumber;
   private String bsb;
 
-  public RecipientBankAcctDto() {
+
+  public RecipientBankAccountDto() {
   }
 
   @JsonCreator
-  public RecipientBankAcctDto(@JsonProperty("recipientBankAcctId") long recipientBankAcctId,
-                              @JsonProperty("creationDate") String creationDate,
-                              @JsonProperty("updatedDate") String updatedDate,
-                              @JsonProperty("acctName") String acctName,
-                              @JsonProperty("acctNumber") String acctNumber,
-                              @JsonProperty("bsb") String bsb) {
-    this.recipientBankAcctId = recipientBankAcctId;
+  public RecipientBankAccountDto(@JsonProperty("recipientBankAccountId") long recipientBankAccountId,
+                                 @JsonProperty("creationDate") String creationDate,
+                                 @JsonProperty("updatedDate") String updatedDate,
+                                 @JsonProperty("acctName") String acctName,
+                                 @JsonProperty("acctNumber") String acctNumber,
+                                 @JsonProperty("bsb") String bsb) {
+    this.recipientBankAccountId = recipientBankAccountId;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
     this.acctName = acctName;
@@ -41,12 +44,12 @@ public class RecipientBankAcctDto extends ResourceSupport implements DomainObjec
     this.bsb = bsb;
   }
 
-  public long getRecipientBankAcctId() {
-    return recipientBankAcctId;
+  public long getRecipientBankAccountId() {
+    return recipientBankAccountId;
   }
 
-  public void setRecipientBankAcctId(long recipientBankAcctId) {
-    this.recipientBankAcctId = recipientBankAcctId;
+  public void setRecipientBankAccountId(long recipientBankAccountId) {
+    this.recipientBankAccountId = recipientBankAccountId;
   }
 
   public String getCreationDate() {
@@ -91,8 +94,8 @@ public class RecipientBankAcctDto extends ResourceSupport implements DomainObjec
 
   @Override
   public String toString() {
-    return "RecipientBankAcctDto{" +
-            "recipientBankAcctId=" + recipientBankAcctId +
+    return "RecipientBankAccountDto{" +
+            "recipientBankAccountId=" + recipientBankAccountId +
             ", creationDate='" + creationDate + '\'' +
             ", updatedDate='" + updatedDate + '\'' +
             ", acctName='" + acctName + '\'' +

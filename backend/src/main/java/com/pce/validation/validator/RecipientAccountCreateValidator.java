@@ -1,7 +1,7 @@
 package com.pce.validation.validator;
 
 import com.pce.domain.RecipientBankAccount;
-import com.pce.domain.dto.RecipientBankAcctDto;
+import com.pce.domain.dto.RecipientBankAccountDto;
 import com.pce.service.RecipientBankAcctService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,14 +21,14 @@ public class RecipientAccountCreateValidator implements Validator {
 
   @Override
   public boolean supports(Class<?> clazz) {
-    return RecipientBankAcctDto.class.isAssignableFrom(clazz);
+    return RecipientBankAccountDto.class.isAssignableFrom(clazz);
   }
 
   @Override
   public void validate(Object target, Errors errors) {
-    RecipientBankAcctDto recipientBankAcctDto = (RecipientBankAcctDto) target;
-    String acctNumber = recipientBankAcctDto.getAcctNumber();
-    String bsb = recipientBankAcctDto.getBsb();
+    RecipientBankAccountDto recipientBankAccountDto = (RecipientBankAccountDto) target;
+    String acctNumber = recipientBankAccountDto.getAcctNumber();
+    String bsb = recipientBankAccountDto.getBsb();
     Optional<RecipientBankAccount> recipientBankAccountByAccountNumberAndBsb = recipientBankAcctService.findRecipientBankAccountByAccountNumberAndBsb(acctNumber,
             bsb);
     if (recipientBankAccountByAccountNumberAndBsb.isPresent()) {

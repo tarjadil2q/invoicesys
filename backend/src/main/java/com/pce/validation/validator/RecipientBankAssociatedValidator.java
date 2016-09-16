@@ -1,6 +1,6 @@
 package com.pce.validation.validator;
 
-import com.pce.domain.dto.RecipientBankAcctDto;
+import com.pce.domain.dto.RecipientBankAccountDto;
 import com.pce.service.RecipientBankAcctService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,14 +18,14 @@ public class RecipientBankAssociatedValidator implements Validator {
 
   @Override
   public boolean supports(Class<?> clazz) {
-    return RecipientBankAcctDto.class.isAssignableFrom(clazz);
+    return RecipientBankAccountDto.class.isAssignableFrom(clazz);
   }
 
   @Override
   public void validate(Object target, Errors errors) {
-    RecipientBankAcctDto recipientBankAcctDto = (RecipientBankAcctDto) target;
+    RecipientBankAccountDto recipientBankAccountDto = (RecipientBankAccountDto) target;
 
-    long recipientBankAcctId = recipientBankAcctDto.getRecipientBankAcctId();
+    long recipientBankAcctId = recipientBankAccountDto.getRecipientBankAccountId();
     if (!recipientBankAcctService.findRecipientBankAccountById(recipientBankAcctId).isPresent()) {
       errors.rejectValue("recipientBankAcctId", "recipient.not.exists", "Recipient Bank Account  " + recipientBankAcctId + " is not exists in the system, please select different one");
     }

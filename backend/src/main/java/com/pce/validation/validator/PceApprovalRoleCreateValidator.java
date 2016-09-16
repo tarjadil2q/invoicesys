@@ -3,7 +3,6 @@ package com.pce.validation.validator;
 import com.pce.domain.PceApprovalRole;
 import com.pce.domain.dto.PceApprovalRoleDto;
 import com.pce.service.PceApprovalRoleService;
-import com.pce.validation.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -33,12 +32,14 @@ public class PceApprovalRoleCreateValidator implements Validator {
   public void validate(Object target, Errors errors) {
     PceApprovalRoleDto pceApprovalRoleDto = (PceApprovalRoleDto) target;
     int approvalRoleSequence = pceApprovalRoleDto.getApprovalRoleSequence();
-    Optional<PceApprovalRole> pceApprovalRoleByApprovalRoleSequence = pceApprovalRoleService.findPceApprovalRoleByApprovalRoleSequence(approvalRoleSequence);
+    Optional<PceApprovalRole> pceApprovalRoleByApprovalRoleSequence =
+            pceApprovalRoleService.findPceApprovalRoleByApprovalRoleSequenceAndId(pceApprovalRoleDto.getRoleId(),
+                    approvalRoleSequence);
     if (pceApprovalRoleByApprovalRoleSequence.isPresent()) {
       errors.rejectValue("approvalRoleSequence", "role.sequence.exists", "Role sequence " + approvalRoleSequence + " with role of   "
               + pceApprovalRoleByApprovalRoleSequence.get().getPceApprovalRole().getRoleName() + " is  exists in the system, please select different one");
     }
-    ValidationHelper.invokeNestedValidator(this.pceRoleAssociationValidator,
-            pceApprovalRoleDto.getApprovalRole(), errors, "approvalRole");
+    /*ValidationHelper.invokeNestedValidator(this.pceRoleAssociationValidator,
+            pceApprovalRoleDto.getApprovalRole(), errors, "approvalRole");*/
   }
 }

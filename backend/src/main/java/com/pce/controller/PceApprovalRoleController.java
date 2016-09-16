@@ -63,7 +63,7 @@ public class PceApprovalRoleController {
     }
 
     PceApprovalRole pceApprovalRole = modelMapper.map(pceApprovalRoleDto, PceApprovalRole.class);
-
+    pceApprovalRole.setRoleId(0);
     pceApprovalRoleService.createOrUpdatePceApprovalRole(pceApprovalRole);
     pceApprovalRoleDto.add(ControllerLinkBuilder.linkTo(PceApprovalRoleController.class).slash(pceApprovalRole.getRoleId()).withRel(PCE_APPROVAL_ROLE_PATH).withSelfRel());
     return ControllerHelper.getResponseEntityWithoutBody(pceApprovalRoleDto, HttpStatus.CREATED);
@@ -94,13 +94,14 @@ public class PceApprovalRoleController {
   public HttpEntity<Resource<DomainObjectDTO>> updatePceApprovalRole(@PathVariable("id") long id,
                                                                      @RequestBody @Valid PceApprovalRoleDto pceApprovalRoleDto,
                                                                      Errors errors) {
-
-    ValidationUtils.invokeValidator(pceApprovalRoleCreateValidator, pceApprovalRoleDto, errors);
-
     if (errors.hasErrors()) {
       return ValidationErrorBuilder.fromBindingErrors(errors);
     }
+
+    PceApprovalRole existingPceApprovalRole = pceApprovalRoleService.findPceApprovalRoleById(id).orElseThrow(() -> new NoSuchElementException(String.format("Pce Approval role=%s not found", id)));
+
     PceApprovalRole pceApprovalRole = modelMapper.map(pceApprovalRoleDto, PceApprovalRole.class);
+    pceApprovalRole.setRoleId(existingPceApprovalRole.getRoleId());
     PceApprovalRole updatedPceApprovalRole = pceApprovalRoleService.createOrUpdatePceApprovalRole(pceApprovalRole);
     pceApprovalRoleDto.add(ControllerLinkBuilder.linkTo(PceApprovalRoleController.class).slash(updatedPceApprovalRole.getRoleId()).withRel(PCE_APPROVAL_ROLE_PATH).withSelfRel());
 

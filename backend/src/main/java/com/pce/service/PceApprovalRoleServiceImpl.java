@@ -1,7 +1,9 @@
 package com.pce.service;
 
 import com.pce.domain.PceApprovalRole;
+import com.pce.domain.Role;
 import com.pce.repository.PceApprovalRoleRepository;
+import com.pce.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,9 @@ public class PceApprovalRoleServiceImpl implements PceApprovalRoleService {
   @Autowired
   private PceApprovalRoleRepository pceApprovalRoleRepository;
 
+  @Autowired
+  private RoleRepository roleRepository;
+
 
   @Override
   public Optional<PceApprovalRole> findPceApprovalRoleById(long id) {
@@ -31,14 +36,17 @@ public class PceApprovalRoleServiceImpl implements PceApprovalRoleService {
   }
 
   @Override
-  public Optional<PceApprovalRole> findPceApprovalRoleByApprovalRoleSequence(int roleSequenceNum) {
-    Optional<PceApprovalRole> byApprovalRoleSequence = pceApprovalRoleRepository.findByApprovalRoleSequence(roleSequenceNum);
-    return Optional.ofNullable(byApprovalRoleSequence.get());
+  public Optional<PceApprovalRole> findPceApprovalRoleByApprovalRoleSequenceAndId(long approvalRoleId, int roleSequenceNum) {
+    Optional<PceApprovalRole> byApprovalRoleSequence = pceApprovalRoleRepository.findByApprovalRoleSequenceAndRoleId(roleSequenceNum,
+            approvalRoleId);
+    return byApprovalRoleSequence;
   }
 
   @Transactional
   @Override
   public PceApprovalRole createOrUpdatePceApprovalRole(PceApprovalRole pceApprovalRole) {
+    Role role = roleRepository.findOne(pceApprovalRole.getRoleId());
+    pceApprovalRole.setPceApprovalRole(role);
     return pceApprovalRoleRepository.save(pceApprovalRole);
   }
 }

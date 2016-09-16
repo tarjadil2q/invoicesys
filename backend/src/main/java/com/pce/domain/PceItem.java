@@ -30,6 +30,7 @@ public class PceItem {
   private Pce pce;
 
   @CreationTimestamp
+  @Column(name = "creation_date", insertable = true, updatable = false)
   private Calendar creationDate;
 
   @UpdateTimestamp

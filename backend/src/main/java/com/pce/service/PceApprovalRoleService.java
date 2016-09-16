@@ -15,7 +15,7 @@ public interface PceApprovalRoleService {
 
   Page<PceApprovalRole> findAllAvailableApprovalRole(Pageable pageRequest);
 
-  Optional<PceApprovalRole> findPceApprovalRoleByApprovalRoleSequence(int roleSequenceNum);
+  Optional<PceApprovalRole> findPceApprovalRoleByApprovalRoleSequenceAndId(long approvalRoleId, int roleSequenceNum);
 
   PceApprovalRole createOrUpdatePceApprovalRole(PceApprovalRole pceApprovalRole);
 

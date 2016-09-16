@@ -10,5 +10,6 @@ import java.util.Optional;
  */
 public interface PceApprovalRoleRepository extends JpaRepository<PceApprovalRole, Long> {
 
-  Optional<PceApprovalRole> findByApprovalRoleSequence(int roleSequenceNumber);
+  Optional<PceApprovalRole> findByApprovalRoleSequenceAndRoleId(int roleSequenceNumber,
+                                                                long approvalRoleId);
 }

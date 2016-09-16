@@ -5,6 +5,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Set;
 
@@ -30,7 +31,7 @@ public class Pce {
   @Column(name = "total_amount", nullable = false)
   private BigDecimal totalAmount;
 
-  @Column(name = "total_amount_in_word", nullable = false)
+  @Column(name = "total_amount_in_word", nullable = true)
   private String totalAmountInWord;
 
   @ManyToOne(cascade = CascadeType.REFRESH)
@@ -52,6 +53,7 @@ public class Pce {
   private byte[] invoiceImage;
 
   @CreationTimestamp
+  @Column(name = "creation_date", insertable = true, updatable = false)
   private Calendar creationDate;
 
   @UpdateTimestamp
@@ -80,67 +82,122 @@ public class Pce {
     return pceId;
   }
 
+  public void setPceId(long pceId) {
+    this.pceId = pceId;
+  }
+
   public String getPceNo() {
     return pceNo;
+  }
+
+  public void setPceNo(String pceNo) {
+    this.pceNo = pceNo;
   }
 
   public Puk getAssociatedPuk() {
     return associatedPuk;
   }
 
+  public void setAssociatedPuk(Puk associatedPuk) {
+    this.associatedPuk = associatedPuk;
+  }
+
   public BigDecimal getTotalAmount() {
     return totalAmount;
-  }
-
-  public String getTotalAmountInWord() {
-    return totalAmountInWord;
-  }
-
-  public RecipientBankAccount getRecipientBankAccount() {
-    return recipientBankAccount;
-  }
-
-  public String getRemarks() {
-    return remarks;
-  }
-
-  public Set<User> getApprovers() {
-    return approvers;
-  }
-
-  public Set<PceItem> getPceItems() {
-    return pceItems;
-  }
-
-  public byte[] getInvoiceImage() {
-    return invoiceImage;
-  }
-
-  public Calendar getCreationDate() {
-    return creationDate;
-  }
-
-  public Calendar getUpdatedDate() {
-    return updatedDate;
-  }
-
-  public int getPceYear() {
-    return pceYear;
-  }
-
-  public void setPceId(long pceId) {
-    this.pceId = pceId;
   }
 
   public void setTotalAmount(BigDecimal totalAmount) {
     this.totalAmount = totalAmount;
   }
 
+  public String getTotalAmountInWord() {
+    return totalAmountInWord;
+  }
+
   public void setTotalAmountInWord(String totalAmountInWord) {
     this.totalAmountInWord = totalAmountInWord;
   }
 
+  public RecipientBankAccount getRecipientBankAccount() {
+    return recipientBankAccount;
+  }
+
+  public void setRecipientBankAccount(RecipientBankAccount recipientBankAccount) {
+    this.recipientBankAccount = recipientBankAccount;
+  }
+
+  public String getRemarks() {
+    return remarks;
+  }
+
+  public void setRemarks(String remarks) {
+    this.remarks = remarks;
+  }
+
+  public Set<User> getApprovers() {
+    return approvers;
+  }
+
+  public void setApprovers(Set<User> approvers) {
+    this.approvers = approvers;
+  }
+
+  public Set<PceItem> getPceItems() {
+    return pceItems;
+  }
+
+  public void setPceItems(Set<PceItem> pceItems) {
+    this.pceItems = pceItems;
+  }
+
+  public byte[] getInvoiceImage() {
+    return invoiceImage;
+  }
+
+  public void setInvoiceImage(byte[] invoiceImage) {
+    this.invoiceImage = invoiceImage;
+  }
+
+  public Calendar getCreationDate() {
+    return creationDate;
+  }
+
+  public void setCreationDate(Calendar creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public Calendar getUpdatedDate() {
+    return updatedDate;
+  }
+
+  public void setUpdatedDate(Calendar updatedDate) {
+    this.updatedDate = updatedDate;
+  }
+
+  public int getPceYear() {
+    return pceYear;
+  }
+
   public void setPceYear(int pceYear) {
     this.pceYear = pceYear;
+  }
+
+  @Override
+  public String toString() {
+    return "Pce{" +
+            "pceId=" + pceId +
+            ", pceNo='" + pceNo + '\'' +
+            ", associatedPuk=" + associatedPuk +
+            ", totalAmount=" + totalAmount +
+            ", totalAmountInWord='" + totalAmountInWord + '\'' +
+            ", recipientBankAccount=" + recipientBankAccount +
+            ", remarks='" + remarks + '\'' +
+            ", approvers=" + approvers +
+            ", pceItems=" + pceItems +
+            ", invoiceImage=" + Arrays.toString(invoiceImage) +
+            ", creationDate=" + creationDate +
+            ", updatedDate=" + updatedDate +
+            ", pceYear=" + pceYear +
+            '}';
   }
 }

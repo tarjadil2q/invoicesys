@@ -30,6 +30,7 @@ public class RecipientBankAccount {
   private String acctNumber;
 
   @CreationTimestamp
+  @Column(name = "creation_date", insertable = true, updatable = false)
   private Calendar creationDate;
 
   @UpdateTimestamp
@@ -38,7 +39,11 @@ public class RecipientBankAccount {
   @OneToMany(mappedBy = "recipientBankAccount")
   private Set<Pce> associatedPces;
 
-  public RecipientBankAccount(String bsb, String acctName, String acctNumber, Set<Pce> associatedPces) {
+  public RecipientBankAccount() {
+  }
+
+  public RecipientBankAccount(long recipientBankAccountId, String bsb, String acctName, String acctNumber, Set<Pce> associatedPces) {
+    this.recipientBankAccountId = recipientBankAccountId;
     this.bsb = bsb;
     this.acctName = acctName;
     this.acctNumber = acctNumber;
@@ -63,5 +68,41 @@ public class RecipientBankAccount {
 
   public Set<Pce> getAssociatedPces() {
     return associatedPces;
+  }
+
+  public void setRecipientBankAccountId(long recipientBankAccountId) {
+    this.recipientBankAccountId = recipientBankAccountId;
+  }
+
+  public void setBsb(String bsb) {
+    this.bsb = bsb;
+  }
+
+  public void setAcctName(String acctName) {
+    this.acctName = acctName;
+  }
+
+  public void setAcctNumber(String acctNumber) {
+    this.acctNumber = acctNumber;
+  }
+
+  public void setCreationDate(Calendar creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public void setUpdatedDate(Calendar updatedDate) {
+    this.updatedDate = updatedDate;
+  }
+
+  public Calendar getCreationDate() {
+    return creationDate;
+  }
+
+  public Calendar getUpdatedDate() {
+    return updatedDate;
+  }
+
+  public void setAssociatedPces(Set<Pce> associatedPces) {
+    this.associatedPces = associatedPces;
   }
 }

@@ -1,6 +1,5 @@
 package com.pce.domain;
 
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -17,23 +16,27 @@ public class PceApprovalRole {
 
   @Id
   @GeneratedValue(generator = "roleIdGenerator")
-  @GenericGenerator(name = "roleIdGenerator", strategy = "foreign", parameters = @org.hibernate.annotations.Parameter(value = "role", name = "property"))
+  @GenericGenerator(name = "roleIdGenerator", strategy = "foreign", parameters = @org.hibernate.annotations.Parameter(value = "pceApprovalRole", name = "property"))
   @Column(name = "role_id", nullable = false, updatable = false)
   private long roleId;
 
   @Column(name = "approval_role_sequence", unique = true)
   private int approvalRoleSequence;
 
-  @OneToOne(cascade = CascadeType.REFRESH)
-  @JoinColumn(name = "employee_id")
+  @OneToOne(cascade = CascadeType.ALL)
+  @PrimaryKeyJoinColumn
   private Role pceApprovalRole;
 
 
-  @CreationTimestamp
+  @Column(name = "creation_date", insertable = true, updatable = false)
   private Calendar creationDate;
 
   @UpdateTimestamp
   private Calendar updatedDate;
+
+
+  public PceApprovalRole() {
+  }
 
   public PceApprovalRole(int approvalRoleSequence, Role pceApprovalRole) {
     this.approvalRoleSequence = approvalRoleSequence;

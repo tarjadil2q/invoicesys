@@ -21,8 +21,23 @@ public class PCEConfiguration {
   public ModelMapper modelMapper() {
     ModelMapper modelMapper = new ModelMapper();
     modelMapper.addConverter(new CalendarConverter());
+    // modelMapper.addMappings(getRecipientBankMap());
     return modelMapper;
   }
+
+ /* @Bean
+  public PropertyMap<RecipientBankAccountDto, RecipientBankAccount> getRecipientBankMap(){
+    PropertyMap<RecipientBankAccountDto, RecipientBankAccount> recipientBankMap = new PropertyMap<RecipientBankAccountDto, RecipientBankAccount>() {
+      protected void configure() {
+        map().get(source.getAcctName());
+        map().setAcctNumber(source.getAcctNumber());
+        map().setBsb(source.getBsb());
+        map().setRecipientBankAccountId(source.getRecipientBankAccountId());
+      }
+    };
+    return recipientBankMap;
+  }*/
+
 
   /*@Bean
   public MessageSource messageSource() {

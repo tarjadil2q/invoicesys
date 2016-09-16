@@ -28,7 +28,7 @@ public class PceCreateValidator implements Validator {
 
 
     ValidationHelper.invokeNestedValidator(this.pukAssociatedValidator,
-            pceDto.getPuk(), errors, "puk");
+            pceDto.getAssociatedPuk(), errors, "puk");
 
 
     ValidationHelper.invokeNestedValidator(this.recipientBankAssociatedValidator,

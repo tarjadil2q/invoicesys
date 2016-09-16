@@ -2,12 +2,12 @@ package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 /**
@@ -22,9 +22,10 @@ public class PceApprovalRoleDto extends ResourceSupport implements DomainObjectD
   @ReadOnlyProperty
   private String updatedDate;
   @NotNull
-  @Size(min = 1, max = 4, message = "{approvalRoleSequence.minMax.value}")
+  @Min(value = 1, message = "{approvalRoleSequence.min.value}")
+  @Max(value = 4, message = "{approvalRoleSequence.max.value}")
   private int approvalRoleSequence;
-  @NotEmpty
+
   private RoleDto approvalRole;
 
 

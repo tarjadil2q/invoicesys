@@ -2,7 +2,9 @@ package com.pce.controller;
 
 import com.google.common.collect.Lists;
 import com.pce.domain.RecipientBankAccount;
-import com.pce.domain.dto.*;
+import com.pce.domain.dto.ApiError;
+import com.pce.domain.dto.DomainObjectDTO;
+import com.pce.domain.dto.RecipientBankAccountDto;
 import com.pce.service.RecipientBankAcctService;
 import com.pce.util.ControllerHelper;
 import com.pce.validation.validator.RecipientAccountCreateValidator;
@@ -31,8 +33,8 @@ import java.util.Optional;
  * Created by Leonardo Tarjadi on 7/09/2016.
  */
 @RestController
-@RequestMapping("/api/v1/recipient")
-@ExposesResourceFor(PceItemDto.class)
+@RequestMapping("/api/v1/pce/recipient")
+@ExposesResourceFor(RecipientBankAccountDto.class)
 public class RecipientBankAcctController {
 
   public static final String RECIPIENT_BANK_ACCOUNT_URL_PATH = "/recipient";
@@ -42,6 +44,7 @@ public class RecipientBankAcctController {
 
   @Autowired
   private ModelMapper modelMapper;
+
 
   @Autowired
   private EntityLinks entityLinks;
@@ -53,12 +56,12 @@ public class RecipientBankAcctController {
   private RecipientAccountUpdateValidator recipientAccountUpdateValidator;
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
-  @RequestMapping(value = "/{recipientId}/pukitem/{pukItemId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  @RequestMapping(value = "/{recipientId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> getRecipientBankAccountById(@PathVariable("recipientId") long recipientId) {
     RecipientBankAccount recipientBankAccount = recipientBankAcctService.findRecipientBankAccountById(recipientId).orElseThrow(() -> new NoSuchElementException(String.format("Recipient bank account=%s not found", recipientId)));
-    RecipientBankAcctDto recipientBankAcctDto = modelMapper.map(recipientBankAccount, RecipientBankAcctDto.class);
-    Link linkForRecipientBankDto = entityLinks.linkToSingleResource(PukDto.class, recipientBankAcctDto.getRecipientBankAcctId());
-    Resource<DomainObjectDTO> pukResource = new Resource<>(recipientBankAcctDto, linkForRecipientBankDto);
+    RecipientBankAccountDto recipientBankAccountDto = modelMapper.map(recipientBankAccount, RecipientBankAccountDto.class);
+    Link linkForRecipientBankDto = entityLinks.linkToSingleResource(RecipientBankAccountDto.class, recipientBankAccountDto.getRecipientBankAccountId());
+    Resource<DomainObjectDTO> pukResource = new Resource<>(recipientBankAccountDto, linkForRecipientBankDto);
     return new ResponseEntity<>(pukResource, HttpStatus.OK);
   }
 
@@ -67,38 +70,38 @@ public class RecipientBankAcctController {
   public HttpEntity<PagedResources<DomainObjectDTO>> getRecipients(Pageable pageRequest, PagedResourcesAssembler assembler) {
     Page<RecipientBankAccount> pageRecipient = recipientBankAcctService.findAllRecipientBankAccount(pageRequest);
 
-    Page<RecipientBankAcctDto> newPaged = pageRecipient.map(source -> modelMapper.map(source, RecipientBankAcctDto.class));
+    Page<RecipientBankAccountDto> newPaged = pageRecipient.map(source -> modelMapper.map(source, RecipientBankAccountDto.class));
 
     return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
   }
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(method = RequestMethod.POST)
-  public HttpEntity<Resource<DomainObjectDTO>> createRecipient(@RequestBody @Valid RecipientBankAcctDto recipientBankAcctDto, Errors errors) {
-    ValidationUtils.invokeValidator(recipientAccountCreateValidator, recipientBankAcctDto, errors);
+  public HttpEntity<Resource<DomainObjectDTO>> createRecipient(@RequestBody @Valid RecipientBankAccountDto recipientBankAccountDto, Errors errors) {
+    ValidationUtils.invokeValidator(recipientAccountCreateValidator, recipientBankAccountDto, errors);
 
     if (errors.hasErrors()) {
       return ValidationErrorBuilder.fromBindingErrors(errors);
     }
 
-    RecipientBankAccount bankAccount = modelMapper.map(recipientBankAcctDto, RecipientBankAccount.class);
-    Optional<RecipientBankAccount> recipientBankAccount = recipientBankAcctService.findRecipientBankAccountByAccountNumberAndBsb(recipientBankAcctDto.getAcctNumber(),
-            recipientBankAcctDto.getBsb());
+    RecipientBankAccount bankAccount = modelMapper.map(recipientBankAccountDto, RecipientBankAccount.class);
+    Optional<RecipientBankAccount> recipientBankAccount = recipientBankAcctService.findRecipientBankAccountByAccountNumberAndBsb(recipientBankAccountDto.getAcctNumber(),
+            recipientBankAccountDto.getBsb());
     if (recipientBankAccount.isPresent()) {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.CONFLICT,
               "Recipient bank account already exists, please enter different bank account", Lists.newArrayList("Bank account already exists"))), HttpStatus.CONFLICT);
     }
 
     RecipientBankAccount bankAcount = recipientBankAcctService.createOrUpdateRecipientBankAccount(bankAccount);
-    recipientBankAcctDto.add(ControllerLinkBuilder.linkTo(PukGroupController.class).slash(bankAcount.getRecipientBankAccountId()).withRel(RECIPIENT_BANK_ACCOUNT_URL_PATH).withSelfRel());
-    return ControllerHelper.getResponseEntityWithoutBody(recipientBankAcctDto, HttpStatus.CREATED);
+    recipientBankAccountDto.add(ControllerLinkBuilder.linkTo(RecipientBankAcctController.class).slash(bankAcount.getRecipientBankAccountId()).withRel(RECIPIENT_BANK_ACCOUNT_URL_PATH).withSelfRel());
+    return ControllerHelper.getResponseEntityWithoutBody(recipientBankAccountDto, HttpStatus.CREATED);
   }
 
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> updateBankAccount(@PathVariable("id") long id,
-                                                                 @RequestBody @Valid RecipientBankAcctDto recipientBankAcctDto,
+                                                                 @RequestBody @Valid RecipientBankAccountDto recipientBankAccountDto,
                                                                  Errors errors) {
     Optional<RecipientBankAccount> currentBankAccount = recipientBankAcctService.findRecipientBankAccountById(id);
 
@@ -106,20 +109,20 @@ public class RecipientBankAcctController {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.NOT_FOUND,
               "Bank account to be updated not found, please check id is correct ", "Bank Account id is not found")), HttpStatus.NOT_FOUND);
     }
-    recipientBankAcctDto.setRecipientBankAcctId(id);
-    ValidationUtils.invokeValidator(recipientAccountUpdateValidator, recipientBankAcctDto, errors);
+    recipientBankAccountDto.setRecipientBankAccountId(id);
+    ValidationUtils.invokeValidator(recipientAccountUpdateValidator, recipientBankAccountDto, errors);
 
     if (errors.hasErrors()) {
       return ValidationErrorBuilder.fromBindingErrors(errors);
     }
 
-    RecipientBankAccount bankAccount = modelMapper.map(recipientBankAcctDto, RecipientBankAccount.class);
+    RecipientBankAccount bankAccount = modelMapper.map(recipientBankAccountDto, RecipientBankAccount.class);
 
 
     RecipientBankAccount updatedBankAccount = recipientBankAcctService.createOrUpdateRecipientBankAccount(bankAccount);
-    recipientBankAcctDto.add(ControllerLinkBuilder.linkTo(PukItemMeasurementController.class).slash(updatedBankAccount.getRecipientBankAccountId()).withRel(RECIPIENT_BANK_ACCOUNT_URL_PATH).withSelfRel());
+    recipientBankAccountDto.add(ControllerLinkBuilder.linkTo(PukItemMeasurementController.class).slash(updatedBankAccount.getRecipientBankAccountId()).withRel(RECIPIENT_BANK_ACCOUNT_URL_PATH).withSelfRel());
 
-    return ControllerHelper.getResponseEntityWithoutBody(recipientBankAcctDto, HttpStatus.OK);
+    return ControllerHelper.getResponseEntityWithoutBody(recipientBankAccountDto, HttpStatus.OK);
   }
 
 

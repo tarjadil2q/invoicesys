@@ -81,7 +81,7 @@ public class PceController {
     Pce pce = modelMapper.map(pceDto, Pce.class);
 
     Pce createdPce = pceService.createOrUpdatePce(pce);
-    pceDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(createdPce.getPceId()).withRel(PCE_URL_PATH).withSelfRel());
+    pceDto.add(ControllerLinkBuilder.linkTo(PceController.class).slash(createdPce.getPceId()).withRel(PCE_URL_PATH).withSelfRel());
 
     return ControllerHelper.getResponseEntityWithoutBody(pceDto, HttpStatus.CREATED);
   }

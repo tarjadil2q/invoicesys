@@ -27,6 +27,10 @@ public class PukAssociatedValidator implements Validator {
   @Override
   public void validate(Object target, Errors errors) {
     PukDto pukDto = (PukDto) target;
+    if (pukDto == null) {
+      errors.reject("pukDto.not.exists", "Puk is not being set, please set");
+      return;
+    }
     long pukId = pukDto.getPukId();
     Optional<Puk> pukByPukId = pukService.getPukByPukId(pukId);
     if (!pukByPukId.isPresent()) {
