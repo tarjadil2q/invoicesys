@@ -51,9 +51,10 @@ public class PukUpdateValidator implements Validator {
     if (!CollectionUtils.isEmpty(pukDto.getPukItems())) {
       errors.rejectValue("pukItems", "pukItems.exists", "Cannot have puk items, please remove");
     }
-    ValidationHelper.invokeNestedValidator(this.pukGroupAssociationValidator,
-            pukDto.getPukGroup(), errors, "pukGroup");
-
+    if (pukDto.getPukGroup() != null) {
+      ValidationHelper.invokeNestedValidator(this.pukGroupAssociationValidator,
+              pukDto.getPukGroup(), errors, "pukGroup");
+    }
 
   }
 }

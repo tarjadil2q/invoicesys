@@ -43,6 +43,7 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
   @ReadOnlyProperty
   private int pceYear;
 
+  private List<UserDto> approvers;
 
   public PceDto() {
   }
@@ -157,5 +158,13 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
 
   public void setPceYear(int pceYear) {
     this.pceYear = pceYear;
+  }
+
+  public List<UserDto> getApprovers() {
+    return approvers;
+  }
+
+  public void setApprovers(List<UserDto> approvers) {
+    this.approvers = approvers;
   }
 }

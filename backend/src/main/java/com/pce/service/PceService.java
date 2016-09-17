@@ -1,5 +1,6 @@
 package com.pce.service;
 
+import com.pce.domain.CurrentUser;
 import com.pce.domain.Pce;
 import com.pce.domain.PceItem;
 import org.springframework.data.domain.Page;
@@ -19,9 +20,8 @@ public interface PceService {
 
   Optional<Pce> getPceByPceId(long id);
 
-  Optional<PceItem> getPukItemByPukItemId(long id);
-
   Optional<PceItem> getPceItemByPceIdAndPceItemId(long pceId, long PceItemId);
 
+  boolean approvePce(Pce pce, CurrentUser currentUser);
 
 }

@@ -34,7 +34,7 @@ public class PukGroup {
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(name = "puk_group_user", schema = "ivs", joinColumns = @JoinColumn(name = "puk_group_id", referencedColumnName = "id"),
           inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
-  private Set<User> usersInGroup;
+  private Set<User> pukGroupUsers;
 
   @CreationTimestamp
   @CreatedDate
@@ -48,12 +48,12 @@ public class PukGroup {
   }
 
   public PukGroup(long pukGroupId, String pukGroupName, String pukGroupDescription, Set<Puk> puks,
-                  Set<User> usersInGroup) {
+                  Set<User> pukGroupUsers) {
     this.pukGroupId = pukGroupId;
     this.pukGroupName = pukGroupName;
     this.pukGroupDescription = pukGroupDescription;
     this.puks = puks;
-    this.usersInGroup = usersInGroup;
+    this.pukGroupUsers = pukGroupUsers;
   }
 
   public long getPukGroupId() {
@@ -80,8 +80,8 @@ public class PukGroup {
     return updatedDate;
   }
 
-  public Set<User> getUsersInGroup() {
-    return usersInGroup;
+  public Set<User> getPukGroupUsers() {
+    return pukGroupUsers;
   }
 
   public void setPukGroupName(String pukGroupName) {

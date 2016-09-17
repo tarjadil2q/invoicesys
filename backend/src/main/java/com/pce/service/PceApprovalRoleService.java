@@ -4,6 +4,7 @@ import com.pce.domain.PceApprovalRole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -14,6 +15,8 @@ public interface PceApprovalRoleService {
   Optional<PceApprovalRole> findPceApprovalRoleById(long id);
 
   Page<PceApprovalRole> findAllAvailableApprovalRole(Pageable pageRequest);
+
+  List<PceApprovalRole> findAllAvailableApprovalRoleOrderBySequenceNoAsc();
 
   Optional<PceApprovalRole> findPceApprovalRoleByApprovalRoleSequenceAndId(long approvalRoleId, int roleSequenceNum);
 

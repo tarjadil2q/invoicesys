@@ -1,8 +1,8 @@
 package com.pce.service;
 
 import com.google.common.base.Preconditions;
-import com.pce.domain.Pce;
-import com.pce.domain.PceItem;
+import com.google.common.collect.Iterables;
+import com.pce.domain.*;
 import com.pce.repository.PceItemRepository;
 import com.pce.repository.PceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Created by Leonardo Tarjadi on 8/09/2016.
@@ -31,6 +32,9 @@ public class PceServiceImpl implements PceService {
 
   @Autowired
   private PceItemRepository pceItemRepository;
+
+  @Autowired
+  private PceApprovalRoleService pceApprovalRoleService;
 
   public Page<Pce> getAllAvailablePce(Pageable pageRequest) {
     return pceRepository.findAll(pageRequest);
@@ -91,10 +95,6 @@ public class PceServiceImpl implements PceService {
     return Optional.ofNullable(pceRepository.findOne(id));
   }
 
-  @Override
-  public Optional<PceItem> getPukItemByPukItemId(long id) {
-    return Optional.ofNullable(pceItemRepository.findOne(id));
-  }
 
   @Transactional
   @Override
@@ -115,5 +115,43 @@ public class PceServiceImpl implements PceService {
   @Override
   public Optional<PceItem> getPceItemByPceIdAndPceItemId(long pceId, long PceItemId) {
     return Optional.ofNullable(pceItemRepository.findByPceIdAndPceItemId(pceId, PceItemId));
+  }
+
+  @Override
+  public boolean approvePce(Pce pce, CurrentUser currentUser) {
+    Set<Role> roles = currentUser.getRoles();
+    List<PceApprovalRole> validApprovalRoles = pceApprovalRoleService.findAllAvailableApprovalRoleOrderBySequenceNoAsc();
+    Set<User> currentApprovers = pce.getApprovers();
+    List<Role> listOfValidRole = validApprovalRoles.stream().map(pceRole -> pceRole.getPceApprovalRole()).collect(Collectors.toList());
+    if (CollectionUtils.isEmpty(currentApprovers)) {
+      if (roles.stream().anyMatch(role -> role.getId() == listOfValidRole.get(0).getId())) {
+        Set<User> approvers = pce.getApprovers();
+        approvers.add(currentUser.getUser());
+        pceRepository.save(pce);
+        return true;
+      }
+
+    }
+
+    User lastApprover = Iterables.getLast(currentApprovers);
+    Set<Role> lastApproverRoles = lastApprover.getRoles();
+    int foundIndex = 0;
+    for (int i = 0; i < listOfValidRole.size(); i++) {
+      for (Role approverRole : lastApproverRoles) {
+        if (listOfValidRole.get(i).equals(approverRole)) {
+          foundIndex = i;
+        }
+      }
+    }
+    if (listOfValidRole.size() > foundIndex) {
+      Role nextApprovalRole = listOfValidRole.get(foundIndex + 1);
+      if (listOfValidRole.contains(nextApprovalRole)) {
+        Set<User> approvers = pce.getApprovers();
+        approvers.add(currentUser.getUser());
+        pceRepository.save(pce);
+        return true;
+      }
+    }
+    return false;
   }
 }

@@ -43,6 +43,9 @@ public class PukCreateValidator implements Validator {
       errors.rejectValue("pukNo", "pukNo.exists", "Puk No " + pukNo + " already exist in the system, please select different one");
     }
 
+    if (pukDto.getPukGroup() == null) {
+      errors.rejectValue("pukGroup", "pukGroup.notExists", "Puk Group not there, please specify one");
+    }
     ValidationHelper.invokeNestedValidator(this.pukGroupAssociationValidator,
             pukDto.getPukGroup(), errors, "pukGroup");
 

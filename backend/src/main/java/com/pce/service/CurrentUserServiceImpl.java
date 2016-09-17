@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.pce.constant.FunctionalityAccessConstant;
 import com.pce.domain.CurrentUser;
 import com.pce.domain.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -18,6 +19,9 @@ import static com.pce.constant.RoleConstant.ADMIN;
  */
 @Service
 public class CurrentUserServiceImpl implements CurrentUserService {
+
+  @Autowired
+  private PceApprovalRoleService pceApprovalRoleService;
 
   @Override
   public boolean canAccessUser(CurrentUser currentUser, Long userId) {
@@ -64,5 +68,10 @@ public class CurrentUserServiceImpl implements CurrentUserService {
       return true;
     }
     return false;
+  }
+
+  public boolean canCurrentUserApprovePce(CurrentUser currentUser) {
+    Preconditions.checkArgument(currentUser != null, "Current user cannot be null");
+    return currentUser.getRoles().stream().anyMatch(role -> pceApprovalRoleService.findPceApprovalRoleById(role.getId()).isPresent());
   }
 }

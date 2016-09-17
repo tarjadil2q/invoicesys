@@ -3,6 +3,7 @@ package com.pce.repository;
 import com.pce.domain.PceApprovalRole;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -12,4 +13,6 @@ public interface PceApprovalRoleRepository extends JpaRepository<PceApprovalRole
 
   Optional<PceApprovalRole> findByApprovalRoleSequenceAndRoleId(int roleSequenceNumber,
                                                                 long approvalRoleId);
+
+  List<PceApprovalRole> findAllByOrderByApprovalRoleSequenceAsc();
 }

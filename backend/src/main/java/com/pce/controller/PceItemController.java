@@ -45,7 +45,7 @@ public class PceItemController {
 
 
     Pce pce = pceService.getPceByPceId(pceId).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", pceId)));
-    PceItem pceItem = pceService.getPukItemByPukItemId(pceItemId).orElseThrow(() -> new NoSuchElementException(String.format("PceItem=%s not found", pceItemId)));
+    PceItem pceItem = pceService.getPceItemByPceIdAndPceItemId(pceId, pceItemId).orElseThrow(() -> new NoSuchElementException(String.format("PceItem=%s not found", pceItemId)));
 
     PceItem mappedPceItem = modelMapper.map(pceItemDto, PceItem.class);
     mappedPceItem.setPceItemId(pceItem.getPceItemId());
