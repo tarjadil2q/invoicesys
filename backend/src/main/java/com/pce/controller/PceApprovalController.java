@@ -48,7 +48,7 @@ public class PceApprovalController {
 
   private static final String PCE_APPROVAL_URL_PATH = "/pceapproval";
 
-  @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
+  @PreAuthorize("@currentUserServiceImpl.canCurrentUserApprovePce(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> approvePce(@PathVariable("id") long id,
                                                           Authentication authentication, Errors errors) {
