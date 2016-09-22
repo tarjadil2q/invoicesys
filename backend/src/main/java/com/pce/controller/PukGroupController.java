@@ -8,6 +8,7 @@ import com.pce.domain.dto.PukGroupDto;
 import com.pce.service.PukGroupService;
 import com.pce.service.mapper.PukGroupMapper;
 import com.pce.util.ControllerHelper;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,14 +44,17 @@ public class PukGroupController {
   private PukGroupService pukGroupService;
   private PukGroupMapper pukGroupMapper;
   private EntityLinks entityLinks;
+  private ModelMapper modelMapper;
 
   @Autowired
   public PukGroupController(PukGroupService pukGroupService,
                             PukGroupMapper pukGroupMapper,
-                            EntityLinks entityLinks) {
+                            EntityLinks entityLinks,
+                            ModelMapper modelMapper) {
     this.pukGroupService = pukGroupService;
     this.pukGroupMapper = pukGroupMapper;
     this.entityLinks = entityLinks;
+    this.modelMapper = modelMapper;
   }
 
 
@@ -100,11 +104,9 @@ public class PukGroupController {
       return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.NOT_FOUND,
               "Puk Group to be updated not found, please check id is correct ", "Puk Group id is not found")), HttpStatus.NOT_FOUND);
     }
-    PukGroup toBeUpdatePukGroup = existingPukGroup.get();
-    PukGroup mappedPukGroup = new PukGroup();
-    mappedPukGroup.setPukGroupId(id);
-    //PukGroup mappedPukGroup = pukGroupMapper.mapDtoIntoEntity(pukGroupDto);
 
+    PukGroup mappedPukGroup = modelMapper.map(pukGroupDto, PukGroup.class);
+    mappedPukGroup.setPukGroupId(id);
     PukGroup updatedPukGroup = pukGroupService.createOrUpdatePukGroup(mappedPukGroup);
     pukGroupDto.add(ControllerLinkBuilder.linkTo(PukGroupController.class).slash(updatedPukGroup.getPukGroupId()).withRel(PUK_GROUP_URL_PATH).withSelfRel());
 

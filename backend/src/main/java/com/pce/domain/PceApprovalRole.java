@@ -1,5 +1,6 @@
 package com.pce.domain;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -28,6 +29,7 @@ public class PceApprovalRole {
   private Role pceApprovalRole;
 
 
+  @CreationTimestamp
   @Column(name = "creation_date", insertable = true, updatable = false)
   private Calendar creationDate;
 

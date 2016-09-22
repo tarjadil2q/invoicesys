@@ -1,5 +1,6 @@
 package com.pce.service;
 
+import com.pce.domain.PukGroup;
 import com.pce.domain.Role;
 import com.pce.domain.User;
 import com.pce.repository.RoleRepository;
@@ -75,6 +76,14 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User createOrUpdate(User user) {
+    return userRepository.save(user);
+  }
+
+  @Override
+  public User addUserToPukGroup(User user, PukGroup pukGroup) {
+    Set<PukGroup> pukGroups = user.getPukGroups();
+    pukGroups.add(pukGroup);
+    user.setPukGroups(pukGroups);
     return userRepository.save(user);
   }
 }

@@ -30,11 +30,11 @@ import java.util.NoSuchElementException;
  * Created by Leonardo Tarjadi on 10/09/2016.
  */
 @RestController
-@RequestMapping("/api/v1/pce/pceapproval")
+@RequestMapping("/api/v1/pce/pceapprovalrole")
 @ExposesResourceFor(PceApprovalRoleDto.class)
 public class PceApprovalRoleController {
 
-  public static final String PCE_APPROVAL_ROLE_PATH = "/pceapproval";
+  public static final String PCE_APPROVAL_ROLE_PATH = "/pceapprovalrole";
 
   @Autowired
   private PceApprovalRoleService pceApprovalRoleService;
@@ -63,7 +63,6 @@ public class PceApprovalRoleController {
     }
 
     PceApprovalRole pceApprovalRole = modelMapper.map(pceApprovalRoleDto, PceApprovalRole.class);
-    pceApprovalRole.setRoleId(0);
     pceApprovalRoleService.createOrUpdatePceApprovalRole(pceApprovalRole);
     pceApprovalRoleDto.add(ControllerLinkBuilder.linkTo(PceApprovalRoleController.class).slash(pceApprovalRole.getRoleId()).withRel(PCE_APPROVAL_ROLE_PATH).withSelfRel());
     return ControllerHelper.getResponseEntityWithoutBody(pceApprovalRoleDto, HttpStatus.CREATED);

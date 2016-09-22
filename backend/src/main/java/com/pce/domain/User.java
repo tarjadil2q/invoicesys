@@ -42,7 +42,9 @@ public class User {
           inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private Set<Role> roles;
 
-  @ManyToMany(mappedBy = "pukGroupUsers")
+  @ManyToMany(cascade = CascadeType.REFRESH)
+  @JoinTable(name = "user_puk_group", schema = "ivs", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+          inverseJoinColumns = @JoinColumn(name = "puk_group_id", referencedColumnName = "id"))
   private Set<PukGroup> pukGroups;
 
   @ManyToMany(mappedBy = "approvers")
@@ -132,6 +134,14 @@ public class User {
 
   public Set<Pce> getPcesApproved() {
     return pcesApproved;
+  }
+
+  public void setPukGroups(Set<PukGroup> pukGroups) {
+    this.pukGroups = pukGroups;
+  }
+
+  public void setPcesApproved(Set<Pce> pcesApproved) {
+    this.pcesApproved = pcesApproved;
   }
 
   @Override

@@ -20,7 +20,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.validation.Errors;
+import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,7 +34,7 @@ import java.util.Set;
  * Created by Leonardo Tarjadi on 16/09/2016.
  */
 @RestController
-@RequestMapping("/api/v1/pceapproval")
+@RequestMapping("/api/v1/pce/pceapproval")
 @ExposesResourceFor(PceDto.class)
 public class PceApprovalController {
   @Autowired
@@ -51,16 +51,17 @@ public class PceApprovalController {
   @PreAuthorize("@currentUserServiceImpl.canCurrentUserApprovePce(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> approvePce(@PathVariable("id") long id,
-                                                          Authentication authentication, Errors errors) {
+                                                          Authentication authentication) {
     Pce pce = pceService.getPceByPceId(id).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", id)));
     CurrentUser principal = (CurrentUser) authentication.getPrincipal();
     Set<User> pukGroupUsers = pce.getAssociatedPuk().getPukGroup().getPukGroupUsers();
     PceApprovalWrapperDto pceApprovalWrapperDto = new PceApprovalWrapperDto(principal,
             pukGroupUsers, pce);
-    ValidationUtils.invokeValidator(pceApproveValidator, pceApprovalWrapperDto, errors);
+    BindException bindException = new BindException(pceApprovalWrapperDto, "pceApprovalWrapperDto");
+    ValidationUtils.invokeValidator(pceApproveValidator, pceApprovalWrapperDto, bindException);
 
-    if (errors.hasErrors()) {
-      return ValidationErrorBuilder.fromBindingErrors(errors);
+    if (bindException.hasErrors()) {
+      return ValidationErrorBuilder.fromBindingErrors(bindException);
     }
 
     if (pceService.approvePce(pce, principal)) {
@@ -70,8 +71,8 @@ public class PceApprovalController {
       return ControllerHelper.getResponseEntityWithoutBody(pceDto, HttpStatus.CREATED);
     }
 
-    errors.reject("userRole.Invalid", "This current user " + principal.getUser().getFirstName() + " " +
+    bindException.reject("userRole.Invalid", "This current user " + principal.getUser().getFirstName() + " " +
             principal.getUser().getLastName() + " is not in the right approval role sequence");
-    return ValidationErrorBuilder.fromBindingErrors(errors);
+    return ValidationErrorBuilder.fromBindingErrors(bindException);
   }
 }

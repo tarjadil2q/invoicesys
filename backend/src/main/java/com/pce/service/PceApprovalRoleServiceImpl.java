@@ -48,6 +48,7 @@ public class PceApprovalRoleServiceImpl implements PceApprovalRoleService {
   public PceApprovalRole createOrUpdatePceApprovalRole(PceApprovalRole pceApprovalRole) {
     Role role = roleRepository.findOne(pceApprovalRole.getRoleId());
     pceApprovalRole.setPceApprovalRole(role);
+    pceApprovalRole.setRoleId(0);
     return pceApprovalRoleRepository.save(pceApprovalRole);
   }
 

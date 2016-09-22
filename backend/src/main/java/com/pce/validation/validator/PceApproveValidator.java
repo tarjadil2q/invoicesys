@@ -30,27 +30,32 @@ public class PceApproveValidator implements Validator {
 
   @Override
   public void validate(Object target, Errors errors) {
-    PceApprovalWrapperDto pceApproval = (PceApprovalWrapperDto) target;
-    CurrentUser principal = pceApproval.getCurrentUser();
+    PceApprovalWrapperDto pceApprovalWrapper = (PceApprovalWrapperDto) target;
+    CurrentUser principal = pceApprovalWrapper.getCurrentUser();
 
-    Pce pce = pceApproval.getPce();
+    Pce pce = pceApprovalWrapper.getPce();
     Set<User> pukGroupUsers = pce.getAssociatedPuk().getPukGroup().getPukGroupUsers();
 
     User currentUser = principal.getUser();
 
     boolean userMatched = pukGroupUsers.stream().anyMatch(user -> user.getId() == currentUser.getId());
     if (!userMatched) {
-      errors.rejectValue("currentUser", "currentUser.not.matched", "Current user not in the puk group user and cannot approve the pce");
+      errors.rejectValue("currentUser", "currentUser.not.matched", "Current user " + currentUser.getFirstName() + " " + currentUser.getLastName() + " not in the puk group user and cannot approve the pce");
     }
 
     Set<Role> roles = principal.getRoles();
     List<PceApprovalRole> validApprovalRoles = pceApprovalRoleService.findAllAvailableApprovalRoleOrderBySequenceNoAsc();
 
-    List<Role> listOfValidRole = validApprovalRoles.stream().map(pceRole -> pceRole.getPceApprovalRole()).collect(Collectors.toList());
-
-    List<Role> validApprovalRole = roles.stream().filter(role -> listOfValidRole.contains(role)).collect(Collectors.toList());
+    List<Long> listOfValidRole = validApprovalRoles.stream().map(pceRole -> pceRole.getPceApprovalRole().getId()).collect(Collectors.toList());
+    List<Role> validApprovalRole = roles.stream().filter(role -> listOfValidRole.contains(role.getId())).collect(Collectors.toList());
     if (CollectionUtils.isEmpty(validApprovalRole)) {
-      errors.rejectValue("currentUser", "currentUser.not.valid.roles", "Current user does not have a valid approval role");
+      errors.rejectValue("currentUser", "currentUser.not.valid.roles", "Current user " + currentUser.getFirstName() + " " + currentUser.getLastName() + "  does not have a valid approval role");
+    }
+    List<Long> existingApprovers = pce.getApprovers().stream().map(user -> user.getId()).collect(Collectors.toList());
+
+    if (existingApprovers.contains(currentUser.getId())) {
+      errors.rejectValue("currentUser", "currentUser.already.approve", "Current user " + currentUser.getFirstName() + " " + currentUser.getLastName() +
+              " already approving pce " + pce.getPceNo());
     }
 
   }

@@ -2,6 +2,7 @@ package com.pce.controller;
 
 import com.google.common.collect.Lists;
 import com.pce.domain.CurrentUser;
+import com.pce.domain.PukGroup;
 import com.pce.domain.Role;
 import com.pce.domain.User;
 import com.pce.domain.dto.ApiError;
@@ -9,6 +10,7 @@ import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.RoleDto;
 import com.pce.domain.dto.UserDto;
 import com.pce.service.CurrentUserService;
+import com.pce.service.PukGroupService;
 import com.pce.service.RoleService;
 import com.pce.service.UserService;
 import com.pce.service.mapper.UserMapper;
@@ -53,18 +55,21 @@ public class UserController {
   private UserMapper userMapper;
   private EntityLinks entityLinks;
   private CurrentUserService currentUserService;
+  private PukGroupService pukGroupService;
 
   @Autowired
   public UserController(UserService userService,
                         RoleService roleService,
                         UserMapper userMapper,
                         EntityLinks entityLinks,
-                        CurrentUserService currentUserService) {
+                        CurrentUserService currentUserService,
+                        PukGroupService pukGroupService) {
     this.userService = userService;
     this.roleService = roleService;
     this.userMapper = userMapper;
     this.entityLinks = entityLinks;
     this.currentUserService = currentUserService;
+    this.pukGroupService = pukGroupService;
   }
 
 
@@ -136,6 +141,18 @@ public class UserController {
     return ControllerHelper.getResponseEntityWithoutBody(userDto, HttpStatus.OK);
 
   }
+
+  @RequestMapping(value = "/{userId}/pukgroup/{pukGroupId}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
+  public HttpEntity<Resource<DomainObjectDTO>> addUserToPukGroup(@PathVariable("userId") long userId,
+                                                                 @PathVariable("pukGroupId") long pukGroupId) {
+    User user = userService.getUserById(userId).orElseThrow(() -> new NoSuchElementException(String.format("UserId=%s not found", userId)));
+    PukGroup pukGroup = pukGroupService.getPukGroupById(pukGroupId).orElseThrow(() -> new NoSuchElementException(String.format("PukGroupId=%s not found", pukGroupId)));
+    userService.addUserToPukGroup(user, pukGroup);
+    UserDto userDto = (UserDto) userMapper.mapEntityIntoDto(user);
+    userDto.setLink(user.getId(), USER_REQUEST_PATH);
+    return ControllerHelper.getResponseEntityWithoutBody(userDto, HttpStatus.OK);
+  }
+
 
   private User getUpdatedUser(CurrentUser currentUserPrincipal, UserDto userDto,
                               User userToBeUpdate) {

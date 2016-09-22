@@ -31,9 +31,7 @@ public class PukGroup {
   private Set<Puk> puks;
 
 
-  @ManyToMany(cascade = CascadeType.ALL)
-  @JoinTable(name = "puk_group_user", schema = "ivs", joinColumns = @JoinColumn(name = "puk_group_id", referencedColumnName = "id"),
-          inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+  @ManyToMany(mappedBy = "pukGroups")
   private Set<User> pukGroupUsers;
 
   @CreationTimestamp

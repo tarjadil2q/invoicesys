@@ -138,14 +138,14 @@ public class PceServiceImpl implements PceService {
     int foundIndex = 0;
     for (int i = 0; i < listOfValidRole.size(); i++) {
       for (Role approverRole : lastApproverRoles) {
-        if (listOfValidRole.get(i).equals(approverRole)) {
+        if (listOfValidRole.get(i).getId() == approverRole.getId()) {
           foundIndex = i;
         }
       }
     }
     if (listOfValidRole.size() > foundIndex) {
       Role nextApprovalRole = listOfValidRole.get(foundIndex + 1);
-      if (listOfValidRole.contains(nextApprovalRole)) {
+      if (listOfValidRole.contains(nextApprovalRole) && currentUser.getRoles().stream().anyMatch(role -> role.getId() == nextApprovalRole.getId())) {
         Set<User> approvers = pce.getApprovers();
         approvers.add(currentUser.getUser());
         pceRepository.save(pce);

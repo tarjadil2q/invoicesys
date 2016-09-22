@@ -1,5 +1,6 @@
 package com.pce.service;
 
+import com.pce.domain.PukGroup;
 import com.pce.domain.Role;
 import com.pce.domain.User;
 import org.springframework.data.domain.Page;
@@ -51,5 +52,7 @@ public interface UserService {
   User createOrUpdate(User user, Set<Role> roles);
 
   User createOrUpdate(User user);
+
+  User addUserToPukGroup(User user, PukGroup pukGroup);
 
 }
