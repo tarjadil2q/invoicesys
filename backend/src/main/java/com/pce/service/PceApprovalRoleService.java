@@ -18,6 +18,8 @@ public interface PceApprovalRoleService {
 
   List<PceApprovalRole> findAllAvailableApprovalRoleOrderBySequenceNoAsc();
 
+  List<PceApprovalRole> findAllAvailableApprovalRoleOrderBySequenceNoDesc();
+
   Optional<PceApprovalRole> findPceApprovalRoleByApprovalRoleSequenceAndId(long approvalRoleId, int roleSequenceNum);
 
   PceApprovalRole createOrUpdatePceApprovalRole(PceApprovalRole pceApprovalRole);

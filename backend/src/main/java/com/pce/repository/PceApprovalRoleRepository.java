@@ -15,4 +15,6 @@ public interface PceApprovalRoleRepository extends JpaRepository<PceApprovalRole
                                                                 long approvalRoleId);
 
   List<PceApprovalRole> findAllByOrderByApprovalRoleSequenceAsc();
+
+  List<PceApprovalRole> findAllByOrderByApprovalRoleSequenceDesc();
 }

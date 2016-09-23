@@ -24,4 +24,6 @@ public interface PceService {
 
   boolean approvePce(Pce pce, CurrentUser currentUser);
 
+  boolean rejectPce(Pce pce, CurrentUser currentUser);
+
 }

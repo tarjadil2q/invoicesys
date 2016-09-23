@@ -18,5 +18,5 @@ public interface CurrentUserService {
 
   boolean canCurrentUserAcces(CurrentUser currentUser, String functionalityAccess);
 
-  boolean canCurrentUserApprovePce(CurrentUser currentUser);
+  boolean canCurrentUserApproveOrRejectPce(CurrentUser currentUser);
 }

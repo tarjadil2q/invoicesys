@@ -70,7 +70,7 @@ public class CurrentUserServiceImpl implements CurrentUserService {
     return false;
   }
 
-  public boolean canCurrentUserApprovePce(CurrentUser currentUser) {
+  public boolean canCurrentUserApproveOrRejectPce(CurrentUser currentUser) {
     Preconditions.checkArgument(currentUser != null, "Current user cannot be null");
     return currentUser.getRoles().stream().anyMatch(role -> pceApprovalRoleService.findPceApprovalRoleById(role.getId()).isPresent());
   }

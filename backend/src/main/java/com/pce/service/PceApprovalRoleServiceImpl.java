@@ -57,4 +57,9 @@ public class PceApprovalRoleServiceImpl implements PceApprovalRoleService {
   public List<PceApprovalRole> findAllAvailableApprovalRoleOrderBySequenceNoAsc() {
     return pceApprovalRoleRepository.findAllByOrderByApprovalRoleSequenceAsc();
   }
+
+  @Override
+  public List<PceApprovalRole> findAllAvailableApprovalRoleOrderBySequenceNoDesc() {
+    return pceApprovalRoleRepository.findAllByOrderByApprovalRoleSequenceDesc();
+  }
 }

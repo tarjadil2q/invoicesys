@@ -1,7 +1,6 @@
 package com.pce.service;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterables;
 import com.pce.domain.*;
 import com.pce.repository.PceItemRepository;
 import com.pce.repository.PceRepository;
@@ -14,10 +13,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.Year;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -133,25 +129,46 @@ public class PceServiceImpl implements PceService {
 
     }
 
-    User lastApprover = Iterables.getLast(currentApprovers);
-    Set<Role> lastApproverRoles = lastApprover.getRoles();
-    int foundIndex = 0;
-    for (int i = 0; i < listOfValidRole.size(); i++) {
-      for (Role approverRole : lastApproverRoles) {
-        if (listOfValidRole.get(i).getId() == approverRole.getId()) {
-          foundIndex = i;
-        }
-      }
+    Role nextApprovalRole = getNextApproverOrRejecterRole(currentApprovers, listOfValidRole);
+    if (nextApprovalRole == null) {
+      return false;
     }
-    if (listOfValidRole.size() > foundIndex) {
-      Role nextApprovalRole = listOfValidRole.get(foundIndex + 1);
-      if (listOfValidRole.contains(nextApprovalRole) && currentUser.getRoles().stream().anyMatch(role -> role.getId() == nextApprovalRole.getId())) {
-        Set<User> approvers = pce.getApprovers();
-        approvers.add(currentUser.getUser());
-        pceRepository.save(pce);
-        return true;
-      }
+    if (currentUser.getRoles().stream().anyMatch(role -> role.getId() == nextApprovalRole.getId())) {
+      Set<User> approvers = pce.getApprovers();
+      approvers.add(currentUser.getUser());
+      pceRepository.save(pce);
+      return true;
     }
     return false;
+  }
+
+  private Role getNextApproverOrRejecterRole(Set<User> currentApprovers, List<Role> listOfValidRole) {
+    Set<Role> currentApproverRoles = new LinkedHashSet<>();
+    for (User user : currentApprovers) {
+      currentApproverRoles.addAll(user.getRoles());
+    }
+    Set<Long> currentApproverRoleIds = currentApproverRoles.stream().map(roleUser -> roleUser.getId()).collect(Collectors.toSet());
+    List<Role> nextApproverOrRejecterRoles = listOfValidRole.stream().filter(role -> !currentApproverRoleIds.contains(role.getId())).collect(Collectors.toList());
+    if (!CollectionUtils.isEmpty(nextApproverOrRejecterRoles)) {
+      return nextApproverOrRejecterRoles.get(0);
+    }
+    return null;
+  }
+
+
+  @Override
+  public boolean rejectPce(Pce pce, CurrentUser currentUser) {
+    List<Role> validRoles = pceApprovalRoleService.findAllAvailableApprovalRoleOrderBySequenceNoAsc().stream().map(pceApprovalRole -> pceApprovalRole.getPceApprovalRole()).collect(Collectors.toList());
+    Role nextApproverOrRejecterRole = getNextApproverOrRejecterRole(pce.getApprovers(), validRoles);
+    if (nextApproverOrRejecterRole == null) {
+      return false;
+    }
+    if (currentUser.getRoles().stream().anyMatch(role -> role.getId() == nextApproverOrRejecterRole.getId())) {
+      pce.setApprovers(new HashSet<>());
+      pceRepository.save(pce);
+      return true;
+    }
+    return false;
+
   }
 }

@@ -1,11 +1,12 @@
 package com.pce.validation.validator;
 
-import com.pce.domain.*;
+import com.pce.domain.CurrentUser;
+import com.pce.domain.Pce;
+import com.pce.domain.User;
 import com.pce.domain.dto.PceApprovalWrapperDto;
 import com.pce.service.PceApprovalRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -33,24 +34,15 @@ public class PceApproveValidator implements Validator {
     PceApprovalWrapperDto pceApprovalWrapper = (PceApprovalWrapperDto) target;
     CurrentUser principal = pceApprovalWrapper.getCurrentUser();
 
-    Pce pce = pceApprovalWrapper.getPce();
-    Set<User> pukGroupUsers = pce.getAssociatedPuk().getPukGroup().getPukGroupUsers();
 
     User currentUser = principal.getUser();
 
-    boolean userMatched = pukGroupUsers.stream().anyMatch(user -> user.getId() == currentUser.getId());
-    if (!userMatched) {
-      errors.rejectValue("currentUser", "currentUser.not.matched", "Current user " + currentUser.getFirstName() + " " + currentUser.getLastName() + " not in the puk group user and cannot approve the pce");
+    if (!isUserValidAgainstPukGroup(pceApprovalWrapper)) {
+      errors.rejectValue("currentUser", "currentUser.not.matched", "Current user " + currentUser.getFirstName() + " " + currentUser.getLastName() + " not in the puk group user and cannot approve  pce");
     }
 
-    Set<Role> roles = principal.getRoles();
-    List<PceApprovalRole> validApprovalRoles = pceApprovalRoleService.findAllAvailableApprovalRoleOrderBySequenceNoAsc();
+    Pce pce = pceApprovalWrapper.getPce();
 
-    List<Long> listOfValidRole = validApprovalRoles.stream().map(pceRole -> pceRole.getPceApprovalRole().getId()).collect(Collectors.toList());
-    List<Role> validApprovalRole = roles.stream().filter(role -> listOfValidRole.contains(role.getId())).collect(Collectors.toList());
-    if (CollectionUtils.isEmpty(validApprovalRole)) {
-      errors.rejectValue("currentUser", "currentUser.not.valid.roles", "Current user " + currentUser.getFirstName() + " " + currentUser.getLastName() + "  does not have a valid approval role");
-    }
     List<Long> existingApprovers = pce.getApprovers().stream().map(user -> user.getId()).collect(Collectors.toList());
 
     if (existingApprovers.contains(currentUser.getId())) {
@@ -58,5 +50,18 @@ public class PceApproveValidator implements Validator {
               " already approving pce " + pce.getPceNo());
     }
 
+  }
+
+  protected boolean isUserValidAgainstPukGroup(PceApprovalWrapperDto pceApprovalWrapper) {
+    Pce pce = pceApprovalWrapper.getPce();
+    Set<User> pukGroupUsers = pce.getAssociatedPuk().getPukGroup().getPukGroupUsers();
+
+    User user = pceApprovalWrapper.getCurrentUser().getUser();
+
+    boolean userMatched = pukGroupUsers.stream().anyMatch(pukGroupUser -> pukGroupUser.getId() == user.getId());
+    return userMatched ? true : false;
+    //if (!userMatched) {
+
+    //}
   }
 }
