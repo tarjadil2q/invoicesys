@@ -1,24 +1,20 @@
 package com.pce.controller;
 
 import com.google.common.collect.Lists;
-import com.pce.domain.CurrentUser;
-import com.pce.domain.PukGroup;
-import com.pce.domain.Role;
-import com.pce.domain.User;
-import com.pce.domain.dto.ApiError;
-import com.pce.domain.dto.DomainObjectDTO;
-import com.pce.domain.dto.RoleDto;
-import com.pce.domain.dto.UserDto;
+import com.pce.domain.*;
+import com.pce.domain.dto.*;
 import com.pce.service.CurrentUserService;
 import com.pce.service.PukGroupService;
 import com.pce.service.RoleService;
 import com.pce.service.UserService;
 import com.pce.service.mapper.UserMapper;
 import com.pce.util.ControllerHelper;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.*;
@@ -38,6 +34,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 /**
  * Created by Leonardo Tarjadi on 7/02/2016.
  */
@@ -56,6 +55,8 @@ public class UserController {
   private EntityLinks entityLinks;
   private CurrentUserService currentUserService;
   private PukGroupService pukGroupService;
+  private PagedResourcesAssembler assembler;
+  private ModelMapper modelMapper;
 
   @Autowired
   public UserController(UserService userService,
@@ -63,13 +64,17 @@ public class UserController {
                         UserMapper userMapper,
                         EntityLinks entityLinks,
                         CurrentUserService currentUserService,
-                        PukGroupService pukGroupService) {
+                        PukGroupService pukGroupService,
+                        PagedResourcesAssembler assembler,
+                        ModelMapper modelMapper) {
     this.userService = userService;
     this.roleService = roleService;
     this.userMapper = userMapper;
     this.entityLinks = entityLinks;
     this.currentUserService = currentUserService;
     this.pukGroupService = pukGroupService;
+    this.assembler = assembler;
+    this.modelMapper = modelMapper;
   }
 
 
@@ -153,6 +158,32 @@ public class UserController {
     return ControllerHelper.getResponseEntityWithoutBody(userDto, HttpStatus.OK);
   }
 
+  @RequestMapping(value = "/pukgroup/{pukGroupId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  public HttpEntity<PagedResources<DomainObjectDTO>> getUsersByPukGroup(@PathVariable("pukGroupId") long pukGroupId,
+                                                                        Pageable pageRequest) {
+    PukGroup pukGroup = new PukGroup();
+    pukGroup.setPukGroupId(pukGroupId);
+    Page<User> allUsers = userService.getUsersForPukGroup(pageRequest, pukGroup);
+    Page<Resource<UserDto>> newPaged = allUsers.map(source -> mappedUser(source));
+    return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
+  }
+
+
+  @RequestMapping(value = "/pce/{pceId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  public HttpEntity<Resources<DomainObjectDTO>> getApproversByPceId(@PathVariable("pceId") long id) {
+    Pce pce = new Pce();
+    pce.setPceId(id);
+    List<User> approvers = userService.getApproversByPce(pce);
+    if (CollectionUtils.isEmpty(approvers)) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    List<Resource<UserDto>> userDtos = approvers.stream().map(user -> mappedUser(user)).collect(Collectors.toList());
+    Link selfLink = linkTo(methodOn(UserController.class).getApproversByPceId(id)).withSelfRel();
+    Resources resources = new Resources(userDtos, selfLink);
+
+    return new ResponseEntity<>(resources, HttpStatus.OK);
+  }
+
 
   private User getUpdatedUser(CurrentUser currentUserPrincipal, UserDto userDto,
                               User userToBeUpdate) {
@@ -173,6 +204,17 @@ public class UserController {
             .filter(roleDto -> roleService.isRoleExist(roleDto.getRoleId()))
             .map(roleDto -> roleService.getRoleById(roleDto.getRoleId()).get())
             .collect(Collectors.toSet());
+  }
+
+
+  private Resource<UserDto> mappedUser(User user) {
+    Link selfLink = linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel();
+    UserDto userDto = modelMapper.map(user, UserDto.class);
+    Link allRoles = entityLinks.linkToCollectionResource(RoleDto.class).withRel("all-roles");
+    Link roleLink = linkTo(methodOn(RoleController.class).getRolesByUserId(user.getId(), new PageRequest(0, 20))).withRel("role");
+    Link allPukGroups = entityLinks.linkToCollectionResource(PukGroupDto.class).withRel("all-puk-group");
+    Link pukGroupByUser = linkTo(methodOn(PukGroupController.class).getPukGroupByUserId(user.getId(), new PageRequest(0, 20))).withRel("puk-group");
+    return new Resource<>(userDto, selfLink, roleLink, allRoles, pukGroupByUser, allPukGroups);
   }
 
 

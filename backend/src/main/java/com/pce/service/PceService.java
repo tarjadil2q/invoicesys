@@ -14,16 +14,21 @@ import java.util.Optional;
 public interface PceService {
   Page<Pce> getAllAvailablePce(Pageable pageRequest);
 
+  Page<Pce> getAvailablePceByPukId(long pukId, Pageable pageRequest);
+
   Pce createOrUpdatePce(Pce pce);
 
   PceItem createOrUpdatePceItem(Pce pce, PceItem pceItem);
 
   Optional<Pce> getPceByPceId(long id);
 
+
   Optional<PceItem> getPceItemByPceIdAndPceItemId(long pceId, long PceItemId);
 
   boolean approvePce(Pce pce, CurrentUser currentUser);
 
   boolean rejectPce(Pce pce, CurrentUser currentUser);
+
+  Page<PceItem> getPceItemsByPce(Pce pce, Pageable pageRequest);
 
 }

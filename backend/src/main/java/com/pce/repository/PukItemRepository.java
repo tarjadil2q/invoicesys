@@ -1,6 +1,8 @@
 package com.pce.repository;
 
 import com.pce.domain.PukItem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,6 +15,9 @@ import java.util.List;
 public interface PukItemRepository extends JpaRepository<PukItem, Long> {
   @Query("FROM PukItem pi WHERE pi.puk.pukId = :pukId")
   List<PukItem> findByPukId(@Param("pukId") long pukId);
+
+  @Query("FROM PukItem pi WHERE pi.puk.pukId = :pukId")
+  Page<PukItem> findByPukId(@Param("pukId") long pukId, Pageable pageRequest);
 
   @Query("FROM PukItem pi WHERE pi.puk.pukId = :pukId AND pi.pukItemId = :pukItemId")
   PukItem findByPukIdAndPukItemId(@Param("pukId") long pukId,

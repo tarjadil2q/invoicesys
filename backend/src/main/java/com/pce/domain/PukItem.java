@@ -33,7 +33,7 @@ public class PukItem {
   private int totalActivity;
   @Column(name = "quantity", nullable = false)
   private int quantity;
-  @ManyToOne(cascade = CascadeType.REFRESH)
+  @ManyToOne(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
   @JoinColumn(name = "puk_item_measurement_id", referencedColumnName = "id", nullable = false)
   private PukItemMeasurement pukItemMeasurement;
 

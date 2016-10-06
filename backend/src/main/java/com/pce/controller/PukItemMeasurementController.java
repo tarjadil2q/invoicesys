@@ -42,13 +42,17 @@ public class PukItemMeasurementController {
   private PukItemMeasurementService pukItemMeasurementService;
   private PukItemMeasurementMapper pukItemMeasurementMapper;
   private EntityLinks entityLinks;
+  private PagedResourcesAssembler assembler;
 
 
   @Autowired
-  public PukItemMeasurementController(PukItemMeasurementService pukItemMeasurementService, PukItemMeasurementMapper pukItemMeasurementMapper, EntityLinks entityLinks) {
+  public PukItemMeasurementController(PukItemMeasurementService pukItemMeasurementService, PukItemMeasurementMapper pukItemMeasurementMapper,
+                                      EntityLinks entityLinks,
+                                      PagedResourcesAssembler assembler) {
     this.pukItemMeasurementService = pukItemMeasurementService;
     this.pukItemMeasurementMapper = pukItemMeasurementMapper;
     this.entityLinks = entityLinks;
+    this.assembler = assembler;
   }
 
 
@@ -69,7 +73,6 @@ public class PukItemMeasurementController {
   }
 
 
-  @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> getPukItemMeasurementById(@PathVariable Long id) {
     PukItemMeasurement pukItemMeasurement = pukItemMeasurementService.getPukItemMeasurementById(id).orElseThrow(() -> new NoSuchElementException(String.format("Puk Item Measurement=%s not found", id)));
@@ -79,16 +82,14 @@ public class PukItemMeasurementController {
     return new ResponseEntity<>(pukMeasurementResource, HttpStatus.OK);
   }
 
-  @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-  public HttpEntity<PagedResources<DomainObjectDTO>> getPukItemMeasurements(Pageable pageRequest, PagedResourcesAssembler assembler) {
+  public HttpEntity<PagedResources<DomainObjectDTO>> getPukItemMeasurements(Pageable pageRequest) {
     Page<PukItemMeasurement> allPukMeasurements = pukItemMeasurementService.getAllAvailablePukItemMeasurement(pageRequest);
     Page<DomainObjectDTO> pukMeasurementDtos = pukItemMeasurementMapper.mapEntityPageIntoDTOPage(pageRequest, allPukMeasurements);
     return new ResponseEntity<>(assembler.toResource(pukMeasurementDtos), HttpStatus.OK);
   }
 
 
-  @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> updatePukItemMeasurement(@PathVariable("id") long id,
                                                                         @RequestBody @Valid PukItemMeasurementDto pukItemMeasurementDto) {

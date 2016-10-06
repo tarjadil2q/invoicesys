@@ -1,6 +1,7 @@
 package com.pce.service;
 
 import com.pce.domain.Role;
+import com.pce.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -24,5 +25,7 @@ public interface RoleService {
   boolean isRoleExist(long roleId);
 
   Optional<Role> getRoleById(long id);
+
+  Page<Role> getRolesForUser(Pageable pageRequest, User user);
 
 }

@@ -1,7 +1,9 @@
 package com.pce.service;
 
 import com.google.common.base.Preconditions;
+import com.pce.domain.Pce;
 import com.pce.domain.Puk;
+import com.pce.domain.PukGroup;
 import com.pce.domain.PukItem;
 import com.pce.repository.PukItemRepository;
 import com.pce.repository.PukRepository;
@@ -15,10 +17,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.Year;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -131,6 +130,11 @@ public class PukServiceImpl implements PukService {
     return Optional.ofNullable(pukItemRepository.findByPukIdAndPukItemId(pukId, pukItemId));
   }
 
+  @Override
+  public Page<Puk> getPuksForPukGroup(PukGroup pukGroup, Pageable pageRequest) {
+    Preconditions.checkArgument(pukGroup != null, "Puk Group cannot be null");
+    return pukRepository.findByPukGroup(pukGroup, pageRequest);
+  }
 
   @Override
   public Optional<Puk> getPukByPukNoIgnoreCase(String pukNo) {
@@ -145,5 +149,18 @@ public class PukServiceImpl implements PukService {
   @Override
   public Optional<Puk> getPukByPukId(long id) {
     return Optional.ofNullable(pukRepository.findOne(id));
+  }
+
+  @Override
+  public Optional<Puk> getPukByPce(Pce pce) {
+    Preconditions.checkArgument(pce != null, "Pce cannot be null");
+    Set<Pce> associatedPces = new HashSet<>();
+    associatedPces.add(pce);
+    return Optional.ofNullable(pukRepository.findByAssociatedPces(associatedPces));
+  }
+
+  @Override
+  public Page<PukItem> getPukItemsByPukId(long pukId, Pageable pageRequest) {
+    return pukItemRepository.findByPukId(pukId, pageRequest);
   }
 }

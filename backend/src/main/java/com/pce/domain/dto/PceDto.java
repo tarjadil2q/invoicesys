@@ -1,6 +1,7 @@
 package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
@@ -15,6 +16,7 @@ import java.util.List;
  * Created by Leonardo Tarjadi on 7/09/2016.
  */
 @Relation(collectionRelation = "pceList")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializable {
 
   @ReadOnlyProperty

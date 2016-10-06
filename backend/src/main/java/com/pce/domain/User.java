@@ -37,12 +37,12 @@ public class User {
   @UpdateTimestamp
   private Calendar updatedDate;
 
-  @ManyToMany(cascade = CascadeType.ALL)
+  @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @JoinTable(name = "user_role", schema = "ivs", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
           inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
   private Set<Role> roles;
 
-  @ManyToMany(cascade = CascadeType.REFRESH)
+  @ManyToMany(cascade = CascadeType.REFRESH, fetch = FetchType.LAZY)
   @JoinTable(name = "user_puk_group", schema = "ivs", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
           inverseJoinColumns = @JoinColumn(name = "puk_group_id", referencedColumnName = "id"))
   private Set<PukGroup> pukGroups;

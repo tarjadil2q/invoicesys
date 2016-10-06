@@ -171,4 +171,15 @@ public class PceServiceImpl implements PceService {
     return false;
 
   }
+
+  @Override
+  public Page<PceItem> getPceItemsByPce(Pce pce, Pageable pageRequest) {
+    Preconditions.checkArgument(pce != null, "Pce cannot be null");
+    return pceItemRepository.findByPce(pce, pageRequest);
+  }
+
+  @Override
+  public Page<Pce> getAvailablePceByPukId(long pukId, Pageable pageRequest) {
+    return pceRepository.findByPukId(pukId, pageRequest);
+  }
 }

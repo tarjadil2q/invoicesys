@@ -1,6 +1,9 @@
 package com.pce.repository;
 
+import com.pce.domain.Pce;
 import com.pce.domain.PceItem;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,6 +21,8 @@ public interface PceItemRepository extends JpaRepository<PceItem, Long> {
   @Query("FROM PceItem pi WHERE pi.pce.pceId = :pceId AND pi.pceItemId = :pceItemId")
   PceItem findByPceIdAndPceItemId(@Param("pceId") long pceId,
                                   @Param("pceItemId") long pceItemId);
+
+  Page<PceItem> findByPce(Pce pce, Pageable pageRequest);
 
 
 }

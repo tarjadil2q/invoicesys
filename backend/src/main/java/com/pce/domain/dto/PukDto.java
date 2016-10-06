@@ -1,7 +1,9 @@
 package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.pce.domain.Pce;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
@@ -15,6 +17,7 @@ import java.util.List;
  * Created by Leonardo Tarjadi on 16/08/2016.
  */
 @Relation(collectionRelation = "pukList")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializable {
   @ReadOnlyProperty
   private long pukId;
@@ -36,6 +39,8 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
 
   private List<PukItemDto> pukItems;
 
+  private List<Pce> associatedPces;
+
 
   public PukDto() {
   }
@@ -48,7 +53,8 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
                 @JsonProperty("pukDescription") String pukDescription,
                 @JsonProperty("budget") BigDecimal budget,
                 @JsonProperty("pukGroup") PukGroupForPukDto pukGroup,
-                @JsonProperty("pukItems") List<PukItemDto> pukItems) {
+                @JsonProperty("pukItems") List<PukItemDto> pukItems,
+                @JsonProperty("associatedPces") List<Pce> associatedPces) {
     this.pukId = pukId;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
@@ -57,6 +63,7 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.budget = budget;
     this.pukGroup = pukGroup;
     this.pukItems = pukItems;
+    this.associatedPces = associatedPces;
   }
 
   public long getPukId() {
@@ -132,6 +139,14 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.pukItems = pukItems;
   }
 
+  public List<Pce> getAssociatedPces() {
+    return associatedPces;
+  }
+
+  public void setAssociatedPces(List<Pce> associatedPces) {
+    this.associatedPces = associatedPces;
+  }
+
   @Override
   public String toString() {
     return "PukDto{" +
@@ -144,6 +159,7 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
             ", pukYear=" + pukYear +
             ", pukGroup=" + pukGroup +
             ", pukItems=" + pukItems +
+            ", associatedPces=" + associatedPces +
             '}';
   }
 }

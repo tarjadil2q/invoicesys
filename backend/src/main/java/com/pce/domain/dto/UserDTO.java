@@ -1,6 +1,7 @@
 package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pce.controller.UserController;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -17,6 +18,7 @@ import java.util.List;
  * Created by Leonardo Tarjadi on 5/03/2016.
  */
 @Relation(collectionRelation = "userList")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserDto extends ResourceSupport implements DomainObjectDTO, Serializable {
   @ReadOnlyProperty
   private long id;

@@ -3,7 +3,6 @@ package com.pce;
 import com.pce.constant.RoleConstant;
 import com.pce.domain.Role;
 import com.pce.service.RoleService;
-import com.pce.service.UserServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +28,6 @@ import java.util.List;
 public class Application extends SpringBootServletInitializer {
   private static final Logger logger = LoggerFactory.getLogger(Application.class);
 
-
-  @Autowired
-  private UserServiceImpl userService;
 
   @Autowired
   private RoleService roleService;

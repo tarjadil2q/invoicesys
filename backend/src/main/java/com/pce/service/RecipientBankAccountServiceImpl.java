@@ -1,5 +1,7 @@
 package com.pce.service;
 
+import com.google.common.base.Preconditions;
+import com.pce.domain.Pce;
 import com.pce.domain.RecipientBankAccount;
 import com.pce.repository.RecipientBankAcctRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +45,11 @@ public class RecipientBankAccountServiceImpl implements RecipientBankAcctService
   @Override
   public Page<RecipientBankAccount> findAllRecipientBankAccount(Pageable pageRequest) {
     return recipientBankAcctRepository.findAll(pageRequest);
+  }
+
+  @Override
+  public Optional<RecipientBankAccount> findRecipientBankAccountByPce(Pce pce) {
+    Preconditions.checkArgument(pce != null, "Pce cannot be null");
+    return recipientBankAcctRepository.findByAssociatedPces(pce);
   }
 }

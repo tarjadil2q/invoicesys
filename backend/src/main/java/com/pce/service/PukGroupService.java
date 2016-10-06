@@ -1,6 +1,8 @@
 package com.pce.service;
 
+import com.pce.domain.CurrentUser;
 import com.pce.domain.PukGroup;
+import com.pce.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,4 +21,8 @@ public interface PukGroupService {
   PukGroup createOrUpdatePukGroup(PukGroup pukGroup);
 
   Page<PukGroup> getAllAvailablePukGroup(Pageable pageRequest);
+
+  List<PukGroup> getAllAvailablePukGroupForCurrentUser(CurrentUser currentUser);
+
+  Page<PukGroup> getPukGroupsByUser(Pageable pageRequest, User user);
 }

@@ -40,14 +40,14 @@ public class Puk {
   private int pukYear;
 
 
-  @ManyToOne(cascade = {CascadeType.REFRESH})
+  @ManyToOne(cascade = {CascadeType.REFRESH}, fetch = FetchType.LAZY)
   @JoinColumn(name = "puk_group_id", referencedColumnName = "id", nullable = false)
   private PukGroup pukGroup;
 
-  @OneToMany(mappedBy = "puk", cascade = {CascadeType.MERGE})
+  @OneToMany(mappedBy = "puk", cascade = {CascadeType.MERGE}, fetch = FetchType.LAZY)
   private Set<PukItem> pukItems;
 
-  @OneToMany(mappedBy = "associatedPuk")
+  @OneToMany(mappedBy = "associatedPuk", fetch = FetchType.LAZY)
   private Set<Pce> associatedPces;
 
 

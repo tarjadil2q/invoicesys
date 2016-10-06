@@ -16,7 +16,6 @@ public interface CurrentUserService {
 
   boolean thisRoleCanAccess(List<String> rolesToValidate, CurrentUser currentUser);
 
-  boolean canCurrentUserAcces(CurrentUser currentUser, String functionalityAccess);
-
   boolean canCurrentUserApproveOrRejectPce(CurrentUser currentUser);
+
 }

@@ -2,12 +2,14 @@ package com.pce.controller;
 
 import com.google.common.collect.Lists;
 import com.pce.domain.Role;
+import com.pce.domain.User;
 import com.pce.domain.dto.ApiError;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.RoleDto;
 import com.pce.service.RoleService;
 import com.pce.service.mapper.RoleMapper;
 import com.pce.util.ControllerHelper;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +45,20 @@ public class RoleController {
   private RoleService roleService;
   private RoleMapper roleMapper;
   private EntityLinks entityLinks;
+  private ModelMapper modelMapper;
+  private PagedResourcesAssembler assembler;
 
   @Autowired
-  public RoleController(RoleService roleService, RoleMapper roleMapper, EntityLinks entityLinks) {
+  public RoleController(RoleService roleService, RoleMapper roleMapper, EntityLinks entityLinks,
+                        ModelMapper modelMapper,
+                        PagedResourcesAssembler assembler) {
     this.roleService = roleService;
     this.roleMapper = roleMapper;
     this.entityLinks = entityLinks;
+    this.modelMapper = modelMapper;
+    this.assembler = assembler;
   }
 
-  @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> getRoleById(@PathVariable Long id) {
     Role role = roleService.getRoleById(id).orElseThrow(() -> new NoSuchElementException(String.format("Role=%s not found", id)));
@@ -61,7 +68,6 @@ public class RoleController {
     return new ResponseEntity<>(userResource, HttpStatus.OK);
   }
 
-  @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<PagedResources<DomainObjectDTO>> getRoles(Pageable pageRequest, PagedResourcesAssembler assembler) {
     Page<Role> allRoles = roleService.getAllAvailableRoles(pageRequest);
@@ -85,6 +91,16 @@ public class RoleController {
 
     return ControllerHelper.getResponseEntityWithoutBody(roleDto, HttpStatus.CREATED);
 
+  }
+
+  @RequestMapping(value = "/user/{userId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  public HttpEntity<PagedResources<DomainObjectDTO>> getRolesByUserId(@PathVariable("userId") long id,
+                                                                      Pageable pageRequest) {
+    User user = new User();
+    user.setId(id);
+    Page<Role> allUsers = roleService.getRolesForUser(pageRequest, user);
+    Page<Resource<RoleDto>> newPaged = allUsers.map(source -> new Resource(modelMapper.map(source, RoleDto.class)));
+    return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
   }
 
 

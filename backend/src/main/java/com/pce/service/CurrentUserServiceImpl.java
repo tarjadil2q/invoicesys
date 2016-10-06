@@ -59,19 +59,10 @@ public class CurrentUserServiceImpl implements CurrentUserService {
     return roles.stream().anyMatch(role -> rolesToValidate.contains(role.getRoleName()));
   }
 
-  @Override
-  public boolean canCurrentUserAcces(CurrentUser currentUser, String functionalityAccess) {
-    Preconditions.checkArgument(currentUser != null, "Current user cannot be null");
-    Preconditions.checkArgument(functionalityAccess != null, "Functinality access cannot be null");
-    if (FunctionalityAccessConstant.PUK.getAccessName().equalsIgnoreCase(functionalityAccess)) {
-      //TODO get all puk_group for user current user  from puk_group_user and return true if user is in any puk group
-      return true;
-    }
-    return false;
-  }
 
   public boolean canCurrentUserApproveOrRejectPce(CurrentUser currentUser) {
     Preconditions.checkArgument(currentUser != null, "Current user cannot be null");
     return currentUser.getRoles().stream().anyMatch(role -> pceApprovalRoleService.findPceApprovalRoleById(role.getId()).isPresent());
   }
+
 }

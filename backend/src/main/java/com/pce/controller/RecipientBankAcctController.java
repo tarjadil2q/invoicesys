@@ -1,6 +1,7 @@
 package com.pce.controller;
 
 import com.google.common.collect.Lists;
+import com.pce.domain.Pce;
 import com.pce.domain.RecipientBankAccount;
 import com.pce.domain.dto.ApiError;
 import com.pce.domain.dto.DomainObjectDTO;
@@ -28,6 +29,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Created by Leonardo Tarjadi on 7/09/2016.
@@ -125,5 +129,21 @@ public class RecipientBankAcctController {
     return ControllerHelper.getResponseEntityWithoutBody(recipientBankAccountDto, HttpStatus.OK);
   }
 
+  @RequestMapping(value = "/pce/{pceId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  public HttpEntity<Resource<RecipientBankAccountDto>> getRecipientByPceId(@PathVariable("pceId") long pceId) {
+    Pce pce = new Pce();
+    pce.setPceId(pceId);
+    Optional<RecipientBankAccount> recipientBankAccount = recipientBankAcctService.findRecipientBankAccountByPce(pce);
+    if (!recipientBankAccount.isPresent()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    return new ResponseEntity<>(mappedRecipient(recipientBankAccount.get()), HttpStatus.OK);
+  }
+
+  private Resource<RecipientBankAccountDto> mappedRecipient(RecipientBankAccount recipient) {
+    Link selfLink = linkTo(methodOn(RecipientBankAcctController.class).getRecipientBankAccountById(recipient.getRecipientBankAccountId())).withSelfRel();
+    RecipientBankAccountDto recipientDto = modelMapper.map(recipient, RecipientBankAccountDto.class);
+    return new Resource<>(recipientDto, selfLink);
+  }
 
 }

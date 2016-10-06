@@ -1,5 +1,6 @@
 package com.pce.service;
 
+import com.pce.domain.Pce;
 import com.pce.domain.PukGroup;
 import com.pce.domain.Role;
 import com.pce.domain.User;
@@ -7,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -54,5 +56,9 @@ public interface UserService {
   User createOrUpdate(User user);
 
   User addUserToPukGroup(User user, PukGroup pukGroup);
+
+  Page<User> getUsersForPukGroup(Pageable pageRequest, PukGroup pukGroup);
+
+  List<User> getApproversByPce(Pce pce);
 
 }

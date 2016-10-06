@@ -1,5 +1,7 @@
 package com.pce.service;
 
+import com.google.common.base.Preconditions;
+import com.pce.domain.Pce;
 import com.pce.domain.PukGroup;
 import com.pce.domain.Role;
 import com.pce.domain.User;
@@ -11,10 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Leonardo Tarjadi on 6/02/2016.
@@ -85,5 +86,22 @@ public class UserServiceImpl implements UserService {
     pukGroups.add(pukGroup);
     user.setPukGroups(pukGroups);
     return userRepository.save(user);
+  }
+
+  @Transactional
+  @Override
+  public Page<User> getUsersForPukGroup(Pageable pageRequest, PukGroup pukGroup) {
+    Preconditions.checkArgument(pukGroup != null, "Puk Group cannot be null");
+    Set<PukGroup> pukGroups = new HashSet<>();
+    pukGroups.add(pukGroup);
+    return userRepository.findByPukGroups(pukGroups, pageRequest);
+  }
+
+  @Override
+  public List<User> getApproversByPce(Pce pce) {
+    Preconditions.checkArgument(pce != null, "Pce  cannot be null");
+    Set<Pce> pces = new HashSet<>();
+    pces.add(pce);
+    return userRepository.findByPcesApproved(pces);
   }
 }

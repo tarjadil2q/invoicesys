@@ -69,7 +69,6 @@ public class PceApprovalRoleController {
   }
 
 
-  @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> getPceApprovalRoleById(@PathVariable Long id) {
     PceApprovalRole pceApprovalRole = pceApprovalRoleService.findPceApprovalRoleById(id).orElseThrow(() -> new NoSuchElementException(String.format("Pce Approval role=%s not found", id)));
@@ -79,7 +78,7 @@ public class PceApprovalRoleController {
     return new ResponseEntity<>(userResource, HttpStatus.OK);
   }
 
-  @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
+
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<PagedResources<DomainObjectDTO>> getPceApprovalRoles(Pageable pageRequest, PagedResourcesAssembler assembler) {
     Page<PceApprovalRole> allPceApprovalRoles = pceApprovalRoleService.findAllAvailableApprovalRole(pageRequest);

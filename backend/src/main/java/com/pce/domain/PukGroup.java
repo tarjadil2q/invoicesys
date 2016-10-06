@@ -27,11 +27,11 @@ public class PukGroup {
   @Column(name = "puk_group_description", nullable = false)
   private String pukGroupDescription;
 
-  @OneToMany(mappedBy = "pukGroup")
+  @OneToMany(mappedBy = "pukGroup", fetch = FetchType.LAZY)
   private Set<Puk> puks;
 
 
-  @ManyToMany(mappedBy = "pukGroups")
+  @ManyToMany(mappedBy = "pukGroups", fetch = FetchType.LAZY)
   private Set<User> pukGroupUsers;
 
   @CreationTimestamp

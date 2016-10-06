@@ -8,6 +8,7 @@ import com.pce.domain.dto.PceApprovalWrapperDto;
 import com.pce.domain.dto.PceDto;
 import com.pce.service.PceApprovalRoleService;
 import com.pce.service.PceService;
+import com.pce.service.UserService;
 import com.pce.util.ControllerHelper;
 import com.pce.validation.validator.PceApproveValidator;
 import com.pce.validation.validator.PceRejectValidator;
@@ -35,7 +36,7 @@ import java.util.Set;
  * Created by Leonardo Tarjadi on 16/09/2016.
  */
 @RestController
-@RequestMapping("/api/v1/pce")
+@RequestMapping("/api/v1/pce/approval")
 @ExposesResourceFor(PceDto.class)
 public class PceApprovalController {
   @Autowired
@@ -50,6 +51,10 @@ public class PceApprovalController {
 
   @Autowired
   private ModelMapper modelMapper;
+
+  @Autowired
+  private UserService userService;
+
 
   private static final String PCE_APPROVAL_URL_PATH = "/pce";
 

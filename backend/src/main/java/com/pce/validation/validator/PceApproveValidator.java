@@ -60,8 +60,5 @@ public class PceApproveValidator implements Validator {
 
     boolean userMatched = pukGroupUsers.stream().anyMatch(pukGroupUser -> pukGroupUser.getId() == user.getId());
     return userMatched ? true : false;
-    //if (!userMatched) {
-
-    //}
   }
 }
