@@ -3,7 +3,6 @@ package com.pce.domain.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.hateoas.core.Relation;
@@ -26,7 +25,6 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
   @ReadOnlyProperty
   private String updatedDate;
 
-  @NotEmpty(message = "PCE No cannot be empty")
   private String pceNo;
 
   private String remarks;

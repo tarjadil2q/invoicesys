@@ -4,12 +4,15 @@ import com.google.common.base.Preconditions;
 import com.pce.domain.*;
 import com.pce.repository.PceItemRepository;
 import com.pce.repository.PceRepository;
+import com.pce.repository.PukRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.time.Year;
@@ -32,15 +35,17 @@ public class PceServiceImpl implements PceService {
   @Autowired
   private PceApprovalRoleService pceApprovalRoleService;
 
+  @Autowired
+  private PukRepository pukRepository;
+
   public Page<Pce> getAllAvailablePce(Pageable pageRequest) {
     return pceRepository.findAll(pageRequest);
   }
 
-  @Transactional
+  @Transactional(isolation = Isolation.SERIALIZABLE)
   public Pce createOrUpdatePce(Pce pce) {
     Preconditions.checkArgument(pce != null, new IllegalArgumentException("Pce cannot be null"));
     Set<PceItem> pceItems = pce.getPceItems();
-    //TODO create pce no based on puk group code with sequence number
     List<PceItem> existingPukItems = getExistingPceItem(pce.getPceId(), pceItems);
     BigDecimal totalPcePrice = BigDecimal.ZERO;
     if (!CollectionUtils.isEmpty(pceItems)) {
@@ -53,7 +58,20 @@ public class PceServiceImpl implements PceService {
       totalPcePrice = totalPcePrice.add(existingPceItem.getPriceAmount());
     }
     pce.setTotalAmount(totalPcePrice);
-    pce.setPceYear(Year.now().getValue());
+    if (pce.getPceYear() == 0) {
+      pce.setPceYear(Year.now().getValue());
+    }
+
+    if (StringUtils.isEmpty(pce.getPceNo())) {
+
+      long pukId = pce.getAssociatedPuk().getPukId();
+      int maxPceCountByYear = pceRepository.findMaxPceCountByYear(pce.getPceYear(), pukId);
+      maxPceCountByYear = maxPceCountByYear + 1;
+      Puk associatedPuk = pukRepository.findOne(pukId);
+      String pukGroupName = associatedPuk.getPukGroup().getPukGroupName();
+      pce.setPceNo(pukGroupName + "-" + maxPceCountByYear);
+    }
+
 
     Pce savedPce = pceRepository.save(pce);
     Set<PceItem> pceItemSet = savedPce.getPceItems();

@@ -15,4 +15,7 @@ public interface PceRepository extends JpaRepository<Pce, Long> {
   @Query("FROM Pce p WHERE p.associatedPuk.pukId = :pukId order by p.creationDate desc")
   Page<Pce> findByPukId(@Param("pukId") long pukId, Pageable pageRequest);
 
+  @Query("Select Count(*) as count From Pce p where p.pceYear = :pceYear And p.associatedPuk.pukId = :pukId")
+  int findMaxPceCountByYear(@Param("pceYear") int pceYear, @Param("pukId") long pukId);
+
 }
