@@ -9,17 +9,23 @@ import com.pce.domain.dto.PceDto;
 import com.pce.service.PceApprovalRoleService;
 import com.pce.service.PceService;
 import com.pce.service.UserService;
+import com.pce.service.mapper.PceMapper;
 import com.pce.util.ControllerHelper;
 import com.pce.validation.validator.PceApproveValidator;
 import com.pce.validation.validator.PceRejectValidator;
 import com.pce.validation.validator.ValidationErrorBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindException;
@@ -53,10 +59,27 @@ public class PceApprovalController {
   private ModelMapper modelMapper;
 
   @Autowired
+  private PceMapper pceMapper;
+
+  @Autowired
   private UserService userService;
+
+  @Autowired
+  private PagedResourcesAssembler assembler;
 
 
   private static final String PCE_APPROVAL_URL_PATH = "/pce";
+
+  @RequestMapping(value = "/currentuser", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  public HttpEntity<PagedResources<Resource<PceDto>>> getAllPceToBeApproveOrRejectByCurrentUser(Authentication authentication, Pageable pageRequest) {
+    CurrentUser principal = (CurrentUser) authentication.getPrincipal();
+    Page<Pce> allPceToBeApproved = pceService.findAllPceToBeApproved(principal, pageRequest);
+    if (!allPceToBeApproved.hasContent()) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    Page<Resource<PceDto>> newPaged = allPceToBeApproved.map(source -> pceMapper.mappedPce(source));
+    return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
+  }
 
   @PreAuthorize("@currentUserServiceImpl.canCurrentUserApproveOrRejectPce(principal)")
   @RequestMapping(value = "/approve/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")

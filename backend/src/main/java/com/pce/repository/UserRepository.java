@@ -2,11 +2,13 @@ package com.pce.repository;
 
 import com.pce.domain.Pce;
 import com.pce.domain.PukGroup;
+import com.pce.domain.Role;
 import com.pce.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,4 +23,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
   Page<User> findByPukGroups(Set<PukGroup> pukGroups, Pageable pageable);
 
   List<User> findByPcesApproved(Set<Pce> pces);
+
+  User findByRolesIn(Collection<Role> roles);
 }

@@ -33,6 +33,8 @@ public interface UserService {
    */
   Optional<User> getUserByEmail(String email);
 
+  Optional<User> getUserByRole(Role role);
+
   /**
    * Return All users, {@link User}.
    *

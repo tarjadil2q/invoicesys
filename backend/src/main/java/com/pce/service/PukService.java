@@ -7,6 +7,7 @@ import com.pce.domain.PukItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -31,6 +32,8 @@ public interface PukService {
   Optional<PukItem> getPukItemByPukIdAndPukItemId(long pukId, long pukItemId);
 
   Page<Puk> getPuksForPukGroup(PukGroup pukGroup, Pageable pageRequest);
+
+  List<Puk> getPuksForPukGroups(List<PukGroup> pukGroups);
 
   Optional<Puk> getPukByPce(Pce pce);
 

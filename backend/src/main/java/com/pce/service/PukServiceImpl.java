@@ -163,4 +163,9 @@ public class PukServiceImpl implements PukService {
   public Page<PukItem> getPukItemsByPukId(long pukId, Pageable pageRequest) {
     return pukItemRepository.findByPukId(pukId, pageRequest);
   }
+
+  @Override
+  public List<Puk> getPuksForPukGroups(List<PukGroup> pukGroups) {
+    return pukRepository.findByPukGroupIn(pukGroups);
+  }
 }

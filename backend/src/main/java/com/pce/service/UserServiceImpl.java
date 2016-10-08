@@ -1,6 +1,7 @@
 package com.pce.service;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.pce.domain.Pce;
 import com.pce.domain.PukGroup;
 import com.pce.domain.Role;
@@ -103,5 +104,10 @@ public class UserServiceImpl implements UserService {
     Set<Pce> pces = new HashSet<>();
     pces.add(pce);
     return userRepository.findByPcesApproved(pces);
+  }
+
+  @Override
+  public Optional<User> getUserByRole(Role role) {
+    return Optional.ofNullable(userRepository.findByRolesIn(Lists.newArrayList(role)));
   }
 }

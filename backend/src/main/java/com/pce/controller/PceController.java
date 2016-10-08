@@ -3,9 +3,8 @@ package com.pce.controller;
 import com.pce.domain.Pce;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.PceDto;
-import com.pce.domain.dto.PukDto;
-import com.pce.domain.dto.RecipientBankAccountDto;
 import com.pce.service.PceService;
+import com.pce.service.mapper.PceMapper;
 import com.pce.util.ControllerHelper;
 import com.pce.validation.validator.PceCreateValidator;
 import com.pce.validation.validator.PceUpdateValidator;
@@ -13,10 +12,11 @@ import com.pce.validation.validator.ValidationErrorBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
-import org.springframework.hateoas.*;
+import org.springframework.hateoas.ExposesResourceFor;
+import org.springframework.hateoas.PagedResources;
+import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
@@ -29,9 +29,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.NoSuchElementException;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Created by Leonardo Tarjadi on 5/09/2016.
@@ -47,7 +44,8 @@ public class PceController {
   private ModelMapper modelMapper;
 
   @Autowired
-  private EntityLinks entityLinks;
+  private PceMapper pceMapper;
+
 
   @Autowired
   private PceCreateValidator pceCreateValidator;
@@ -63,13 +61,13 @@ public class PceController {
   @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<PceDto>> getPceById(@PathVariable Long id) {
     Pce pce = pceService.getPceByPceId(id).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", id)));
-    return new ResponseEntity<>(mappedPce(pce), HttpStatus.OK);
+    return new ResponseEntity<>(pceMapper.mappedPce(pce), HttpStatus.OK);
   }
 
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<PagedResources<DomainObjectDTO>> getPce(Pageable pageRequest) {
     Page<Pce> allPces = pceService.getAllAvailablePce(pageRequest);
-    Page<Resource<PceDto>> newPaged = allPces.map(source -> mappedPce(source));
+    Page<Resource<PceDto>> newPaged = allPces.map(source -> pceMapper.mappedPce(source));
     return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
   }
 
@@ -79,7 +77,7 @@ public class PceController {
     if (CollectionUtils.isEmpty(allPces.getContent())) {
       return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
-    Page<Resource<PceDto>> newPaged = allPces.map(source -> mappedPce(source));
+    Page<Resource<PceDto>> newPaged = allPces.map(source -> pceMapper.mappedPce(source));
     return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
   }
 
@@ -121,19 +119,6 @@ public class PceController {
 
     return ControllerHelper.getResponseEntityWithoutBody(pceDto, HttpStatus.OK);
 
-  }
-
-  private Resource<PceDto> mappedPce(Pce pce) {
-    long pceId = pce.getPceId();
-    Link selfLink = linkTo(methodOn(PceController.class).getPceById(pceId)).withSelfRel();
-    PceDto pceDto = modelMapper.map(pce, PceDto.class);
-    Link pukLink = linkTo(methodOn(PukController.class).getPukByPceId(pceId)).withRel("puk");
-    Link allPuk = entityLinks.linkToCollectionResource(PukDto.class).withRel("all-puks");
-    Link pceItems = linkTo(methodOn(PceItemController.class).getPceItemsByPceId(pceId, new PageRequest(0, 20))).withRel("pce-item");
-    Link recipient = linkTo(methodOn(RecipientBankAcctController.class).getRecipientByPceId(pceId)).withRel("recipient");
-    Link allRecipient = entityLinks.linkToCollectionResource(RecipientBankAccountDto.class).withRel("all-recipient");
-    Link approvers = linkTo(methodOn(UserController.class).getApproversByPceId(pceId)).withRel("current-approvers");
-    return new Resource<>(pceDto, selfLink, pukLink, allPuk, pceItems, recipient, allRecipient, approvers);
   }
 
 

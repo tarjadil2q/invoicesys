@@ -38,6 +38,16 @@ public class PceServiceImpl implements PceService {
   @Autowired
   private PukRepository pukRepository;
 
+  @Autowired
+  private PukGroupService pukGroupService;
+
+  @Autowired
+  private PukService pukService;
+
+  @Autowired
+  private UserService userService;
+
+
   public Page<Pce> getAllAvailablePce(Pageable pageRequest) {
     return pceRepository.findAll(pageRequest);
   }
@@ -132,11 +142,55 @@ public class PceServiceImpl implements PceService {
   }
 
   @Override
+  public Page<Pce> findAllPceToBeApproved(CurrentUser currentUser, Pageable pageRequest) {
+    List<Role> validRoles = getAllApprovalRoleOrderBySequence();
+    Role approvalRoleForCurrentUser = findApprovalRoleFrom(currentUser, validRoles);
+    if (approvalRoleForCurrentUser == null) {
+      return null;
+    }
+    List<PukGroup> allPukGroupsForCurrentUser = pukGroupService.getAllAvailablePukGroupForCurrentUser(currentUser);
+    List<Puk> puksForPukGroups = pukService.getPuksForPukGroups(allPukGroupsForCurrentUser);
+
+    int indexOfCurrentRole = validRoles.indexOf(approvalRoleForCurrentUser);
+    int currentYear = Year.now().getValue();
+    if (indexOfCurrentRole == 0) {
+      return pceRepository.findByApproversIsNullAndAssociatedPukInAndPceYearOrderByCreationDateDesc(puksForPukGroups, currentYear, pageRequest);
+    }
+    Role previousApprovalRole = validRoles.get(indexOfCurrentRole - 1);
+
+    Optional<User> previousApproverUser = userService.getUserByRole(previousApprovalRole);
+    if (!previousApproverUser.isPresent()) {
+      return null;
+    }
+    return pceRepository.findByApproversNotInAndApproversInAndAssociatedPukInAndPceYearOrderByCreationDateDesc(currentUser.getUser(),
+            previousApproverUser.get(), puksForPukGroups, currentYear, pageRequest);
+
+  }
+
+  private Role findApprovalRoleFrom(CurrentUser currentUser, List<Role> validApprovalRoles) {
+    Set<Role> roles = currentUser.getRoles();
+    for (Role role : roles) {
+      for (Role validRole : validApprovalRoles) {
+        if (role.getId() == validRole.getId()) {
+          return validRole;
+        }
+      }
+    }
+    return null;
+  }
+
+
+  private List<Role> getAllApprovalRoleOrderBySequence() {
+    List<PceApprovalRole> validApprovalRoles = pceApprovalRoleService.findAllAvailableApprovalRoleOrderBySequenceNoAsc();
+    return validApprovalRoles.stream().map(pceRole -> pceRole.getPceApprovalRole()).collect(Collectors.toList());
+  }
+
+  @Override
   public boolean approvePce(Pce pce, CurrentUser currentUser) {
     Set<Role> roles = currentUser.getRoles();
-    List<PceApprovalRole> validApprovalRoles = pceApprovalRoleService.findAllAvailableApprovalRoleOrderBySequenceNoAsc();
+
     Set<User> currentApprovers = pce.getApprovers();
-    List<Role> listOfValidRole = validApprovalRoles.stream().map(pceRole -> pceRole.getPceApprovalRole()).collect(Collectors.toList());
+    List<Role> listOfValidRole = getAllApprovalRoleOrderBySequence();
     if (CollectionUtils.isEmpty(currentApprovers)) {
       if (roles.stream().anyMatch(role -> role.getId() == listOfValidRole.get(0).getId())) {
         Set<User> approvers = pce.getApprovers();

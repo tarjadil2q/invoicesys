@@ -16,6 +16,7 @@ public interface PceService {
 
   Page<Pce> getAvailablePceByPukId(long pukId, Pageable pageRequest);
 
+
   Pce createOrUpdatePce(Pce pce);
 
   PceItem createOrUpdatePceItem(Pce pce, PceItem pceItem);
@@ -30,5 +31,7 @@ public interface PceService {
   boolean rejectPce(Pce pce, CurrentUser currentUser);
 
   Page<PceItem> getPceItemsByPce(Pce pce, Pageable pageRequest);
+
+  Page<Pce> findAllPceToBeApproved(CurrentUser currentUser, Pageable pageRequest);
 
 }
