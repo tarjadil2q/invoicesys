@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 
 /**
@@ -21,6 +22,9 @@ public interface PceRepository extends JpaRepository<Pce, Long> {
 
   @Query("Select Count(*) as count From Pce p where p.pceYear = :pceYear And p.associatedPuk.pukId = :pukId")
   int findMaxPceCountByYear(@Param("pceYear") int pceYear, @Param("pukId") long pukId);
+
+  @Query("select Sum(totalAmount) as totalAmount From Pce p where p.associatedPuk.pukId = :pukId")
+  BigDecimal findTotalPceAmountByPuk(@Param("pukId") long pukId);
 
   Page<Pce> findByApproversNotInAndApproversInAndAssociatedPukInAndPceYearOrderByCreationDateDesc(User currentUser, User previousApproverUser,
                                                                                                   Collection<Puk> associatedPuk, int pceYear, Pageable pageRequest);

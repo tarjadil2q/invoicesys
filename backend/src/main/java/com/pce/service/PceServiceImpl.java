@@ -1,7 +1,10 @@
 package com.pce.service;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.pce.domain.*;
+import com.pce.exception.PceBudgetException;
 import com.pce.repository.PceItemRepository;
 import com.pce.repository.PceRepository;
 import com.pce.repository.PukRepository;
@@ -56,17 +59,14 @@ public class PceServiceImpl implements PceService {
   public Pce createOrUpdatePce(Pce pce) {
     Preconditions.checkArgument(pce != null, new IllegalArgumentException("Pce cannot be null"));
     Set<PceItem> pceItems = pce.getPceItems();
-    List<PceItem> existingPukItems = getExistingPceItem(pce.getPceId(), pceItems);
-    BigDecimal totalPcePrice = BigDecimal.ZERO;
-    if (!CollectionUtils.isEmpty(pceItems)) {
-      for (PceItem pceItem : pceItems) {
-        totalPcePrice = totalPcePrice.add(pceItem.getPriceAmount());
-      }
+    BigDecimal totalPcePrice   = getPceTotalPriceBy(pce, pceItems);
+    Puk assocPuk = pce.getAssociatedPuk();
+    BigDecimal pukBudget = assocPuk.getBudget();
+    BigDecimal totalPceAmountSoFar = totalPcePrice.add(getTotalPceBudgetBy(assocPuk));
+    if (totalPceAmountSoFar.compareTo(pukBudget) == 1) {
+      throw new PceBudgetException("Total Puk Budget " + pukBudget + "  for " + assocPuk.getPukDescription() + " is not enough against total amount PCE so far for this puk  " + totalPcePrice);
     }
 
-    for (PceItem existingPceItem : existingPukItems) {
-      totalPcePrice = totalPcePrice.add(existingPceItem.getPriceAmount());
-    }
     pce.setTotalAmount(totalPcePrice);
     if (pce.getPceYear() == 0) {
       pce.setPceYear(Year.now().getValue());
@@ -74,7 +74,7 @@ public class PceServiceImpl implements PceService {
 
     if (StringUtils.isEmpty(pce.getPceNo())) {
 
-      long pukId = pce.getAssociatedPuk().getPukId();
+      long pukId = assocPuk.getPukId();
       int maxPceCountByYear = pceRepository.findMaxPceCountByYear(pce.getPceYear(), pukId);
       maxPceCountByYear = maxPceCountByYear + 1;
       Puk associatedPuk = pukRepository.findOne(pukId);
@@ -95,6 +95,25 @@ public class PceServiceImpl implements PceService {
 
   }
 
+  private BigDecimal getPceTotalPriceBy(Pce pce, Set<PceItem> currentPceItems){
+    List<PceItem> existingPceItems = getExistingPceItem(pce.getPceId(), currentPceItems);
+    BigDecimal totalPcePrice = BigDecimal.ZERO;
+    if (!CollectionUtils.isEmpty(currentPceItems)) {
+      for (PceItem pceItem : currentPceItems) {
+        totalPcePrice = totalPcePrice.add(pceItem.getPriceAmount());
+      }
+    }
+
+
+    for (PceItem existingPceItem : existingPceItems) {
+      totalPcePrice = totalPcePrice.add(existingPceItem.getPriceAmount());
+    }
+    return totalPcePrice;
+  }
+
+  public BigDecimal getTotalPceBudgetBy(Puk puk) {
+    return pceRepository.findTotalPceAmountByPuk(puk.getPukId());
+  }
 
   //TODO change to lambda
   private List<PceItem> getExistingPceItem(long pceId, Set<PceItem> currentPceItem) {
@@ -124,17 +143,19 @@ public class PceServiceImpl implements PceService {
   @Override
   public PceItem createOrUpdatePceItem(Pce pce, PceItem pceItem) {
     pceItem.setPce(pce);
-
-    PceItem savedPceItem = pceItemRepository.save(pceItem);
-    List<PceItem> pceItems = pceItemRepository.findByPceId(pce.getPceId());
-    BigDecimal totalPcePrice = BigDecimal.ZERO;
-    for (PceItem pci : pceItems) {
-      totalPcePrice = totalPcePrice.add(pci.getPriceAmount());
+    BigDecimal totalPcePrice   = getPceTotalPriceBy(pce, Sets.newHashSet(pceItem));
+    Puk assocPuk = pce.getAssociatedPuk();
+    BigDecimal pukBudget = assocPuk.getBudget();
+    if (totalPcePrice.compareTo(pukBudget) == 1) {
+      throw new PceBudgetException("Total Puk Budget " + pukBudget + "  for " + assocPuk.getPukDescription() + " is not enough against total amount PCE so far for this puk  " + totalPcePrice);
     }
+    PceItem savedPceItem = pceItemRepository.save(pceItem);
     pce.setTotalAmount(totalPcePrice);
     pceRepository.save(pce);
     return savedPceItem;
   }
+
+
 
   @Override
   public Optional<PceItem> getPceItemByPceIdAndPceItemId(long pceId, long PceItemId) {
