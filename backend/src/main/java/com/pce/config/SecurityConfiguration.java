@@ -1,7 +1,10 @@
 package com.pce.config;
 
+import com.pce.service.authentication.RestAuthenticationEntryPoint;
+import com.pce.service.authentication.RestAuthenticationSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
@@ -12,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 
 /**
  * Created by Leonardo Tarjadi on 8/02/2016.
@@ -25,7 +29,20 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   private UserDetailsService userDetailsService;
 
   @Autowired
+  private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
+
+  @Autowired
+  private RestAuthenticationSuccessHandler restAuthenticationSuccessHandler;
+
+  @Autowired
+  private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler;
+  @Autowired
   BCryptPasswordEncoder bCryptPasswordEncoder;
+
+  @Bean
+  public SimpleUrlAuthenticationFailureHandler getSimpleUrlAuthenticationFailureHandler() {
+    return new SimpleUrlAuthenticationFailureHandler();
+  }
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
@@ -36,6 +53,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
             .antMatchers(HttpMethod.POST, "/api/**").authenticated()
             .antMatchers(HttpMethod.PUT, "/api/**").authenticated()
             .anyRequest().permitAll()
+            .and()
+
+            .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
+            .and()
+            .formLogin().successHandler(restAuthenticationSuccessHandler)
+            .and()
+            .formLogin().failureHandler(simpleUrlAuthenticationFailureHandler)
             .and()
             .csrf().disable()//Enable back when in prod mode
             .httpBasic().and()
