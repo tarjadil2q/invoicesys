@@ -10,6 +10,8 @@ import com.pce.validation.validator.PceCreateValidator;
 import com.pce.validation.validator.PceUpdateValidator;
 import com.pce.validation.validator.ValidationErrorBuilder;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +39,9 @@ import java.util.NoSuchElementException;
 @RequestMapping("/api/v1/pce")
 @ExposesResourceFor(PceDto.class)
 public class PceController {
+
+  private static final Logger logger = LoggerFactory.getLogger(PceController.class);
+
   @Autowired
   private PceService pceService;
 
@@ -60,12 +65,14 @@ public class PceController {
 
   @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<PceDto>> getPceById(@PathVariable Long id) {
+    logger.debug("Retrieving PCE by ID " + id);
     Pce pce = pceService.getPceByPceId(id).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", id)));
     return new ResponseEntity<>(pceMapper.mappedPce(pce), HttpStatus.OK);
   }
 
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<PagedResources<DomainObjectDTO>> getPce(Pageable pageRequest) {
+    logger.debug("Retrieving all pce ");
     Page<Pce> allPces = pceService.getAllAvailablePce(pageRequest);
     Page<Resource<PceDto>> newPaged = allPces.map(source -> pceMapper.mappedPce(source));
     return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
