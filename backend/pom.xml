@@ -10,21 +10,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>pce</artifactId>
-    <packaging>war</packaging>
 
-    <profiles>
-        <profile>
-            <id>deployment</id>
-            <dependencies>
-                <dependency>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                    <scope>provided</scope>
-                </dependency>
-            </dependencies>
-        </profile>
 
-    </profiles>
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
