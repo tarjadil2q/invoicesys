@@ -43,7 +43,7 @@ public class PukItem {
   private BigDecimal totalPrice;
 
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = CascadeType.REFRESH)
   @JoinColumn(name = "puk_id", referencedColumnName = "id")
   private Puk puk;
 

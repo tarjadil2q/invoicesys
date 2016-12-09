@@ -24,7 +24,7 @@ public class PceApprovalRole {
   @Column(name = "approval_role_sequence", unique = true)
   private int approvalRoleSequence;
 
-  @OneToOne(cascade = CascadeType.ALL)
+  @OneToOne(cascade = CascadeType.REFRESH)
   @PrimaryKeyJoinColumn
   private Role pceApprovalRole;
 
