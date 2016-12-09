@@ -25,7 +25,7 @@ public class PukDto extends ResourceSupport implements DomainObjectDTO, Serializ
   private String creationDate;
   @ReadOnlyProperty
   private String updatedDate;
-  @NotEmpty
+  @NotEmpty(message = "Puk No Cannot Be Null / Empty")
   private String pukNo;
   @NotEmpty
   private String pukDescription;

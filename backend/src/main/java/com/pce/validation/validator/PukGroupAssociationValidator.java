@@ -26,10 +26,13 @@ public class PukGroupAssociationValidator implements org.springframework.validat
   @Override
   public void validate(Object target, Errors errors) {
     PukGroupForPukDto pukGroupDto = (PukGroupForPukDto) target;
-    long pukGroupId = pukGroupDto.getPukGroupId();
-    Optional<PukGroup> pukGroupById = pukGroupService.getPukGroupById(pukGroupId);
-    if (!pukGroupById.isPresent()) {
-      errors.rejectValue("pukGroupId", "pukGroup.not.exists", "Puk Group " + pukGroupId + " is not exists in the system, please select different one");
+    if (pukGroupDto != null) {
+      long pukGroupId = pukGroupDto.getPukGroupId();
+      Optional<PukGroup> pukGroupById = pukGroupService.getPukGroupById(pukGroupId);
+      if (!pukGroupById.isPresent()) {
+        errors.rejectValue("pukGroupId", "pukGroup.not.exists", "Puk Group " + pukGroupId + " is not exists in the system, please select different one");
+      }
     }
+
   }
 }
