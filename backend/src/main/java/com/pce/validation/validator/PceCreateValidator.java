@@ -32,7 +32,7 @@ public class PceCreateValidator implements Validator {
       errors.rejectValue("associatedPuk", "associatedPuk.not.exists", "Associated puk not specify, please specify one");
     }
     ValidationHelper.invokeNestedValidator(this.pukAssociatedValidator,
-            associatedPuk, errors, "puk");
+            associatedPuk, errors, "associatedPuk");
 
     RecipientBankAccountDto recipientBankAccount = pceDto.getRecipientBankAccount();
     if (recipientBankAccount == null) {

@@ -59,6 +59,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
   private PukItemMeasurementService pukItemMeasurementService;
 
   @Autowired
+  private RecipientBankAcctService recipientBankAcctService;
+
+  @Autowired
   private RoleService roleService;
 
   @Autowired
@@ -117,6 +120,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
       Role headOfFinance = roleService.createOrUpdateRole(new Role("Head of Finance"));
       Role financeComittee = roleService.createOrUpdateRole(new Role("Finance Comittee"));
       Role comitteeHead = roleService.createOrUpdateRole(new Role(RoleConstant.COMITTEE_HEAD.getRoleName()));
+      Role officer = roleService.createOrUpdateRole(new Role("Officer"));
       if (!userService.isUserExists("leonardo.tarjadi@gmail.com")) {
         UserDto userDto = new UserDto();
         userDto.setEmail("leonardo.tarjadi@gmail.com");
@@ -127,6 +131,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         userService.createOrUpdate(user);
         userService.createOrUpdate(user, Sets.newHashSet(adminRole));
 
+        UserDto officerDto = new UserDto();
+        officerDto.setEmail("lipi.hardjono@gmail.com");
+        officerDto.setFirstName("Lipi");
+        officerDto.setLastName("Hardjono");
+        officerDto.setPassword("gkypce");
+        user = userMapper.mapDtoIntoEntity(officerDto);
+        userService.createOrUpdate(user);
+        User createdOfficerUser = userService.createOrUpdate(user, Sets.newHashSet(officer));
+
         UserDto chairmanUser = new UserDto();
         chairmanUser.setEmail("dedy.wikarsa@gmail.com");
         chairmanUser.setFirstName("Dedy");
@@ -135,7 +148,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         user = userMapper.mapDtoIntoEntity(chairmanUser);
 
         userService.createOrUpdate(user);
-        userService.createOrUpdate(user, Sets.newHashSet(chairman));
+        User createdChairmanUser = userService.createOrUpdate(user, Sets.newHashSet(chairman));
 
         UserDto headOfFinanceUser = new UserDto();
         headOfFinanceUser.setEmail("heny.tan@gmail.com");
@@ -145,7 +158,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         user = userMapper.mapDtoIntoEntity(headOfFinanceUser);
 
         userService.createOrUpdate(user);
-        userService.createOrUpdate(user, Sets.newHashSet(headOfFinance));
+        User createdHeadOfFinanceUser = userService.createOrUpdate(user, Sets.newHashSet(headOfFinance));
 
         UserDto financeUser = new UserDto();
         financeUser.setEmail("merlin.kandaw@gmail.com");
@@ -155,7 +168,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         user = userMapper.mapDtoIntoEntity(financeUser);
 
         userService.createOrUpdate(user);
-        userService.createOrUpdate(user, Sets.newHashSet(financeComittee));
+        User createdFinanceUser = userService.createOrUpdate(user, Sets.newHashSet(financeComittee));
 
         UserDto comitteHeadUser = new UserDto();
         comitteHeadUser.setFirstName("Bambang");
@@ -165,7 +178,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         user = userMapper.mapDtoIntoEntity(comitteHeadUser);
 
         userService.createOrUpdate(user);
-        userService.createOrUpdate(user, Sets.newHashSet(comitteeHead));
+        User createdComitteeUser = userService.createOrUpdate(user, Sets.newHashSet(comitteeHead));
 
 
         PukItemMeasurementDto pukItemMeasurementDto = new PukItemMeasurementDto();
@@ -185,6 +198,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         pukGroupDto.setPukGroupUsers(pukGroupUsers);
 
         PukGroup sarprasHospitalityGroup = pukGroupService.createOrUpdatePukGroup(modelMapper.map(pukGroupDto, PukGroup.class));
+
+        userService.addUserToPukGroup(createdComitteeUser, sarprasHospitalityGroup);
+        userService.addUserToPukGroup(createdOfficerUser, sarprasHospitalityGroup);
+        userService.addUserToPukGroup(createdChairmanUser, sarprasHospitalityGroup);
+        userService.addUserToPukGroup(createdFinanceUser, sarprasHospitalityGroup);
+        userService.addUserToPukGroup(createdHeadOfFinanceUser, sarprasHospitalityGroup);
+
 
         PukDto sarprasCutleryPuk = new PukDto();
         sarprasCutleryPuk.setPukNo("01/SARPRAS/SYD");
@@ -232,6 +252,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         pceApprovalRoleDto.setApprovalRoleSequence(4);
 
         pceApprovalRoleService.createOrUpdatePceApprovalRole(modelMapper.map(pceApprovalRoleDto, PceApprovalRole.class));
+
+        RecipientBankAccountDto recipientBankAccountDto = new RecipientBankAccountDto();
+        recipientBankAccountDto.setAcctName("Leonardo Tarjadi");
+        recipientBankAccountDto.setAcctNumber("1243222");
+        recipientBankAccountDto.setBsb("322-333");
+        recipientBankAcctService.createOrUpdateRecipientBankAccount(modelMapper.map(recipientBankAccountDto, RecipientBankAccount.class));
       }
 
     }

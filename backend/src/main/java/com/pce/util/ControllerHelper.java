@@ -21,6 +21,11 @@ public class ControllerHelper {
     return new ResponseEntity<>(null, httpHeaders, httpStatus);
   }
 
+  public static ResponseEntity getResponseEntityWithoutBody(HttpStatus httpStatus) {
+    HttpHeaders httpHeaders = new HttpHeaders();
+    return new ResponseEntity<>(null, httpHeaders, httpStatus);
+  }
+
   public static ResponseEntity getResponseEntity(ResourceSupport resourceDto) {
     Resource<ResourceSupport> pukResource = new Resource<>(resourceDto);
     return new ResponseEntity<>(pukResource, HttpStatus.OK);

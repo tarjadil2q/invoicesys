@@ -25,7 +25,7 @@ public class PceItem {
   @Column(name = "price_amount", nullable = false)
   private BigDecimal priceAmount;
 
-  @ManyToOne(cascade = CascadeType.ALL)
+  @ManyToOne(cascade = CascadeType.REFRESH)
   @JoinColumn(name = "pce_id", referencedColumnName = "id")
   private Pce pce;
 

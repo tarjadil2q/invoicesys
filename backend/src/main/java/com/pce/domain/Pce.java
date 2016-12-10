@@ -46,7 +46,7 @@ public class Pce {
           inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
   private Set<User> approvers;
 
-  @OneToMany(mappedBy = "pce")
+  @OneToMany(mappedBy = "pce", cascade = CascadeType.REMOVE)
   private Set<PceItem> pceItems;
 
   @Column(name = "invoice_image")

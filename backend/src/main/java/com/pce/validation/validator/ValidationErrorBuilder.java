@@ -26,4 +26,9 @@ public class ValidationErrorBuilder {
     return new ResponseEntity(new Resource<>(error), HttpStatus.NOT_FOUND);
 
   }
+
+  public static ResponseEntity<Resource<DomainObjectDTO>> fromUserCreatedError(String errorMessage) {
+    ApiError error = new ApiError(HttpStatus.NOT_FOUND, "Validation failed " + errorMessage);
+    return new ResponseEntity(new Resource<>(error), HttpStatus.NOT_FOUND);
+  }
 }

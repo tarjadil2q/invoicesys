@@ -17,6 +17,7 @@ import com.pce.validation.validator.ValidationErrorBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.ExposesResourceFor;
@@ -35,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Set;
 
@@ -74,8 +76,9 @@ public class PceApprovalController {
   public HttpEntity<PagedResources<Resource<PceDto>>> getAllPceToBeApproveOrRejectByCurrentUser(Authentication authentication, Pageable pageRequest) {
     CurrentUser principal = (CurrentUser) authentication.getPrincipal();
     Page<Pce> allPceToBeApproved = pceService.findAllPceToBeApproved(principal, pageRequest);
-    if (!allPceToBeApproved.hasContent()) {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    if (allPceToBeApproved == null || !allPceToBeApproved.hasContent()) {
+      ArrayList<Pce> emptyPces = new ArrayList<>();
+      return new ResponseEntity<>(assembler.toResource(new PageImpl(emptyPces)), HttpStatus.OK);
     }
     Page<Resource<PceDto>> newPaged = allPceToBeApproved.map(source -> pceMapper.mappedPce(source));
     return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
@@ -99,7 +102,7 @@ public class PceApprovalController {
 
     if (pceService.approvePce(pce, principal)) {
       PceDto pceDto = modelMapper.map(pce, PceDto.class);
-      pceDto.add(ControllerLinkBuilder.linkTo(PceApprovalController.class).slash(pce.getPceId()).withRel(PCE_APPROVAL_URL_PATH).withSelfRel());
+      pceDto.add(ControllerLinkBuilder.linkTo(UserController.class).slash(PCE_APPROVAL_URL_PATH).slash(pce.getPceId()).withSelfRel());
 
       return ControllerHelper.getResponseEntityWithoutBody(pceDto, HttpStatus.OK);
     }

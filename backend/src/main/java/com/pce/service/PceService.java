@@ -34,4 +34,8 @@ public interface PceService {
 
   Page<Pce> findAllPceToBeApproved(CurrentUser currentUser, Pageable pageRequest);
 
+  boolean deletePceItemAndPce(long pceId, long pceItemId);
+
+  boolean deletePce(long pceId);
+
 }

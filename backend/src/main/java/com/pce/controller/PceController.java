@@ -3,6 +3,7 @@ package com.pce.controller;
 import com.pce.domain.Pce;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.PceDto;
+import com.pce.exception.PceCreateUpdateException;
 import com.pce.service.PceService;
 import com.pce.service.mapper.PceMapper;
 import com.pce.util.ControllerHelper;
@@ -31,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 /**
  * Created by Leonardo Tarjadi on 5/09/2016.
@@ -111,6 +113,9 @@ public class PceController {
                                                          @RequestBody @Valid PceDto pceDto, Errors errors) {
 
     Pce pce = pceService.getPceByPceId(id).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", id)));
+    if (!pce.getApprovers().isEmpty()) {
+      throw new PceCreateUpdateException("Cannot update pce  as it is in the approving transition, please reject the pce first");
+    }
     pceDto.setPceId(id);
     ValidationUtils.invokeValidator(pceUpdateValidator, pceDto, errors);
 
@@ -125,7 +130,22 @@ public class PceController {
     pceDto.add(ControllerLinkBuilder.linkTo(PukController.class).slash(updatedPce.getPceId()).withRel(PCE_URL_PATH).withSelfRel());
 
     return ControllerHelper.getResponseEntityWithoutBody(pceDto, HttpStatus.OK);
+  }
 
+  @PreAuthorize("@pceUserServiceImpl.canCurrentUserCreateOrUpdatePce(principal)")
+  @RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json; charset=UTF-8")
+  public HttpEntity<Resource<DomainObjectDTO>> deletePce(@PathVariable("id") long id) {
+    Optional<Pce> pceByPceId = pceService.getPceByPceId(id);
+    if (pceByPceId.isPresent()) {
+      Pce pce = pceByPceId.get();
+      if (pce.getApprovers().isEmpty()) {
+        boolean deleted = pceService.deletePce(id);
+        if (deleted) {
+          return ControllerHelper.getResponseEntityWithoutBody(HttpStatus.OK);
+        }
+      }
+    }
+    return ValidationErrorBuilder.fromUserCreatedError("Unable to delete PCE with ID" + id + " Please make sure ID is valid and PCE is not in approving state");
   }
 
 

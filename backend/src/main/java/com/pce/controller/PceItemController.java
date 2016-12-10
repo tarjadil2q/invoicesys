@@ -5,8 +5,10 @@ import com.pce.domain.PceItem;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.PceDto;
 import com.pce.domain.dto.PceItemDto;
+import com.pce.exception.PceCreateUpdateException;
 import com.pce.service.PceService;
 import com.pce.util.ControllerHelper;
+import com.pce.validation.validator.ValidationErrorBuilder;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -56,6 +58,11 @@ public class PceItemController {
                                                                              @RequestBody @Valid PceItemDto pceItemDto, Errors errors) {
 
     Pce pce = pceService.getPceByPceId(pceId).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", pceId)));
+
+    if (!pce.getApprovers().isEmpty()) {
+      throw new PceCreateUpdateException("Cannot update existing pce item  as it is in the approving transition, please reject the pce first");
+    }
+
     PceItem pceItem = pceService.getPceItemByPceIdAndPceItemId(pceId, pceItemId).orElseThrow(() -> new NoSuchElementException(String.format("PceItem=%s not found", pceItemId)));
 
     PceItem mappedPceItem = modelMapper.map(pceItemDto, PceItem.class);
@@ -73,7 +80,9 @@ public class PceItemController {
                                                                              @RequestBody @Valid PceItemDto pceItemDto, Errors errors) {
     Pce pce = pceService.getPceByPceId(pceId).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", pceId)));
 
-
+    if (!pce.getApprovers().isEmpty()) {
+      throw new PceCreateUpdateException("Cannot create additional pce item  as it is in the approving transition, please reject the pce first");
+    }
     PceItem mappedPceItem = modelMapper.map(pceItemDto, PceItem.class);
     PceItem updatedPceItem = pceService.createOrUpdatePceItem(pce, mappedPceItem);
 
@@ -82,6 +91,21 @@ public class PceItemController {
 
     return ControllerHelper.getResponseEntityWithoutBody(pceItemDto, HttpStatus.CREATED);
 
+  }
+
+  @PreAuthorize("@pceUserServiceImpl.canCurrentUserCreateOrUpdatePce(principal)")
+  @RequestMapping(value = "/{pceId}/pceitem/{pceItemId}", method = RequestMethod.DELETE, produces = "application/json; charset=UTF-8")
+  public HttpEntity<Resource<DomainObjectDTO>> deletePceItemByPceAndPceItem(@PathVariable("pceId") long pceId,
+                                                                            @PathVariable("pceItemId") long pceItemId) {
+    Pce pce = pceService.getPceByPceId(pceId).orElseThrow(() -> new NoSuchElementException(String.format("Pce=%s not found", pceId)));
+    if (!pce.getApprovers().isEmpty()) {
+      throw new PceCreateUpdateException("Cannot delete pce item  as it is in the approving transition, please reject the pce first");
+    }
+
+    if (!pceService.deletePceItemAndPce(pceId, pceItemId)) {
+      return ValidationErrorBuilder.fromUserCreatedError("Unable to Delete PCE Item please ensure that it is exist and that the PCE is not being approved yet");
+    }
+    return ControllerHelper.getResponseEntityWithoutBody(HttpStatus.OK);
   }
 
 

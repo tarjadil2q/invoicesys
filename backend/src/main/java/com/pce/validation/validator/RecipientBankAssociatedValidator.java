@@ -27,7 +27,7 @@ public class RecipientBankAssociatedValidator implements Validator {
 
     long recipientBankAcctId = recipientBankAccountDto.getRecipientBankAccountId();
     if (!recipientBankAcctService.findRecipientBankAccountById(recipientBankAcctId).isPresent()) {
-      errors.rejectValue("recipientBankAcctId", "recipient.not.exists", "Recipient Bank Account  " + recipientBankAcctId + " is not exists in the system, please select different one");
+      errors.rejectValue("recipientBankAccountId", "recipient.not.exists", "Recipient Bank Account  " + recipientBankAcctId + " is not exists in the system, please select different one");
     }
   }
 }

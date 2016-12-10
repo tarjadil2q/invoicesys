@@ -147,6 +147,7 @@ public class UserController {
 
   }
 
+  @PreAuthorize("@currentUserServiceImpl.canAccessUser(principal, #id)")
   @RequestMapping(value = "/{userId}/pukgroup/{pukGroupId}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> addUserToPukGroup(@PathVariable("userId") long userId,
                                                                  @PathVariable("pukGroupId") long pukGroupId) {

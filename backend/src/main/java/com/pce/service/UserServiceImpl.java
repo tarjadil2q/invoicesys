@@ -2,6 +2,7 @@ package com.pce.service;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.pce.domain.Pce;
 import com.pce.domain.PukGroup;
 import com.pce.domain.Role;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 
@@ -83,7 +85,11 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public User addUserToPukGroup(User user, PukGroup pukGroup) {
-    Set<PukGroup> pukGroups = user.getPukGroups();
+    Set<PukGroup> existingUserPukGroups = user.getPukGroups();
+    Set<PukGroup> pukGroups = Sets.newHashSet();
+    if (!CollectionUtils.isEmpty(existingUserPukGroups)) {
+      pukGroups.addAll(existingUserPukGroups);
+    }
     pukGroups.add(pukGroup);
     user.setPukGroups(pukGroups);
     return userRepository.save(user);

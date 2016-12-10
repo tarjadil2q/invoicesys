@@ -29,6 +29,8 @@ public interface PceRepository extends JpaRepository<Pce, Long> {
   Page<Pce> findByApproversNotInAndApproversInAndAssociatedPukInAndPceYearOrderByCreationDateDesc(User currentUser, User previousApproverUser,
                                                                                                   Collection<Puk> associatedPuk, int pceYear, Pageable pageRequest);
 
+  Page<Pce> findByApproversInAndAssociatedPukInAndPceYearOrderByCreationDateDesc(User previousApproverUser, Collection<Puk> associatedPuk, int pceYear, Pageable pageRequest);
+
   Page<Pce> findByApproversIsNullAndAssociatedPukInAndPceYearOrderByCreationDateDesc(Collection<Puk> associatedPuk, int pceYear,
                                                                                      Pageable pageRequest);
 
