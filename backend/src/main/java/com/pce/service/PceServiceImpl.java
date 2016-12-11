@@ -84,8 +84,8 @@ public class PceServiceImpl implements PceService {
       int maxPceCountByYear = pceRepository.findMaxPceCountByYear(pce.getPceYear(), pukId);
       maxPceCountByYear = maxPceCountByYear + 1;
       Puk associatedPuk = pukRepository.findOne(pukId);
-      String pukGroupName = associatedPuk.getPukGroup().getPukGroupName();
-      pce.setPceNo(pukGroupName + "-" + maxPceCountByYear);
+      String pukNo = associatedPuk.getPukNo();
+      pce.setPceNo(pukNo + "-" + maxPceCountByYear + "-" + associatedPuk.getPukYear());
     }
 
 
