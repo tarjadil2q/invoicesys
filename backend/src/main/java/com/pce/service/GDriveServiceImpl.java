@@ -58,6 +58,16 @@ public class GDriveServiceImpl implements DriveService {
   private static final Logger logger = LoggerFactory.getLogger(GDriveServiceImpl.class);
   public static final String ROOT_PARENT_INVOICE_FOLDER = "GKY-SYD-PCE-Invoice";
   public static final String GOOGLE_FOLDER_MIME_TYPE = "application/vnd.google-apps.folder";
+  public static final String PERMISSION_TYPE_ANYONE = "anyone";
+  public static final String PERMISION_ROLE_READER = "reader";
+  public static final String GOOGLE_FIELD_ID = "id";
+  public static final String GOOGLE_FIELD_PARENTS = "parents";
+  public static final String GOOGLE_FIELD_WEB_VIEW_LINK = "webViewLink";
+  public static final String GOOGLE_FIELD_NAME = "name";
+  public static final String GOOGLE_FIELD_THUMBNAIL_LINK = "thumbnailLink";
+  public static final String GOOGLE_FIELD_WEB_CONTENT_LINK = "webContentLink";
+  public static final String GOOGLE_FIELD_ICON_LINK = "iconLink";
+  public static final String GOOGLE_FIELD_MIME_TYPE = "mimeType";
 
   @Autowired
   private GDriveAuthentication gDriveAuthentication;
@@ -92,7 +102,14 @@ public class GDriveServiceImpl implements DriveService {
       fileMetadata.setParents(Lists.newArrayList(parentFolderId, yearFolder.getId(), pceFolder.getId()));
 
       Drive.Files.Create request = drive.files().create(fileMetadata, mediaContent)
-              .setFields("id, parents, webViewLink, name, thumbnailLink, webContentLink, iconLink, mimeType");
+              .setFields(GOOGLE_FIELD_ID + ", " +
+                      GOOGLE_FIELD_PARENTS + ", " +
+                      GOOGLE_FIELD_WEB_VIEW_LINK + ", " +
+                      GOOGLE_FIELD_NAME + ", " +
+                      GOOGLE_FIELD_THUMBNAIL_LINK + ", " +
+                      GOOGLE_FIELD_WEB_CONTENT_LINK + ", " +
+                      GOOGLE_FIELD_ICON_LINK + ", " +
+                      GOOGLE_FIELD_MIME_TYPE);
       File executedFile = request.execute();
 
 
@@ -134,8 +151,8 @@ public class GDriveServiceImpl implements DriveService {
       String mimeType = gDriveFile.getMimeType();
       return new InputStreamResource(getGDrive().files().export(gDriveFile.getFileId(), mimeType).executeMediaAsInputStream());
     } catch (IOException e) {
-      logger.error("Unable to load file with id " + fileId, e);
-      throw new InvalidGoogleFileException("Unable to load file with id " + fileId, e);
+      logger.error("Unable to load file with " + GOOGLE_FIELD_ID + " " + fileId, e);
+      throw new InvalidGoogleFileException("Unable to load file with " + GOOGLE_FIELD_ID + " " + fileId, e);
     }
   }
 
@@ -148,9 +165,9 @@ public class GDriveServiceImpl implements DriveService {
       }
       GDriveFile driveFile = optionalGDriveFile.get();
       String gDriveFileId = driveFile.getFileId();
-      logger.debug("Deleting file with drive id " + gDriveFileId + " from google drive");
+      logger.debug("Deleting file with drive " + GOOGLE_FIELD_ID + " " + gDriveFileId + " from google drive");
       drive.files().delete(gDriveFileId).execute();
-      logger.debug("Deleting gDrive database record with id " + databaseDriveFileId);
+      logger.debug("Deleting gDrive database record with " + GOOGLE_FIELD_ID + " " + databaseDriveFileId);
       gDriveRepository.delete(databaseDriveFileId);
       return true;
 
@@ -169,8 +186,8 @@ public class GDriveServiceImpl implements DriveService {
 
 
   private File checkAndCreateFolder(Drive drive, String folderName, String parentFolderId, String folderDescription) throws IOException {
-    Preconditions.checkArgument(StringUtils.isNotEmpty(folderName), "Folder name cannot be null or empty");
-    Drive.Files.List parentFolderRequest = drive.files().list().setQ("mimeType='application/vnd.google-apps.folder' and trashed=false  and '" + parentFolderId + "' in parents");
+    Preconditions.checkArgument(StringUtils.isNotEmpty(folderName), "Folder " + GOOGLE_FIELD_NAME + " cannot be null or empty");
+    Drive.Files.List parentFolderRequest = drive.files().list().setQ(GOOGLE_FIELD_MIME_TYPE + "='application/vnd.google-apps.folder' and trashed=false  and '" + parentFolderId + "' in " + GOOGLE_FIELD_PARENTS);
     FileList folderList = parentFolderRequest.execute();
     List<File> files = folderList.getFiles();
     if (org.springframework.util.CollectionUtils.isEmpty(files)) {
@@ -192,7 +209,7 @@ public class GDriveServiceImpl implements DriveService {
     fileMetadata.setMimeType(GOOGLE_FOLDER_MIME_TYPE);
 
     return drive.files().create(fileMetadata)
-            .setFields("id")
+            .setFields(GOOGLE_FIELD_ID)
             .execute();
 
   }
@@ -233,20 +250,20 @@ public class GDriveServiceImpl implements DriveService {
     };
     BatchRequest batch = drive.batch();
     Permission userPermission = new Permission()
-            .setType("anyone")
-            .setRole("reader");
+            .setType(PERMISSION_TYPE_ANYONE)
+            .setRole(PERMISION_ROLE_READER);
     try {
       PermissionList permissionList = drive.permissions().list(fileId).execute();
       List<Permission> permissions = permissionList.getPermissions();
       if (CollectionUtils.isEmpty(permissions) || !isAnyoneReaderPermission(permissions)) {
         drive.permissions().create(fileId, userPermission)
-                .setFields("id")
+                .setFields(GOOGLE_FIELD_ID)
                 .queue(batch, callback);
         batch.execute();
       }
 
     } catch (IOException e) {
-      throw new InvalidGoogleFileException("Unable to get file with id " + fileId + " from GDrive", e);
+      throw new InvalidGoogleFileException("Unable to get file with " + GOOGLE_FIELD_ID + " " + fileId + " from GDrive", e);
     }
   }
 
