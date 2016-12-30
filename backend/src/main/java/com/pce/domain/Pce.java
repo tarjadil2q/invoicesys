@@ -49,6 +49,10 @@ public class Pce {
   @OneToMany(mappedBy = "pce", cascade = CascadeType.REMOVE)
   private Set<PceItem> pceItems;
 
+  @OneToMany(mappedBy = "pce")
+  private Set<GDriveFile> driveFiles;
+
+
   @Column(name = "invoice_image")
   private byte[] invoiceImage;
 
@@ -66,8 +70,10 @@ public class Pce {
   public Pce() {
   }
 
-  public Pce(String pceNo, Puk associatedPuk, RecipientBankAccount recipientBankAccount, String remarks, Set<User> approvers, Set<PceItem> pceItems, byte[] invoiceImage,
-             int pceYear) {
+  public Pce(String pceNo, Puk associatedPuk, RecipientBankAccount recipientBankAccount, String remarks, Set<User> approvers,
+             Set<PceItem> pceItems, byte[] invoiceImage,
+             int pceYear,
+             Set<GDriveFile> driveFiles) {
     this.pceNo = pceNo;
     this.associatedPuk = associatedPuk;
     this.recipientBankAccount = recipientBankAccount;
@@ -76,6 +82,7 @@ public class Pce {
     this.pceItems = pceItems;
     this.invoiceImage = invoiceImage;
     this.pceYear = pceYear;
+    this.driveFiles = driveFiles;
   }
 
   public long getPceId() {
@@ -180,6 +187,14 @@ public class Pce {
 
   public void setPceYear(int pceYear) {
     this.pceYear = pceYear;
+  }
+
+  public Set<GDriveFile> getDriveFiles() {
+    return driveFiles;
+  }
+
+  public void setDriveFiles(Set<GDriveFile> driveFiles) {
+    this.driveFiles = driveFiles;
   }
 
   @Override

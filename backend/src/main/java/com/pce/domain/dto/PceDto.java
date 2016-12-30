@@ -10,6 +10,7 @@ import org.springframework.hateoas.core.Relation;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Leonardo Tarjadi on 7/09/2016.
@@ -40,6 +41,8 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
 
   private List<PceItemDto> pceItems;
 
+  private Set<GDriveFileDto> driveFiles;
+
   @ReadOnlyProperty
   private int pceYear;
 
@@ -58,7 +61,8 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
                 @JsonProperty("totalAmountInWords") String totalAmountInWords,
                 @JsonProperty("associatedPuk") PukDto associatedPuk,
                 @JsonProperty("recipientBankAccount") RecipientBankAccountDto recipientBankAccount,
-                @JsonProperty("pceItems") List<PceItemDto> pceItems) {
+                @JsonProperty("pceItems") List<PceItemDto> pceItems,
+                @JsonProperty("driveFiles") Set<GDriveFileDto> driveFiles) {
     this.associatedPuk = associatedPuk;
     this.pceId = pceId;
     this.creationDate = creationDate;
@@ -69,6 +73,7 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
     this.totalAmountInWords = totalAmountInWords;
     this.recipientBankAccount = recipientBankAccount;
     this.pceItems = pceItems;
+    this.driveFiles = driveFiles;
   }
 
 
@@ -166,5 +171,13 @@ public class PceDto extends ResourceSupport implements DomainObjectDTO, Serializ
 
   public void setApprovers(List<UserDto> approvers) {
     this.approvers = approvers;
+  }
+
+  public Set<GDriveFileDto> getDriveFiles() {
+    return driveFiles;
+  }
+
+  public void setDriveFiles(Set<GDriveFileDto> driveFiles) {
+    this.driveFiles = driveFiles;
   }
 }

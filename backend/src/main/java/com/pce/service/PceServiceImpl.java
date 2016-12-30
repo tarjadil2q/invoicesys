@@ -51,6 +51,9 @@ public class PceServiceImpl implements PceService {
   @Autowired
   private UserService userService;
 
+  @Autowired
+  private DriveService driveService;
+
 
   public Page<Pce> getAllAvailablePce(Pageable pageRequest) {
     return pceRepository.findAll(pageRequest);
@@ -320,7 +323,11 @@ public class PceServiceImpl implements PceService {
 
   public boolean deletePce(long pceId) {
     Pce pce = pceRepository.findOne(pceId);
+    Set<GDriveFile> driveFiles = pce.getDriveFiles();
     if (pce != null && pce.getApprovers().isEmpty()) {
+      if (driveFiles != null) {
+        driveFiles.forEach(gDriveFile -> driveService.deleteDriveFile(gDriveFile.getgDriveFileId()));
+      }
       pceRepository.delete(pceId);
       return true;
     }
