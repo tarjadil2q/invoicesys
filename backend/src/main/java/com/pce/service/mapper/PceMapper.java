@@ -32,13 +32,14 @@ public class PceMapper {
     long pceId = pce.getPceId();
     Link selfLink = linkTo(methodOn(PceController.class).getPceById(pceId)).withSelfRel();
     PceDto pceDto = modelMapper.map(pce, PceDto.class);
+    Link gDriveFilesByPce = linkTo(methodOn(GDriveController.class).getGDriveFilesByPceId(pceId, new PageRequest(0, 20))).withRel("gdrive-attachement-files");
     Link pukLink = linkTo(methodOn(PukController.class).getPukByPceId(pceId)).withRel("puk");
     Link allPuk = entityLinks.linkToCollectionResource(PukDto.class).withRel("all-puks");
     Link pceItems = linkTo(methodOn(PceItemController.class).getPceItemsByPceId(pceId, new PageRequest(0, 20))).withRel("pce-item");
     Link recipient = linkTo(methodOn(RecipientBankAcctController.class).getRecipientByPceId(pceId)).withRel("recipient");
     Link allRecipient = entityLinks.linkToCollectionResource(RecipientBankAccountDto.class).withRel("all-recipient");
     Link approvers = linkTo(methodOn(UserController.class).getApproversByPceId(pceId)).withRel("current-approvers");
-    return new Resource<>(pceDto, selfLink, pukLink, allPuk, pceItems, recipient, allRecipient, approvers);
+    return new Resource<>(pceDto, selfLink, pukLink, allPuk, pceItems, gDriveFilesByPce, recipient, allRecipient, approvers);
   }
 
 
