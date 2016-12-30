@@ -1,6 +1,7 @@
 package com.pce.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.data.annotation.ReadOnlyProperty;
 import org.springframework.hateoas.ResourceSupport;
@@ -12,6 +13,7 @@ import java.io.Serializable;
  * Created by Leonardo Tarjadi on 7/09/2016.
  */
 @Relation(collectionRelation = "recipientBankAcctList")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecipientBankAccountDto extends ResourceSupport implements DomainObjectDTO, Serializable {
   @ReadOnlyProperty
   private long recipientBankAccountId;
@@ -25,6 +27,8 @@ public class RecipientBankAccountDto extends ResourceSupport implements DomainOb
   private String acctNumber;
   private String bsb;
 
+  private UserDto associatedUser;
+
 
   public RecipientBankAccountDto() {
   }
@@ -35,13 +39,15 @@ public class RecipientBankAccountDto extends ResourceSupport implements DomainOb
                                  @JsonProperty("updatedDate") String updatedDate,
                                  @JsonProperty("acctName") String acctName,
                                  @JsonProperty("acctNumber") String acctNumber,
-                                 @JsonProperty("bsb") String bsb) {
+                                 @JsonProperty("bsb") String bsb,
+                                 @JsonProperty("associatedUser") UserDto associatedUser) {
     this.recipientBankAccountId = recipientBankAccountId;
     this.creationDate = creationDate;
     this.updatedDate = updatedDate;
     this.acctName = acctName;
     this.acctNumber = acctNumber;
     this.bsb = bsb;
+    this.associatedUser = associatedUser;
   }
 
   public long getRecipientBankAccountId() {
@@ -92,6 +98,14 @@ public class RecipientBankAccountDto extends ResourceSupport implements DomainOb
     this.bsb = bsb;
   }
 
+  public UserDto getAssociatedUser() {
+    return associatedUser;
+  }
+
+  public void setAssociatedUser(UserDto associatedUser) {
+    this.associatedUser = associatedUser;
+  }
+
   @Override
   public String toString() {
     return "RecipientBankAccountDto{" +
@@ -101,6 +115,7 @@ public class RecipientBankAccountDto extends ResourceSupport implements DomainOb
             ", acctName='" + acctName + '\'' +
             ", acctNumber='" + acctNumber + '\'' +
             ", bsb='" + bsb + '\'' +
+            ", associatedUser=" + associatedUser +
             '}';
   }
 }

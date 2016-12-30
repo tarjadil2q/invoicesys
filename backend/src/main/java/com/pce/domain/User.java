@@ -50,18 +50,23 @@ public class User {
   @ManyToMany(mappedBy = "approvers")
   private Set<Pce> pcesApproved;
 
+  @OneToMany(mappedBy = "associatedUser")
+  private Set<RecipientBankAccount> recipientBankAccounts;
+
 
   public User() {
   }
 
   public User(String firstName, String lastName, String email, String passwordHash, Set<Role> roles,
-              Set<PukGroup> pukGroups) {
+              Set<PukGroup> pukGroups,
+              Set<RecipientBankAccount> recipientBankAccounts) {
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.passwordHash = passwordHash;
     this.roles = roles;
     this.pukGroups = pukGroups;
+    this.recipientBankAccounts = recipientBankAccounts;
   }
 
   public long getId() {
@@ -142,6 +147,14 @@ public class User {
 
   public void setPcesApproved(Set<Pce> pcesApproved) {
     this.pcesApproved = pcesApproved;
+  }
+
+  public Set<RecipientBankAccount> getRecipientBankAccounts() {
+    return recipientBankAccounts;
+  }
+
+  public void setRecipientBankAccounts(Set<RecipientBankAccount> recipientBankAccounts) {
+    this.recipientBankAccounts = recipientBankAccounts;
   }
 
   @Override

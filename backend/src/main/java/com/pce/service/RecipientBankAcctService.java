@@ -2,6 +2,7 @@ package com.pce.service;
 
 import com.pce.domain.Pce;
 import com.pce.domain.RecipientBankAccount;
+import com.pce.domain.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,6 +17,8 @@ public interface RecipientBankAcctService {
   Optional<RecipientBankAccount> findRecipientBankAccountById(long id);
 
   Optional<RecipientBankAccount> findRecipientBankAccountByPce(Pce pce);
+
+  Page<RecipientBankAccount> findRecipientBankAccountByUser(User user, Pageable pageRequest);
 
   List<RecipientBankAccount> findRecipientBankAccountByAccountName(String name);
 

@@ -1,8 +1,8 @@
 package com.pce.controller;
 
-import com.google.common.collect.Lists;
 import com.pce.domain.Pce;
 import com.pce.domain.RecipientBankAccount;
+import com.pce.domain.User;
 import com.pce.domain.dto.ApiError;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.RecipientBankAccountDto;
@@ -22,6 +22,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.*;
@@ -59,14 +60,15 @@ public class RecipientBankAcctController {
   @Autowired
   private RecipientAccountUpdateValidator recipientAccountUpdateValidator;
 
+  @Autowired
+  private PagedResourcesAssembler assembler;
+
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
   @RequestMapping(value = "/{recipientId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-  public HttpEntity<Resource<DomainObjectDTO>> getRecipientBankAccountById(@PathVariable("recipientId") long recipientId) {
+  public HttpEntity<Resource<RecipientBankAccountDto>> getRecipientBankAccountById(@PathVariable("recipientId") long recipientId) {
     RecipientBankAccount recipientBankAccount = recipientBankAcctService.findRecipientBankAccountById(recipientId).orElseThrow(() -> new NoSuchElementException(String.format("Recipient bank account=%s not found", recipientId)));
-    RecipientBankAccountDto recipientBankAccountDto = modelMapper.map(recipientBankAccount, RecipientBankAccountDto.class);
-    Link linkForRecipientBankDto = entityLinks.linkToSingleResource(RecipientBankAccountDto.class, recipientBankAccountDto.getRecipientBankAccountId());
-    Resource<DomainObjectDTO> pukResource = new Resource<>(recipientBankAccountDto, linkForRecipientBankDto);
-    return new ResponseEntity<>(pukResource, HttpStatus.OK);
+
+    return new ResponseEntity<>(mappedRecipient(recipientBankAccount), HttpStatus.OK);
   }
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
@@ -74,8 +76,7 @@ public class RecipientBankAcctController {
   public HttpEntity<PagedResources<DomainObjectDTO>> getRecipients(Pageable pageRequest, PagedResourcesAssembler assembler) {
     Page<RecipientBankAccount> pageRecipient = recipientBankAcctService.findAllRecipientBankAccount(pageRequest);
 
-    Page<RecipientBankAccountDto> newPaged = pageRecipient.map(source -> modelMapper.map(source, RecipientBankAccountDto.class));
-
+    Page<Resource<RecipientBankAccountDto>> newPaged = pageRecipient.map(source -> mappedRecipient((source)));
     return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
   }
 
@@ -89,15 +90,9 @@ public class RecipientBankAcctController {
     }
 
     RecipientBankAccount bankAccount = modelMapper.map(recipientBankAccountDto, RecipientBankAccount.class);
-    Optional<RecipientBankAccount> recipientBankAccount = recipientBankAcctService.findRecipientBankAccountByAccountNumberAndBsb(recipientBankAccountDto.getAcctNumber(),
-            recipientBankAccountDto.getBsb());
-    if (recipientBankAccount.isPresent()) {
-      return new ResponseEntity(new Resource<>(new ApiError(HttpStatus.CONFLICT,
-              "Recipient bank account already exists, please enter different bank account", Lists.newArrayList("Bank account already exists"))), HttpStatus.CONFLICT);
-    }
 
-    RecipientBankAccount bankAcount = recipientBankAcctService.createOrUpdateRecipientBankAccount(bankAccount);
-    recipientBankAccountDto.add(ControllerLinkBuilder.linkTo(RecipientBankAcctController.class).slash(bankAcount.getRecipientBankAccountId()).withRel(RECIPIENT_BANK_ACCOUNT_URL_PATH).withSelfRel());
+    RecipientBankAccount createdBankAccount = recipientBankAcctService.createOrUpdateRecipientBankAccount(bankAccount);
+    recipientBankAccountDto.add(ControllerLinkBuilder.linkTo(RecipientBankAcctController.class).slash(createdBankAccount.getRecipientBankAccountId()).withRel(RECIPIENT_BANK_ACCOUNT_URL_PATH).withSelfRel());
     return ControllerHelper.getResponseEntityWithoutBody(recipientBankAccountDto, HttpStatus.CREATED);
   }
 
@@ -129,6 +124,19 @@ public class RecipientBankAcctController {
     return ControllerHelper.getResponseEntityWithoutBody(recipientBankAccountDto, HttpStatus.OK);
   }
 
+  @RequestMapping(value = "/user/{userId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
+  public HttpEntity<PagedResources<RecipientBankAccountDto>> getRecipientByUserID(@PathVariable("userId") long userId,
+                                                                                  Pageable pageRequest) {
+    User user = new User();
+    user.setId(userId);
+    Page<RecipientBankAccount> recipients = recipientBankAcctService.findRecipientBankAccountByUser(user, pageRequest);
+    if (CollectionUtils.isEmpty(recipients.getContent())) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    Page<Resource<RecipientBankAccountDto>> newPaged = recipients.map(source -> mappedRecipient(source));
+    return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
+  }
+
   @RequestMapping(value = "/pce/{pceId}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<RecipientBankAccountDto>> getRecipientByPceId(@PathVariable("pceId") long pceId) {
     Pce pce = new Pce();
@@ -143,7 +151,9 @@ public class RecipientBankAcctController {
   private Resource<RecipientBankAccountDto> mappedRecipient(RecipientBankAccount recipient) {
     Link selfLink = linkTo(methodOn(RecipientBankAcctController.class).getRecipientBankAccountById(recipient.getRecipientBankAccountId())).withSelfRel();
     RecipientBankAccountDto recipientDto = modelMapper.map(recipient, RecipientBankAccountDto.class);
-    return new Resource<>(recipientDto, selfLink);
+    Link userLink = linkTo(methodOn(UserController.class).getUserById(recipient.getAssociatedUser().getId())).withRel("user");
+    Link allRecipients = entityLinks.linkToCollectionResource(RecipientBankAccountDto.class).withRel("all-recipient");
+    return new Resource<>(recipientDto, selfLink, userLink, allRecipients);
   }
 
 }

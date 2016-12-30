@@ -80,13 +80,10 @@ public class UserController {
 
   @PreAuthorize("@currentUserServiceImpl.canAccessUser(principal, #id)")
   @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
-  public HttpEntity<Resource<DomainObjectDTO>> getUserById(@PathVariable Long id) {
+  public HttpEntity<Resource<UserDto>> getUserById(@PathVariable Long id) {
     User user = userService.getUserById(id).orElseThrow(() -> new NoSuchElementException(String.format("User=%s not found", id)));
-    UserDto userDto = (UserDto) userMapper.mapEntityIntoDto(user);
-    Link linkForUser = entityLinks.linkToSingleResource(UserDto.class, userDto.getUserId());
 
-    Resource<DomainObjectDTO> userResource = new Resource<>(userDto, linkForUser);
-    return new ResponseEntity<>(userResource, HttpStatus.OK);
+    return new ResponseEntity<>(mappedUser(user), HttpStatus.OK);
   }
 
 
@@ -95,8 +92,11 @@ public class UserController {
 
   public HttpEntity<PagedResources<DomainObjectDTO>> getUsers(Pageable pageRequest, PagedResourcesAssembler assembler) {
     Page<User> allUsers = userService.getAllUsers(pageRequest);
-    Page<DomainObjectDTO> userDtos = userMapper.mapEntityPageIntoDTOPage(pageRequest, allUsers);
-    return new ResponseEntity<>(assembler.toResource(userDtos), HttpStatus.OK);
+    if (CollectionUtils.isEmpty(allUsers.getContent())) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+    Page<Resource<UserDto>> newPaged = allUsers.map(source -> mappedUser(source));
+    return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
   }
 
   @PreAuthorize("@currentUserServiceImpl.isCurrentUserAdmin(principal)")
@@ -212,10 +212,11 @@ public class UserController {
     Link selfLink = linkTo(methodOn(UserController.class).getUserById(user.getId())).withSelfRel();
     UserDto userDto = modelMapper.map(user, UserDto.class);
     Link allRoles = entityLinks.linkToCollectionResource(RoleDto.class).withRel("all-roles");
+    Link allBankAccount = linkTo(methodOn(RecipientBankAcctController.class).getRecipientByUserID(user.getId(), new PageRequest(0, 20))).withRel("all-bank-account");
     Link roleLink = linkTo(methodOn(RoleController.class).getRolesByUserId(user.getId(), new PageRequest(0, 20))).withRel("role");
     Link allPukGroups = entityLinks.linkToCollectionResource(PukGroupDto.class).withRel("all-puk-group");
     Link pukGroupByUser = linkTo(methodOn(PukGroupController.class).getPukGroupByUserId(user.getId(), new PageRequest(0, 20))).withRel("puk-group");
-    return new Resource<>(userDto, selfLink, roleLink, allRoles, pukGroupByUser, allPukGroups);
+    return new Resource<>(userDto, selfLink, roleLink, allRoles, pukGroupByUser, allPukGroups, allBankAccount);
   }
 
 

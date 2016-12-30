@@ -5,7 +5,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Set;
 
@@ -53,9 +52,6 @@ public class Pce {
   private Set<GDriveFile> driveFiles;
 
 
-  @Column(name = "invoice_image")
-  private byte[] invoiceImage;
-
   @CreationTimestamp
   @Column(name = "creation_date", insertable = true, updatable = false)
   private Calendar creationDate;
@@ -71,7 +67,7 @@ public class Pce {
   }
 
   public Pce(String pceNo, Puk associatedPuk, RecipientBankAccount recipientBankAccount, String remarks, Set<User> approvers,
-             Set<PceItem> pceItems, byte[] invoiceImage,
+             Set<PceItem> pceItems,
              int pceYear,
              Set<GDriveFile> driveFiles) {
     this.pceNo = pceNo;
@@ -80,7 +76,6 @@ public class Pce {
     this.remarks = remarks;
     this.approvers = approvers;
     this.pceItems = pceItems;
-    this.invoiceImage = invoiceImage;
     this.pceYear = pceYear;
     this.driveFiles = driveFiles;
   }
@@ -157,13 +152,6 @@ public class Pce {
     this.pceItems = pceItems;
   }
 
-  public byte[] getInvoiceImage() {
-    return invoiceImage;
-  }
-
-  public void setInvoiceImage(byte[] invoiceImage) {
-    this.invoiceImage = invoiceImage;
-  }
 
   public Calendar getCreationDate() {
     return creationDate;
@@ -209,7 +197,6 @@ public class Pce {
             ", remarks='" + remarks + '\'' +
             ", approvers=" + approvers +
             ", pceItems=" + pceItems +
-            ", invoiceImage=" + Arrays.toString(invoiceImage) +
             ", creationDate=" + creationDate +
             ", updatedDate=" + updatedDate +
             ", pceYear=" + pceYear +

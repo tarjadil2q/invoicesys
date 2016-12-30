@@ -13,6 +13,7 @@ import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Leonardo Tarjadi on 5/03/2016.
@@ -35,6 +36,8 @@ public class UserDto extends ResourceSupport implements DomainObjectDTO, Seriali
   private List<RoleDto> roles;
   private String password;
 
+  private Set<RecipientBankAccountDto> recipientBankAccounts;
+
   @NotNull
   public UserDto() {
   }
@@ -52,7 +55,8 @@ public class UserDto extends ResourceSupport implements DomainObjectDTO, Seriali
                  @JsonProperty("creationDate") String creationDate,
                  @JsonProperty("updatedDate") String updatedDate,
                  @JsonProperty("roles") List<RoleDto> roles,
-                 @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, value = "password") String password) {
+                 @JsonProperty(access = JsonProperty.Access.WRITE_ONLY, value = "password") String password,
+                 @JsonProperty("recipientBankAccounts") Set<RecipientBankAccountDto> recipientBankAccounts) {
     this.id = id;
     this.firstName = firstName;
     this.lastName = lastName;
@@ -61,6 +65,7 @@ public class UserDto extends ResourceSupport implements DomainObjectDTO, Seriali
     this.updatedDate = updatedDate;
     this.roles = roles;
     this.password = password;
+    this.recipientBankAccounts = recipientBankAccounts;
   }
 
   public long getUserId() {
@@ -125,6 +130,14 @@ public class UserDto extends ResourceSupport implements DomainObjectDTO, Seriali
 
   public void setPassword(String password) {
     this.password = password;
+  }
+
+  public Set<RecipientBankAccountDto> getRecipientBankAccounts() {
+    return recipientBankAccounts;
+  }
+
+  public void setRecipientBankAccounts(Set<RecipientBankAccountDto> recipientBankAccounts) {
+    this.recipientBankAccounts = recipientBankAccounts;
   }
 
   @Override

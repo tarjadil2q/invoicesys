@@ -39,15 +39,22 @@ public class RecipientBankAccount {
   @OneToMany(mappedBy = "recipientBankAccount")
   private Set<Pce> associatedPces;
 
+  @ManyToOne(cascade = CascadeType.REFRESH)
+  @JoinColumn(name = "user_id", referencedColumnName = "id")
+  private User associatedUser;
+
   public RecipientBankAccount() {
   }
 
-  public RecipientBankAccount(long recipientBankAccountId, String bsb, String acctName, String acctNumber, Set<Pce> associatedPces) {
+  public RecipientBankAccount(long recipientBankAccountId, String bsb, String acctName, String acctNumber,
+                              Set<Pce> associatedPces,
+                              User associatedUser) {
     this.recipientBankAccountId = recipientBankAccountId;
     this.bsb = bsb;
     this.acctName = acctName;
     this.acctNumber = acctNumber;
     this.associatedPces = associatedPces;
+    this.associatedUser = associatedUser;
   }
 
   public long getRecipientBankAccountId() {
@@ -104,5 +111,13 @@ public class RecipientBankAccount {
 
   public void setAssociatedPces(Set<Pce> associatedPces) {
     this.associatedPces = associatedPces;
+  }
+
+  public User getAssociatedUser() {
+    return associatedUser;
+  }
+
+  public void setAssociatedUser(User associatedUser) {
+    this.associatedUser = associatedUser;
   }
 }

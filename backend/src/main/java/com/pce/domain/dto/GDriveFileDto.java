@@ -17,6 +17,11 @@ public class GDriveFileDto extends ResourceSupport implements DomainObjectDTO, S
   @ReadOnlyProperty
   private long gDriveFileId;
 
+  @ReadOnlyProperty
+  private String creationDate;
+  @ReadOnlyProperty
+  private String updatedDate;
+
   private String fileId;
 
   private String fileName;
@@ -38,6 +43,8 @@ public class GDriveFileDto extends ResourceSupport implements DomainObjectDTO, S
   public GDriveFileDto(@JsonProperty("gDriveFileId") long gDriveFileId,
                        @JsonProperty("fileId") String fileId,
                        @JsonProperty("fileName") String fileName,
+                       @JsonProperty("creationDate") String creationDate,
+                       @JsonProperty("updatedDate") String updatedDate,
                        @JsonProperty("webContentLink") String webContentLink,
                        @JsonProperty("thumbnailLink") String thumbnailLink,
                        @JsonProperty("iconLink") String iconLink,
@@ -46,6 +53,8 @@ public class GDriveFileDto extends ResourceSupport implements DomainObjectDTO, S
     this.gDriveFileId = gDriveFileId;
     this.fileId = fileId;
     this.fileName = fileName;
+    this.creationDate = creationDate;
+    this.updatedDate = updatedDate;
     this.webContentLink = webContentLink;
     this.thumbnailLink = thumbnailLink;
     this.iconLink = iconLink;
@@ -115,5 +124,21 @@ public class GDriveFileDto extends ResourceSupport implements DomainObjectDTO, S
 
   public void setWebViewLink(String webViewLink) {
     this.webViewLink = webViewLink;
+  }
+
+  public String getCreationDate() {
+    return creationDate;
+  }
+
+  public void setCreationDate(String creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public String getUpdatedDate() {
+    return updatedDate;
+  }
+
+  public void setUpdatedDate(String updatedDate) {
+    this.updatedDate = updatedDate;
   }
 }

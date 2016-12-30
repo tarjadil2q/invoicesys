@@ -37,6 +37,7 @@ public class PCEConfiguration {
       @Override
       protected void configure() {
         when(Conditions.isNull()).skip().setRoles(null);
+        when(Conditions.isNull()).skip().setRecipientBankAccounts(null);
       }
     });
     modelMapper.addMappings(new PropertyMap<Pce, PceDto>() {
@@ -64,6 +65,12 @@ public class PCEConfiguration {
         when(Conditions.isNull()).skip().setPukItemMeasurement(null);
       }
     }));
+    modelMapper.addMappings(new PropertyMap<RecipientBankAccount, RecipientBankAccountDto>() {
+      @Override
+      protected void configure() {
+        when(Conditions.isNull()).skip().setAssociatedUser(null);
+      }
+    });
     return modelMapper;
   }
 

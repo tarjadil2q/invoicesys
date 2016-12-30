@@ -2,7 +2,9 @@ package com.pce.validation.validator;
 
 import com.pce.domain.RecipientBankAccount;
 import com.pce.domain.dto.RecipientBankAccountDto;
+import com.pce.domain.dto.UserDto;
 import com.pce.service.RecipientBankAcctService;
+import com.pce.validation.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -19,6 +21,9 @@ public class RecipientAccountCreateValidator implements Validator {
   @Autowired
   private RecipientBankAcctService recipientBankAcctService;
 
+  @Autowired
+  private RecipientUserAssociatedValidator recipientUserAssociatedValidator;
+
   @Override
   public boolean supports(Class<?> clazz) {
     return RecipientBankAccountDto.class.isAssignableFrom(clazz);
@@ -27,6 +32,13 @@ public class RecipientAccountCreateValidator implements Validator {
   @Override
   public void validate(Object target, Errors errors) {
     RecipientBankAccountDto recipientBankAccountDto = (RecipientBankAccountDto) target;
+
+    UserDto user = recipientBankAccountDto.getAssociatedUser();
+    if (user == null) {
+      errors.rejectValue("associatedUser", "user.not.exists", "Associated User not specify, please specify one");
+    }
+    ValidationHelper.invokeNestedValidator(this.recipientUserAssociatedValidator,
+            user, errors, "associatedUser");
     String acctNumber = recipientBankAccountDto.getAcctNumber();
     String bsb = recipientBankAccountDto.getBsb();
     Optional<RecipientBankAccount> recipientBankAccountByAccountNumberAndBsb = recipientBankAcctService.findRecipientBankAccountByAccountNumberAndBsb(acctNumber,

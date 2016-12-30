@@ -76,6 +76,9 @@ public class PceController {
   public HttpEntity<PagedResources<DomainObjectDTO>> getPce(Pageable pageRequest) {
     logger.debug("Retrieving all pce ");
     Page<Pce> allPces = pceService.getAllAvailablePce(pageRequest);
+    if (CollectionUtils.isEmpty(allPces.getContent())) {
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
     Page<Resource<PceDto>> newPaged = allPces.map(source -> pceMapper.mappedPce(source));
     return new ResponseEntity<>(assembler.toResource(newPaged), HttpStatus.OK);
   }

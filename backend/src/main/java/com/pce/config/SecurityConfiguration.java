@@ -129,7 +129,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         userDto.setPassword("gkypce");
         User user = userMapper.mapDtoIntoEntity(userDto);
         userService.createOrUpdate(user);
-        userService.createOrUpdate(user, Sets.newHashSet(adminRole));
+        User createdAdminUser = userService.createOrUpdate(user, Sets.newHashSet(adminRole));
 
         UserDto officerDto = new UserDto();
         officerDto.setEmail("lipi.hardjono@gmail.com");
@@ -257,6 +257,9 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         recipientBankAccountDto.setAcctName("Leonardo Tarjadi");
         recipientBankAccountDto.setAcctNumber("1243222");
         recipientBankAccountDto.setBsb("322-333");
+        UserDto userAdmin = new UserDto();
+        userAdmin.setId(createdAdminUser.getId());
+        recipientBankAccountDto.setAssociatedUser(userAdmin);
         recipientBankAcctService.createOrUpdateRecipientBankAccount(modelMapper.map(recipientBankAccountDto, RecipientBankAccount.class));
       }
 
