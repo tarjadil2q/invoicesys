@@ -1,7 +1,13 @@
 package com.pce.service;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.googleapis.batch.BatchRequest;
+import com.google.api.client.googleapis.batch.json.JsonBatchCallback;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.googleapis.json.GoogleJsonError;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.http.HttpHeaders;
+import com.google.api.client.http.HttpResponseException;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.json.JsonFactory;
@@ -9,6 +15,8 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.google.api.services.drive.model.Permission;
+import com.google.api.services.drive.model.PermissionList;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.pce.domain.GDriveFile;
@@ -29,6 +37,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.BufferedInputStream;
@@ -74,7 +83,7 @@ public class GDriveServiceImpl implements DriveService {
       fileMetadata.setName(pce.getPceNo() + " - " + pce.getPceYear() + " - " + "invoice - " + uploadFile.getOriginalFilename());
 
       File parentFolder = checkAndCreateFolder(drive, ROOT_PARENT_INVOICE_FOLDER, "root", "GKY PCE Invoice folder");
-
+      setPermission(drive, parentFolder.getId());
       String parentFolderId = parentFolder.getId();
 
       File yearFolder = checkAndCreateFolder(drive, String.valueOf(pce.getPceYear()), parentFolderId, "Year group subfolder for PCE Invoice");
@@ -202,6 +211,47 @@ public class GDriveServiceImpl implements DriveService {
       throw new GoogleCredentialsException("Exception when initializing http transport ", e);
     }
 
+  }
+
+
+  private void setPermission(Drive drive, String fileId) {
+    JsonBatchCallback<Permission> callback = new JsonBatchCallback<Permission>() {
+      @Override
+      public void onFailure(GoogleJsonError e,
+                            HttpHeaders responseHeaders)
+              throws IOException {
+        logger.error("Unable to set permission ", e);
+        throw new GoogleJsonResponseException(new HttpResponseException.Builder(400, "Error setting permission", responseHeaders), e);
+      }
+
+      @Override
+      public void onSuccess(Permission permission,
+                            HttpHeaders responseHeaders)
+              throws IOException {
+        logger.info("Successfully setting permission with  ID: " + permission.getId());
+      }
+    };
+    BatchRequest batch = drive.batch();
+    Permission userPermission = new Permission()
+            .setType("anyone")
+            .setRole("reader");
+    try {
+      PermissionList permissionList = drive.permissions().list(fileId).execute();
+      List<Permission> permissions = permissionList.getPermissions();
+      if (CollectionUtils.isEmpty(permissions) || !isAnyoneReaderPermission(permissions)) {
+        drive.permissions().create(fileId, userPermission)
+                .setFields("id")
+                .queue(batch, callback);
+        batch.execute();
+      }
+
+    } catch (IOException e) {
+      throw new InvalidGoogleFileException("Unable to get file with id " + fileId + " from GDrive", e);
+    }
+  }
+
+  private boolean isAnyoneReaderPermission(List<Permission> permissions) {
+    return permissions.stream().anyMatch(permission -> "anyone".equals(permission.getType()) && "reader".equals(permission.getRole()));
   }
 
 }
