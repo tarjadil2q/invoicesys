@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Created by Leonardo Tarjadi on 29/12/2016.
@@ -90,7 +91,7 @@ public class GDriveServiceImpl implements DriveService {
       Drive drive = getGDrive();
 
       File fileMetadata = new File();
-      fileMetadata.setName(pce.getPceNo() + " - " + pce.getPceYear() + " - " + "invoice - " + uploadFile.getOriginalFilename());
+      fileMetadata.setName(pce.getPceNo() + " - " + "Invoice - " + uploadFile.getOriginalFilename());
 
       File parentFolder = checkAndCreateFolder(drive, ROOT_PARENT_INVOICE_FOLDER, "root", "GKY PCE Invoice folder");
       setPermission(drive, parentFolder.getId());
@@ -121,6 +122,7 @@ public class GDriveServiceImpl implements DriveService {
       gDriveFileDto.setThumbnailLink(executedFile.getThumbnailLink());
       gDriveFileDto.setIconLink(executedFile.getIconLink());
       gDriveFileDto.setMimeType(executedFile.getMimeType());
+      gDriveFileDto.setParentFolderIds(executedFile.getParents().stream().collect(Collectors.joining(", ")));
 
       GDriveFile gDriveFile = modelMapper.map(gDriveFileDto, GDriveFile.class);
       gDriveFile.setPce(pce);
@@ -129,7 +131,7 @@ public class GDriveServiceImpl implements DriveService {
 
     } catch (IOException e) {
       logger.error("Error when interacting with google drive api", e);
-      throw new InvalidGoogleFileException("Exception occurs while interacting with Google Drive API ", e);
+      throw new InvalidGoogleFileException("Exception occurs while interacting with Google Drive API " + e.getMessage(), e);
     }
   }
 
@@ -189,16 +191,21 @@ public class GDriveServiceImpl implements DriveService {
     Preconditions.checkArgument(StringUtils.isNotEmpty(folderName), "Folder " + GOOGLE_FIELD_NAME + " cannot be null or empty");
     Drive.Files.List parentFolderRequest = drive.files().list().setQ(GOOGLE_FIELD_MIME_TYPE + "='application/vnd.google-apps.folder' and trashed=false  and '" + parentFolderId + "' in " + GOOGLE_FIELD_PARENTS);
     FileList folderList = parentFolderRequest.execute();
-    List<File> files = folderList.getFiles();
-    if (org.springframework.util.CollectionUtils.isEmpty(files)) {
+    List<File> folders = folderList.getFiles();
+    if (org.springframework.util.CollectionUtils.isEmpty(folders) || folders.stream().noneMatch(file -> folderName.equals(file.getName()))) {
       return createFolder(drive, folderName, folderDescription, parentFolderId);
-    }
-    for (File file : files) {
-      if (String.valueOf(folderName).equalsIgnoreCase(file.getName())) {
-        return file;
+    } else {
+      for (File folder : folders) {
+        if (folderName.equals(folder.getName())) {
+          return folder;
+        }
       }
     }
-    throw new InvalidGoogleFileException("Unable to find subfolder " + folderName);
+    throw new InvalidGoogleFileException("Unable to create folder " + folderName);
+  }
+
+  private boolean folderNameExists(String folderName, List<File> folders) {
+    return folders.stream().anyMatch(folder -> folderName.equals(folder.getName()));
   }
 
   private File createFolder(Drive drive, String folderName, String folderDescription, String parentIds) throws IOException {

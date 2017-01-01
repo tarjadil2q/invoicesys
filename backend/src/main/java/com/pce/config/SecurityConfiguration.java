@@ -23,6 +23,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
@@ -99,12 +100,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
             .exceptionHandling().authenticationEntryPoint(restAuthenticationEntryPoint)
             .and()
-            .formLogin().successHandler(restAuthenticationSuccessHandler)
+            .formLogin().successHandler(restAuthenticationSuccessHandler).loginPage("/login")
             .and()
             .formLogin().failureHandler(simpleUrlAuthenticationFailureHandler)
             .and()
             .csrf().disable()//Enable back when in prod mode
             .httpBasic().and()
+            .logout().logoutRequestMatcher(new AntPathRequestMatcher("/logout")).logoutSuccessUrl("/login").and()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
   }
 
@@ -121,6 +123,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
       Role financeComittee = roleService.createOrUpdateRole(new Role("Finance Comittee"));
       Role comitteeHead = roleService.createOrUpdateRole(new Role(RoleConstant.COMITTEE_HEAD.getRoleName()));
       Role officer = roleService.createOrUpdateRole(new Role("Officer"));
+      Role userRole = roleService.createOrUpdateRole(new Role(RoleConstant.USER.getRoleName()));
       if (!userService.isUserExists("leonardo.tarjadi@gmail.com")) {
         UserDto userDto = new UserDto();
         userDto.setEmail("leonardo.tarjadi@gmail.com");
@@ -130,6 +133,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         User user = userMapper.mapDtoIntoEntity(userDto);
         userService.createOrUpdate(user);
         User createdAdminUser = userService.createOrUpdate(user, Sets.newHashSet(adminRole));
+
+        UserDto normalUserDto = new UserDto();
+        normalUserDto.setEmail("erlych@gmail.com");
+        normalUserDto.setFirstName("Erliyanti");
+        normalUserDto.setLastName("Tjhin");
+        normalUserDto.setPassword("gkypce");
+        user = userMapper.mapDtoIntoEntity(normalUserDto);
+        userService.createOrUpdate(user);
+        User createdNormalUser = userService.createOrUpdate(user, Sets.newHashSet(userRole));
 
         UserDto officerDto = new UserDto();
         officerDto.setEmail("lipi.hardjono@gmail.com");
@@ -261,6 +273,15 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         userAdmin.setId(createdAdminUser.getId());
         recipientBankAccountDto.setAssociatedUser(userAdmin);
         recipientBankAcctService.createOrUpdateRecipientBankAccount(modelMapper.map(recipientBankAccountDto, RecipientBankAccount.class));
+
+        RecipientBankAccountDto normalRecipientBankAccountDto = new RecipientBankAccountDto();
+        normalRecipientBankAccountDto.setAcctName("Erliyanti Tjhin");
+        normalRecipientBankAccountDto.setAcctNumber("322333");
+        normalRecipientBankAccountDto.setBsb("322-344");
+        UserDto normalUsr = new UserDto();
+        normalUsr.setId(createdNormalUser.getId());
+        normalRecipientBankAccountDto.setAssociatedUser(normalUsr);
+        recipientBankAcctService.createOrUpdateRecipientBankAccount(modelMapper.map(normalRecipientBankAccountDto, RecipientBankAccount.class));
       }
 
     }

@@ -39,6 +39,9 @@ public class GDriveFile {
   @Column(name = "mime_type")
   private String mimeType;
 
+  @Column(name = "parent_folder_ids")
+  private String parentFolderIds;
+
   @ManyToOne(cascade = CascadeType.REFRESH)
   @JoinColumn(name = "pce_id", referencedColumnName = "id")
   private Pce pce;
@@ -54,7 +57,8 @@ public class GDriveFile {
   }
 
   public GDriveFile(String fileId, String fileName, String webContentLink, String thumbnailLink,
-                    String iconLink, String mimeType, String webViewLink, Pce pce) {
+                    String iconLink, String mimeType, String webViewLink,
+                    String parentFolderIds, Pce pce) {
     this.fileId = fileId;
     this.fileName = fileName;
     this.webContentLink = webContentLink;
@@ -63,6 +67,7 @@ public class GDriveFile {
     this.pce = pce;
     this.mimeType = mimeType;
     this.webViewLink = webViewLink;
+    this.parentFolderIds = parentFolderIds;
   }
 
   public long getgDriveFileId() {
@@ -135,6 +140,14 @@ public class GDriveFile {
 
   public void setWebViewLink(String webViewLink) {
     this.webViewLink = webViewLink;
+  }
+
+  public String getParentFolderIds() {
+    return parentFolderIds;
+  }
+
+  public void setParentFolderIds(String parentFolderIds) {
+    this.parentFolderIds = parentFolderIds;
   }
 
   public Calendar getCreationDate() {

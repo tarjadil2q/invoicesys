@@ -36,6 +36,8 @@ public class GDriveFileDto extends ResourceSupport implements DomainObjectDTO, S
 
   private String mimeType;
 
+  private String parentFolderIds;
+
   public GDriveFileDto() {
   }
 
@@ -49,7 +51,8 @@ public class GDriveFileDto extends ResourceSupport implements DomainObjectDTO, S
                        @JsonProperty("thumbnailLink") String thumbnailLink,
                        @JsonProperty("iconLink") String iconLink,
                        @JsonProperty("mimeType") String mimeType,
-                       @JsonProperty("webViewLink") String webViewLink) {
+                       @JsonProperty("webViewLink") String webViewLink,
+                       @JsonProperty("parentFolderIds") String parentFolderIds) {
     this.gDriveFileId = gDriveFileId;
     this.fileId = fileId;
     this.fileName = fileName;
@@ -60,6 +63,7 @@ public class GDriveFileDto extends ResourceSupport implements DomainObjectDTO, S
     this.iconLink = iconLink;
     this.mimeType = mimeType;
     this.webViewLink = webViewLink;
+    this.parentFolderIds = parentFolderIds;
   }
 
   public String getFileId() {
@@ -140,5 +144,13 @@ public class GDriveFileDto extends ResourceSupport implements DomainObjectDTO, S
 
   public void setUpdatedDate(String updatedDate) {
     this.updatedDate = updatedDate;
+  }
+
+  public String getParentFolderIds() {
+    return parentFolderIds;
+  }
+
+  public void setParentFolderIds(String parentFolderIds) {
+    this.parentFolderIds = parentFolderIds;
   }
 }
