@@ -27,7 +27,7 @@ public class EmailServiceImpl implements EmailService {
   private static final Logger logger = LoggerFactory.getLogger(EmailServiceImpl.class);
 
   private static final String footerEmail = "<br/><br/> Best Regards, <br/> PCE System<br/><br/>" +
-          "----This is system generated message. Pleas do not reply to this email----";
+          "----This is system generated message. Please do not reply to this email----";
   public static final String MAIL_SMTP_HOST = "mail.smtp.host";
   public static final String MAIL_SMTP_AUTH = "mail.smtp.auth";
   public static final String MAIL_SMTP_PORT = "mail.smtp.port";
