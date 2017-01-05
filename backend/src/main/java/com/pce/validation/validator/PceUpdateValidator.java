@@ -4,6 +4,7 @@ import com.pce.domain.Pce;
 import com.pce.domain.dto.PceDto;
 import com.pce.domain.dto.PukDto;
 import com.pce.domain.dto.RecipientBankAccountDto;
+import com.pce.domain.dto.UserDto;
 import com.pce.service.PceService;
 import com.pce.validation.ValidationHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -40,6 +42,11 @@ public class PceUpdateValidator implements Validator {
     Optional<Pce> currentPceOptional = pceService.getPceByPceId(pceId);
     if (!currentPceOptional.isPresent()) {
       errors.rejectValue("pceId", "pceId.not.exists", "Pce Id " + pceId + " not exist in the system, please select different one");
+    }
+
+    List<UserDto> approvers = pceDto.getApprovers();
+    if (!CollectionUtils.isEmpty(approvers)) {
+      errors.rejectValue("approvers", "approvers.not.empty", "Cannot update PCE when PCE is in approving process");
     }
     PukDto associatedPuk = pceDto.getAssociatedPuk();
     if (associatedPuk != null) {

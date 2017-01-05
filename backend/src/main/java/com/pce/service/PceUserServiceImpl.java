@@ -14,4 +14,9 @@ public class PceUserServiceImpl implements PceUserService {
     return currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("Officer") ||
             role.getRoleName().equalsIgnoreCase("Comittee Head") || role.getRoleName().equalsIgnoreCase("Admin"));
   }
+
+  public boolean isCurrentUserOfficerOrAdmin(CurrentUser currentUser) {
+    return currentUser.getRoles().stream().anyMatch(role -> role.getRoleName().equalsIgnoreCase("Officer") ||
+            role.getRoleName().equalsIgnoreCase("Admin"));
+  }
 }

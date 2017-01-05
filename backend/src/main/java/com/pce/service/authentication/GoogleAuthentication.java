@@ -12,11 +12,11 @@ import java.io.IOException;
  * Created by Leonardo Tarjadi on 28/12/2016.
  */
 @Service
-public class GDriveAuthentication {
+public class GoogleAuthentication {
 
 
-  public Credential getCredential() throws IOException {
-    GoogleCredential credential = GoogleCredential.fromStream(GDriveAuthentication.class.getResourceAsStream("/pce.json"))
+  public Credential getDriveCredential() throws IOException {
+    GoogleCredential credential = GoogleCredential.fromStream(GoogleAuthentication.class.getResourceAsStream("/pce.json"))
             .createScoped(Lists.newArrayList(DriveScopes.DRIVE,
                     DriveScopes.DRIVE_FILE,
                     DriveScopes.DRIVE_READONLY,

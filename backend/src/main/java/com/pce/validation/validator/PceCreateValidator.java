@@ -27,6 +27,9 @@ public class PceCreateValidator implements Validator {
   @Override
   public void validate(Object target, Errors errors) {
     PceDto pceDto = (PceDto) target;
+    if (pceDto.getPceId() != 0) {
+      errors.rejectValue("pceId", "pce.id.not.empty", "Cannot have PCE ID for newly created PCE, please not specify PCE ID");
+    }
     PukDto associatedPuk = pceDto.getAssociatedPuk();
     if (associatedPuk == null) {
       errors.rejectValue("associatedPuk", "associatedPuk.not.exists", "Associated puk not specify, please specify one");

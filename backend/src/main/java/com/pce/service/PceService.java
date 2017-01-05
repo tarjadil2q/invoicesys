@@ -1,12 +1,12 @@
 package com.pce.service;
 
-import com.pce.domain.CurrentUser;
-import com.pce.domain.Pce;
-import com.pce.domain.PceItem;
+import com.pce.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Created by Leonardo Tarjadi on 8/09/2016.
@@ -29,6 +29,8 @@ public interface PceService {
   boolean approvePce(Pce pce, CurrentUser currentUser);
 
   boolean rejectPce(Pce pce, CurrentUser currentUser);
+
+  Role getNextApproverOrRejecterRole(Set<User> currentApprovers, List<Role> listOfValidRole);
 
   Page<PceItem> getPceItemsByPce(Pce pce, Pageable pageRequest);
 

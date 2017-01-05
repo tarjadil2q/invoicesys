@@ -8,7 +8,6 @@ import com.google.api.client.googleapis.json.GoogleJsonError;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpHeaders;
 import com.google.api.client.http.HttpResponseException;
-import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.InputStreamContent;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -22,10 +21,9 @@ import com.google.common.collect.Lists;
 import com.pce.domain.GDriveFile;
 import com.pce.domain.Pce;
 import com.pce.domain.dto.GDriveFileDto;
-import com.pce.exception.GoogleCredentialsException;
 import com.pce.exception.InvalidGoogleFileException;
 import com.pce.repository.GDriveRepository;
-import com.pce.service.authentication.GDriveAuthentication;
+import com.pce.service.authentication.GoogleAuthentication;
 import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -43,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +70,7 @@ public class GDriveServiceImpl implements DriveService {
   public static final String GOOGLE_FIELD_MIME_TYPE = "mimeType";
 
   @Autowired
-  private GDriveAuthentication gDriveAuthentication;
+  private GoogleAuthentication googleAuthentication;
 
 
   @Autowired
@@ -79,6 +78,8 @@ public class GDriveServiceImpl implements DriveService {
 
   @Autowired
   private GDriveRepository gDriveRepository;
+
+  private Drive drive;
 
   @Transactional
   @Override
@@ -129,7 +130,7 @@ public class GDriveServiceImpl implements DriveService {
       return gDriveRepository.save(gDriveFile);
 
 
-    } catch (IOException e) {
+    } catch (IOException | GeneralSecurityException e) {
       logger.error("Error when interacting with google drive api", e);
       throw new InvalidGoogleFileException("Exception occurs while interacting with Google Drive API " + e.getMessage(), e);
     }
@@ -152,7 +153,7 @@ public class GDriveServiceImpl implements DriveService {
       GDriveFile gDriveFile = driveFileById.get();
       String mimeType = gDriveFile.getMimeType();
       return new InputStreamResource(getGDrive().files().export(gDriveFile.getFileId(), mimeType).executeMediaAsInputStream());
-    } catch (IOException e) {
+    } catch (IOException | GeneralSecurityException e) {
       logger.error("Unable to load file with " + GOOGLE_FIELD_ID + " " + fileId, e);
       throw new InvalidGoogleFileException("Unable to load file with " + GOOGLE_FIELD_ID + " " + fileId, e);
     }
@@ -173,7 +174,7 @@ public class GDriveServiceImpl implements DriveService {
       gDriveRepository.delete(databaseDriveFileId);
       return true;
 
-    } catch (IOException e) {
+    } catch (IOException | GeneralSecurityException e) {
       logger.error("Error when interacting with google drive api ", e);
       throw new InvalidGoogleFileException("Exception occurs while interacting with Google Drive API ", e);
     }
@@ -204,9 +205,6 @@ public class GDriveServiceImpl implements DriveService {
     throw new InvalidGoogleFileException("Unable to create folder " + folderName);
   }
 
-  private boolean folderNameExists(String folderName, List<File> folders) {
-    return folders.stream().anyMatch(folder -> folderName.equals(folder.getName()));
-  }
 
   private File createFolder(Drive drive, String folderName, String folderDescription, String parentIds) throws IOException {
     File fileMetadata = new File();
@@ -221,20 +219,12 @@ public class GDriveServiceImpl implements DriveService {
 
   }
 
-  private Drive getGDrive() throws IOException {
-    Credential credential = gDriveAuthentication.getCredential();
-    return new Drive.Builder(getHttpTransport(), JSON_FACTORY, credential).setApplicationName("GKY-PCE-App").build();
-
-  }
-
-  private HttpTransport getHttpTransport() {
-    try {
-      return GoogleNetHttpTransport.newTrustedTransport();
-    } catch (Exception e) {
-      logger.error("Exception when initializing http transport", e);
-      throw new GoogleCredentialsException("Exception when initializing http transport ", e);
+  private Drive getGDrive() throws IOException, GeneralSecurityException {
+    if (drive == null) {
+      Credential credential = googleAuthentication.getDriveCredential();
+      return new Drive.Builder(GoogleNetHttpTransport.newTrustedTransport(), JSON_FACTORY, credential).setApplicationName("GKY-PCE-App").build();
     }
-
+    return drive;
   }
 
 

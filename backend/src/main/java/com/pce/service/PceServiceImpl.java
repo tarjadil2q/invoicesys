@@ -265,7 +265,7 @@ public class PceServiceImpl implements PceService {
     return false;
   }
 
-  private Role getNextApproverOrRejecterRole(Set<User> currentApprovers, List<Role> listOfValidRole) {
+  public Role getNextApproverOrRejecterRole(Set<User> currentApprovers, List<Role> listOfValidRole) {
     Set<Role> currentApproverRoles = new LinkedHashSet<>();
     for (User user : currentApprovers) {
       currentApproverRoles.addAll(user.getRoles());

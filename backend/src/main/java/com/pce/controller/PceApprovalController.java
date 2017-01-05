@@ -1,11 +1,10 @@
 package com.pce.controller;
 
-import com.pce.domain.CurrentUser;
-import com.pce.domain.Pce;
-import com.pce.domain.User;
+import com.pce.domain.*;
 import com.pce.domain.dto.DomainObjectDTO;
 import com.pce.domain.dto.PceApprovalWrapperDto;
 import com.pce.domain.dto.PceDto;
+import com.pce.service.EmailService;
 import com.pce.service.PceApprovalRoleService;
 import com.pce.service.PceService;
 import com.pce.service.UserService;
@@ -23,12 +22,12 @@ import org.springframework.data.web.PagedResourcesAssembler;
 import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.hateoas.PagedResources;
 import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.mvc.ControllerLinkBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,9 +35,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
  * Created by Leonardo Tarjadi on 16/09/2016.
@@ -69,8 +70,12 @@ public class PceApprovalController {
   @Autowired
   private PagedResourcesAssembler assembler;
 
+  @Autowired
+  private EmailService mailService;
+
 
   private static final String PCE_APPROVAL_URL_PATH = "/pce";
+
 
   @RequestMapping(value = "/currentuser", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<PagedResources<Resource<PceDto>>> getAllPceToBeApproveOrRejectByCurrentUser(Authentication authentication, Pageable pageRequest) {
@@ -101,8 +106,13 @@ public class PceApprovalController {
     }
 
     if (pceService.approvePce(pce, principal)) {
+      Optional<User> userByRoleOptional = getNextApprover(pce);
+      if (userByRoleOptional.isPresent()) {
+        mailService.sendEmail(userByRoleOptional.get().getEmail(), "GKY Sydney PCE waiting for approval", "There is PCE waiting for your approval. " +
+                "Please go to this " + "<a href=" + linkTo(PceApprovalController.class).slash("/currentuser").toString() + ">" + "link" + "</a>");
+      }
       PceDto pceDto = modelMapper.map(pce, PceDto.class);
-      pceDto.add(ControllerLinkBuilder.linkTo(UserController.class).slash(PCE_APPROVAL_URL_PATH).slash(pce.getPceId()).withSelfRel());
+      pceDto.add(linkTo(UserController.class).slash(PCE_APPROVAL_URL_PATH).slash(pce.getPceId()).withSelfRel());
 
       return ControllerHelper.getResponseEntityWithoutBody(pceDto, HttpStatus.OK);
     }
@@ -110,6 +120,13 @@ public class PceApprovalController {
     bindException.reject("userRole.Invalid", "This current user " + principal.getUser().getFirstName() + " " +
             principal.getUser().getLastName() + " is not in the right approval role sequence");
     return ValidationErrorBuilder.fromBindingErrors(bindException);
+  }
+
+  private Optional<User> getNextApprover(Pce pce) {
+    List<PceApprovalRole> validApprovalRoles = pceApprovalRoleService.findAllAvailableApprovalRoleOrderBySequenceNoAsc();
+    List<Role> approvalRoles = validApprovalRoles.stream().map(pceRole -> pceRole.getPceApprovalRole()).collect(Collectors.toList());
+    Role nextApproverOrRejecterRole = pceService.getNextApproverOrRejecterRole(pce.getApprovers(), approvalRoles);
+    return userService.getUserByRole(nextApproverOrRejecterRole);
   }
 
   @PreAuthorize("@currentUserServiceImpl.canCurrentUserApproveOrRejectPce(principal)")
@@ -130,8 +147,20 @@ public class PceApprovalController {
     }
 
     if (pceService.rejectPce(pce, principal)) {
+      List<PceApprovalRole> validApprovalRoles = pceApprovalRoleService.findAllAvailableApprovalRoleOrderBySequenceNoAsc();
+      List<Role> approvalRoles = validApprovalRoles.stream().map(pceRole -> pceRole.getPceApprovalRole()).collect(Collectors.toList());
+      if (!CollectionUtils.isEmpty(approvalRoles)) {
+        Role rejecterRole = approvalRoles.get(0);
+        Optional<User> rejectedUserByRole = userService.getUserByRole(rejecterRole);
+        if (rejectedUserByRole.isPresent()) {
+          mailService.sendEmail(rejectedUserByRole.get().getEmail(), "GKY Sydney PCE rejected.",
+                  "There is PCE being rejected." +
+                          " Please go to this <a href=" + linkTo(methodOn(PceController.class).getPceById(pce.getPceId())).toString() + ">" + "link</a>" + " for more detail.");
+        }
+
+      }
       PceDto pceDto = modelMapper.map(pce, PceDto.class);
-      pceDto.add(ControllerLinkBuilder.linkTo(PceApprovalController.class).slash(pce.getPceId()).withRel(PCE_APPROVAL_URL_PATH).withSelfRel());
+      pceDto.add(linkTo(PceApprovalController.class).slash(pce.getPceId()).withRel(PCE_APPROVAL_URL_PATH).withSelfRel());
 
       return ControllerHelper.getResponseEntityWithoutBody(pceDto, HttpStatus.OK);
     }
