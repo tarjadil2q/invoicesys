@@ -8,6 +8,7 @@ import com.pce.domain.dto.PukItemMeasurementDto;
 import com.pce.service.PukItemMeasurementService;
 import com.pce.service.mapper.PukItemMeasurementMapper;
 import com.pce.util.ControllerHelper;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,7 @@ public class PukItemMeasurementController {
   }
 
 
+  @ApiOperation(value = "get puk item measurement by id")
   @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> getPukItemMeasurementById(@PathVariable Long id) {
     PukItemMeasurement pukItemMeasurement = pukItemMeasurementService.getPukItemMeasurementById(id).orElseThrow(() -> new NoSuchElementException(String.format("Puk Item Measurement=%s not found", id)));
