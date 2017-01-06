@@ -8,7 +8,7 @@ import com.pce.domain.dto.PukItemMeasurementDto;
 import com.pce.service.PukItemMeasurementService;
 import com.pce.service.mapper.PukItemMeasurementMapper;
 import com.pce.util.ControllerHelper;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +74,10 @@ public class PukItemMeasurementController {
   }
 
 
-  @ApiOperation(value = "get puk item measurement by id")
+  @ApiOperation(value = "Get puk item measurement by id")
+  @ApiImplicitParam(name = "id", value = "Puk Item Measurement ID")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Ok", response = PukItemMeasurementDto.class)})
   @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> getPukItemMeasurementById(@PathVariable Long id) {
     PukItemMeasurement pukItemMeasurement = pukItemMeasurementService.getPukItemMeasurementById(id).orElseThrow(() -> new NoSuchElementException(String.format("Puk Item Measurement=%s not found", id)));
@@ -84,6 +87,10 @@ public class PukItemMeasurementController {
     return new ResponseEntity<>(pukMeasurementResource, HttpStatus.OK);
   }
 
+  @ApiOperation(value = "Get All puk items measurement")
+  @ApiImplicitParam(name = "id", value = "Puk Item Measurement ID")
+  @ApiResponses(value = {
+          @ApiResponse(code = 200, message = "Ok", response = PagedResources.class, responseContainer = "List")})
   @RequestMapping(method = RequestMethod.GET, produces = "application/json; charset=UTF-8")
   public HttpEntity<PagedResources<DomainObjectDTO>> getPukItemMeasurements(Pageable pageRequest) {
     Page<PukItemMeasurement> allPukMeasurements = pukItemMeasurementService.getAllAvailablePukItemMeasurement(pageRequest);
@@ -92,6 +99,10 @@ public class PukItemMeasurementController {
   }
 
 
+  @ApiResponses(value = {
+          @ApiResponse(code = 201, message = "Updated", responseHeaders =
+                  {@ResponseHeader(name = "location", description = "location to retrieve back the updated value", response = String.class)}),
+          @ApiResponse(code = 200, message = "ok")})
   @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json; charset=UTF-8")
   public HttpEntity<Resource<DomainObjectDTO>> updatePukItemMeasurement(@PathVariable("id") long id,
                                                                         @RequestBody @Valid PukItemMeasurementDto pukItemMeasurementDto) {
@@ -110,6 +121,6 @@ public class PukItemMeasurementController {
     PukItemMeasurement updatedPukItemMeasurement = pukItemMeasurementService.createOrUpdatePukItemMeasurement(toBeUpdatedPukMeasurement);
     pukItemMeasurementDto.add(ControllerLinkBuilder.linkTo(PukItemMeasurementController.class).slash(updatedPukItemMeasurement.getPukItemMeasurementId()).withRel(PUK_ITEM_MEASUREMENT_URL_PATH).withSelfRel());
 
-    return ControllerHelper.getResponseEntityWithoutBody(pukItemMeasurementDto, HttpStatus.OK);
+    return ControllerHelper.getResponseEntityWithoutBody(pukItemMeasurementDto, HttpStatus.CREATED);
   }
 }
